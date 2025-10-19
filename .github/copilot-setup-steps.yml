@@ -1,0 +1,64 @@
+# GitHub Copilot Coding Agent Setup Steps
+# This file configures the development environment for the coding agent
+# to efficiently build, test, and validate changes.
+
+steps:
+  # Step 1: Setup .NET environment
+  - name: Setup .NET SDK
+    run: |
+      # Verify .NET 10.0 is installed (or install it)
+      dotnet --version
+      
+  # Step 2: Restore backend dependencies
+  - name: Restore Backend Dependencies
+    run: |
+      cd src/backend
+      dotnet restore Flowertrack.sln
+      
+  # Step 3: Build backend
+  - name: Build Backend
+    run: |
+      cd src/backend
+      dotnet build Flowertrack.sln --configuration Release --no-restore
+      
+  # Step 4: Setup Node.js environment
+  - name: Setup Node.js
+    run: |
+      # Verify Node.js is installed (minimum version 18.x recommended)
+      node --version
+      npm --version
+      
+  # Step 5: Install frontend dependencies
+  - name: Install Frontend Dependencies
+    run: |
+      cd src/frontend/flowertrack-client
+      npm ci
+      
+  # Step 6: Run frontend linter
+  - name: Lint Frontend Code
+    run: |
+      cd src/frontend/flowertrack-client
+      npm run lint
+      
+  # Step 7: Check frontend formatting
+  - name: Check Frontend Formatting
+    run: |
+      cd src/frontend/flowertrack-client
+      npm run format:check
+      
+  # Step 8: Build frontend
+  - name: Build Frontend
+    run: |
+      cd src/frontend/flowertrack-client
+      npm run build
+      
+  # Optional: Run tests (when test suites are implemented)
+  # - name: Run Backend Tests
+  #   run: |
+  #     cd src/backend
+  #     dotnet test --no-build --configuration Release
+  #     
+  # - name: Run Frontend Tests
+  #   run: |
+  #     cd src/frontend/flowertrack-client
+  #     npm test -- --run
