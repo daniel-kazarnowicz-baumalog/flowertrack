@@ -1,0 +1,40 @@
+# Dependencies
+node_modules
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+dist
+build
+.vite
+*.local
+
+# Coverage
+coverage
+*.lcov
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.idea
+.vscode
+*.swp
+*.swo
+
+# Minified files
+*.min.js
+*.min.css
+
+# Environment
+.env
+.env.local
+.env.*.local
