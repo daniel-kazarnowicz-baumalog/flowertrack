@@ -1,0 +1,6 @@
+@Flowertrack.Api_HostAddress = http://localhost:5102
+
+GET {{Flowertrack.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
