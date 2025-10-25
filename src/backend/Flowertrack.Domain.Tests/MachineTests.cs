@@ -1,7 +1,7 @@
-using Flowertrack.Api.Domain.Common;
-using Flowertrack.Api.Domain.Entities;
-using Flowertrack.Api.Domain.Events;
-using Flowertrack.Api.Domain.ValueObjects;
+using Flowertrack.Domain.Common;
+using Flowertrack.Domain.Entities;
+using Flowertrack.Domain.Events;
+using Flowertrack.Domain.ValueObjects;
 
 namespace Flowertrack.Domain.Tests;
 
@@ -305,7 +305,7 @@ public class MachineTests
         machine.ActivateAlarm("Test alarm");
 
         // Act & Assert
-        var exception = Assert.Throws<Flowertrack.Api.Exceptions.DomainException>(() =>
+        var exception = Assert.Throws<Flowertrack.Domain.Exceptions.DomainException>(() =>
             machine.UpdateStatus(MachineStatus.Active, "Trying to activate"));
 
         Assert.Contains("Cannot change machine status from Alarm to Active", exception.Message);
@@ -531,7 +531,7 @@ public class MachineTests
         var machine = Machine.Create(TestOrganizationId, TestSerialNumber);
 
         // Act & Assert
-        var exception = Assert.Throws<Flowertrack.Api.Exceptions.DomainException>(() =>
+        var exception = Assert.Throws<Flowertrack.Domain.Exceptions.DomainException>(() =>
             machine.ClearAlarm("Trying to clear"));
 
         Assert.Contains("Cannot clear alarm: machine is not in alarm state", exception.Message);
