@@ -16,12 +16,12 @@ public sealed record ServiceUserCreatedEvent : DomainEvent
     /// <summary>
     /// Email address of the user
     /// </summary>
-    public string Email { get; init; }
+    public required string Email { get; init; }
 
     /// <summary>
     /// Full name of the user
     /// </summary>
-    public string FullName { get; init; }
+    public required string FullName { get; init; }
 
     /// <summary>
     /// When the user account was created

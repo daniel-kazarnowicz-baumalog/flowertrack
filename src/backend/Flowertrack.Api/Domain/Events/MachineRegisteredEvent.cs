@@ -21,17 +21,17 @@ public sealed record MachineRegisteredEvent : DomainEvent
     /// <summary>
     /// Serial number of the machine (unique identifier from manufacturer)
     /// </summary>
-    public string SerialNumber { get; init; }
+    public required string SerialNumber { get; init; }
 
     /// <summary>
     /// Brand/manufacturer of the machine
     /// </summary>
-    public string Brand { get; init; }
+    public required string Brand { get; init; }
 
     /// <summary>
     /// Model identifier of the machine
     /// </summary>
-    public string Model { get; init; }
+    public required string Model { get; init; }
 
     public MachineRegisteredEvent(
         Guid machineId,

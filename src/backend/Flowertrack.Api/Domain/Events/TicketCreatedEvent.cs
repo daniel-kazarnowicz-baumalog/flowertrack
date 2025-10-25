@@ -16,7 +16,7 @@ public sealed record TicketCreatedEvent : DomainEvent
     /// <summary>
     /// Human-readable ticket number (e.g., "TKT-2024-0001")
     /// </summary>
-    public string TicketNumber { get; init; }
+    public required string TicketNumber { get; init; }
 
     /// <summary>
     /// Organization that owns this ticket
@@ -36,7 +36,7 @@ public sealed record TicketCreatedEvent : DomainEvent
     /// <summary>
     /// Priority level of the ticket
     /// </summary>
-    public string Priority { get; init; }
+    public required string Priority { get; init; }
 
     public TicketCreatedEvent(
         Guid ticketId,
