@@ -163,7 +163,7 @@ try
 
         app.MapGet("/test/server-error", () =>
         {
-            throw new InvalidOperationException("Something went wrong in the server");
+            throw new InvalidOperationException("Simulated server error for testing exception handling");
         });
     }
 
