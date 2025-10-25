@@ -6,7 +6,8 @@
       "Bash(npx supabase:*)",
       "Bash(npm install:*)",
       "Bash(timeout /t 5)",
-      "Bash(dotnet ef migrations add:*)"
+      "Bash(dotnet ef migrations add:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []
