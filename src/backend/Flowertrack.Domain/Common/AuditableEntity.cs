@@ -55,4 +55,22 @@ public abstract class AuditableEntity<TId> where TId : notnull
     {
         _domainEvents.Clear();
     }
+
+    /// <summary>
+    /// Sets the created audit information.
+    /// </summary>
+    protected void SetCreatedAudit(Guid? createdBy)
+    {
+        CreatedAt = DateTimeOffset.UtcNow;
+        CreatedBy = createdBy;
+    }
+
+    /// <summary>
+    /// Sets the updated audit information.
+    /// </summary>
+    protected void SetUpdatedAudit(Guid? updatedBy)
+    {
+        UpdatedAt = DateTimeOffset.UtcNow;
+        UpdatedBy = updatedBy;
+    }
 }
