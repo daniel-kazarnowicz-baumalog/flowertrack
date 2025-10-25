@@ -1,16 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(dotnet run)",
-      "Bash(npm run dev:*)",
-      "Bash(npx supabase:*)",
-      "Bash(npm install:*)",
-      "Bash(timeout /t 5)",
-      "Bash(dotnet ef migrations add:*)",
-      "Bash(mkdir:*)",
+      "Bash(git fetch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git merge:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "Bash(taskkill /F /PID 18180)",
+      "Bash(dotnet run)",
+      "Bash(timeout:*)"
     ],
     "deny": [],
     "ask": []

@@ -12,7 +12,7 @@ namespace Flowertrack.Domain.Entities.Organizations;
 public sealed class Organization : AuditableEntity<Guid>, IAggregateRoot
 {
     // Private constructor for EF Core
-    private Organization()
+    private Organization() : base(Guid.NewGuid())
     {
         Name = string.Empty;
     }
@@ -155,7 +155,7 @@ public sealed class Organization : AuditableEntity<Guid>, IAggregateRoot
             Notes = notes?.Trim()
         };
 
-        organization.AddDomainEvent(new OrganizationCreatedEvent(organization.Id, organization.Name));
+        organization.RaiseDomainEvent(new OrganizationCreatedEvent(organization.Id, organization.Name));
 
         return organization;
     }
@@ -181,7 +181,7 @@ public sealed class Organization : AuditableEntity<Guid>, IAggregateRoot
         var previousStatus = ServiceStatus;
         ServiceStatus = status;
 
-        AddDomainEvent(new OrganizationServiceStatusChangedEvent(
+        RaiseDomainEvent(new OrganizationServiceStatusChangedEvent(
             Id,
             previousStatus,
             status,
@@ -209,8 +209,8 @@ public sealed class Organization : AuditableEntity<Guid>, IAggregateRoot
         var previousStatus = ServiceStatus;
         ServiceStatus = ServiceStatus.Suspended;
 
-        AddDomainEvent(new OrganizationServiceSuspendedEvent(Id, reason));
-        AddDomainEvent(new OrganizationServiceStatusChangedEvent(
+        RaiseDomainEvent(new OrganizationServiceSuspendedEvent(Id, reason));
+        RaiseDomainEvent(new OrganizationServiceStatusChangedEvent(
             Id,
             previousStatus,
             ServiceStatus.Suspended,
@@ -237,7 +237,7 @@ public sealed class Organization : AuditableEntity<Guid>, IAggregateRoot
         var previousStatus = ServiceStatus;
         ServiceStatus = ServiceStatus.Active;
 
-        AddDomainEvent(new OrganizationServiceStatusChangedEvent(
+        RaiseDomainEvent(new OrganizationServiceStatusChangedEvent(
             Id,
             previousStatus,
             ServiceStatus.Active,
@@ -304,14 +304,14 @@ public sealed class Organization : AuditableEntity<Guid>, IAggregateRoot
         if (ServiceStatus == ServiceStatus.Expired)
         {
             ServiceStatus = ServiceStatus.Active;
-            AddDomainEvent(new OrganizationServiceStatusChangedEvent(
+            RaiseDomainEvent(new OrganizationServiceStatusChangedEvent(
                 Id,
                 ServiceStatus.Expired,
                 ServiceStatus.Active,
                 "Contract renewed"));
         }
 
-        AddDomainEvent(new OrganizationContractRenewedEvent(Id, previousEndDate, newEndDate));
+        RaiseDomainEvent(new OrganizationContractRenewedEvent(Id, previousEndDate, newEndDate));
     }
 
     /// <summary>
@@ -331,7 +331,7 @@ public sealed class Organization : AuditableEntity<Guid>, IAggregateRoot
             .Replace("/", "_")
             .Replace("=", "");
 
-        AddDomainEvent(new OrganizationApiKeyGeneratedEvent(Id, isRegeneration));
+        RaiseDomainEvent(new OrganizationApiKeyGeneratedEvent(Id, isRegeneration));
 
         return ApiKey;
     }
