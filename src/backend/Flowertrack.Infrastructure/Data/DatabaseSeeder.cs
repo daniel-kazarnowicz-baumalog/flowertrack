@@ -1,5 +1,5 @@
-using Flowertrack.Domain.Entities;
-using Flowertrack.Domain.ValueObjects;
+using Flowertrack.Domain.Entities.Organizations;
+using Flowertrack.Domain.Enums;
 using Flowertrack.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -89,12 +89,10 @@ public static class DatabaseSeeder
             }
 
             // Set some organizations to different statuses
-            organizations[1].UpdateServiceStatus(ServiceStatus.Suspended);
-            organizations[3].UpdateServiceStatus(ServiceStatus.Active);
+            organizations[1].UpdateServiceStatus(ServiceStatus.Suspended, "Manual suspension for testing");
+            organizations[3].UpdateServiceStatus(ServiceStatus.Active, "Reactivation after suspension");
 
-            // Add notes to some organizations
-            organizations[0].UpdateNotes("Główny klient - priorytet wysoki. Wieloletnia współpraca.");
-            organizations[2].UpdateNotes("Nowy klient od stycznia 2025. Testowy okres umowy.");
+            // Note: Notes are set during organization creation
 
             // Add organizations to context
             await context.Organizations.AddRangeAsync(organizations);
@@ -118,8 +116,13 @@ public static class DatabaseSeeder
         string postalCode,
         string country)
     {
-        var organization = new Organization(name, email, phone);
-        organization.UpdateAddress(address, city, postalCode, country);
-        return organization;
+        return Organization.Create(
+            name: name,
+            email: email,
+            phone: phone,
+            address: address,
+            city: city,
+            postalCode: postalCode,
+            country: country);
     }
 }

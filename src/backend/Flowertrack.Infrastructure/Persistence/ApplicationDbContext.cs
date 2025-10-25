@@ -1,5 +1,5 @@
 using Flowertrack.Domain.Common;
-using Flowertrack.Domain.Entities;
+using Flowertrack.Domain.Entities.Organizations;
 using Microsoft.EntityFrameworkCore;
 
 namespace Flowertrack.Infrastructure.Persistence;
