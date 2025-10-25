@@ -128,6 +128,45 @@ try
     })
     .WithName("GetWeatherForecast");
 
+    // Test endpoints for exception handling (Development only)
+    if (app.Environment.IsDevelopment())
+    {
+        app.MapGet("/test/not-found", () =>
+        {
+            throw new Flowertrack.Api.Exceptions.NotFoundException("TestResource", 123);
+        });
+
+        app.MapGet("/test/validation", () =>
+        {
+            var errors = new Dictionary<string, string[]>
+            {
+                { "Name", new[] { "Name is required", "Name must be at least 3 characters" } },
+                { "Email", new[] { "Invalid email format" } }
+            };
+            throw new Flowertrack.Api.Exceptions.ValidationException(errors);
+        });
+
+        app.MapGet("/test/unauthorized", () =>
+        {
+            throw new Flowertrack.Api.Exceptions.UnauthorizedException();
+        });
+
+        app.MapGet("/test/forbidden", () =>
+        {
+            throw new Flowertrack.Api.Exceptions.ForbiddenException("You don't have access to this resource");
+        });
+
+        app.MapGet("/test/domain", () =>
+        {
+            throw new Flowertrack.Api.Exceptions.DomainException("Cannot close ticket because it has pending tasks");
+        });
+
+        app.MapGet("/test/server-error", () =>
+        {
+            throw new InvalidOperationException("Something went wrong in the server");
+        });
+    }
+
     app.Run();
 }
 catch (Exception ex)
