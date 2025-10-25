@@ -12,7 +12,7 @@ public abstract class Entity<TId> : IEquatable<Entity<TId>> where TId : notnull
     {
         Id = id;
     }
-    
+
     /// <summary>
     /// Entity identifier
     /// </summary>

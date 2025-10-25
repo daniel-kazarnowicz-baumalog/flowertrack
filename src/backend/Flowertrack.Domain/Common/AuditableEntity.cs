@@ -2,57 +2,52 @@ namespace Flowertrack.Domain.Common;
 
 /// <summary>
 /// Base class for entities that need audit tracking.
-/// Provides standard audit fields and domain event collection management.
+/// Provides standard audit fields for creation and update tracking.
 /// </summary>
 /// <typeparam name="TId">The type of the entity's identifier.</typeparam>
-public abstract class AuditableEntity<TId> where TId : notnull
+public abstract class AuditableEntity<TId> : Entity<TId> where TId : notnull
 {
-    private readonly List<IDomainEvent> _domainEvents = new();
-
-    /// <summary>
-    /// Gets or sets the unique identifier for the entity.
-    /// </summary>
-    public TId Id { get; protected set; } = default!;
+    protected AuditableEntity(TId id) : base(id)
+    {
+    }
 
     /// <summary>
     /// Gets or sets the date and time when the entity was created.
     /// </summary>
-    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; protected set; }
 
     /// <summary>
     /// Gets or sets the identifier of the user who created the entity.
     /// </summary>
-    public Guid? CreatedBy { get; set; }
+    public Guid? CreatedBy { get; protected set; }
 
     /// <summary>
     /// Gets or sets the date and time when the entity was last updated.
     /// </summary>
-    public DateTimeOffset? UpdatedAt { get; set; }
+    public DateTimeOffset? UpdatedAt { get; protected set; }
 
     /// <summary>
     /// Gets or sets the identifier of the user who last updated the entity.
     /// </summary>
-    public Guid? UpdatedBy { get; set; }
+    public Guid? UpdatedBy { get; protected set; }
 
     /// <summary>
-    /// Gets the collection of domain events associated with this entity.
+    /// Sets the audit information for entity creation.
     /// </summary>
-    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
-
-    /// <summary>
-    /// Adds a domain event to the entity's event collection.
-    /// </summary>
-    /// <param name="domainEvent">The domain event to add.</param>
-    protected void AddDomainEvent(IDomainEvent domainEvent)
+    /// <param name="userId">The identifier of the user creating the entity.</param>
+    protected void SetCreatedAudit(Guid userId)
     {
-        _domainEvents.Add(domainEvent);
+        CreatedAt = DateTimeOffset.UtcNow;
+        CreatedBy = userId;
     }
 
     /// <summary>
-    /// Clears all domain events from the entity's event collection.
+    /// Sets the audit information for entity update.
     /// </summary>
-    public void ClearDomainEvents()
+    /// <param name="userId">The identifier of the user updating the entity.</param>
+    protected void SetUpdatedAudit(Guid userId)
     {
-        _domainEvents.Clear();
+        UpdatedAt = DateTimeOffset.UtcNow;
+        UpdatedBy = userId;
     }
 }

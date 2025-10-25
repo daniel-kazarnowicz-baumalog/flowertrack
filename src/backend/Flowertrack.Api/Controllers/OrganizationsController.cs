@@ -1,3 +1,5 @@
+using Flowertrack.Domain.Entities.Organizations;
+using Flowertrack.Domain.Enums;
 using Flowertrack.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -100,9 +102,9 @@ public class OrganizationsController : ControllerBase
         return Ok(new
         {
             Total = count,
-            Active = await _context.Organizations.CountAsync(o => o.ServiceStatus == Domain.ValueObjects.ServiceStatus.Active),
-            Suspended = await _context.Organizations.CountAsync(o => o.ServiceStatus == Domain.ValueObjects.ServiceStatus.Suspended),
-            Expired = await _context.Organizations.CountAsync(o => o.ServiceStatus == Domain.ValueObjects.ServiceStatus.Expired)
+            Active = await _context.Organizations.CountAsync(o => o.ServiceStatus == ServiceStatus.Active),
+            Suspended = await _context.Organizations.CountAsync(o => o.ServiceStatus == ServiceStatus.Suspended),
+            Expired = await _context.Organizations.CountAsync(o => o.ServiceStatus == ServiceStatus.Expired)
         });
     }
 }
