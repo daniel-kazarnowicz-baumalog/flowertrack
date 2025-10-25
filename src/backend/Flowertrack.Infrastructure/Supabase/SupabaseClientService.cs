@@ -22,8 +22,11 @@ public class SupabaseClientService : ISupabaseClient
         IOptions<SupabaseConfig> options,
         ILogger<SupabaseClientService> logger)
     {
-        _options = options.Value ?? throw new ArgumentNullException(nameof(options));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(logger);
+        
+        _options = options.Value ?? throw new ArgumentNullException(nameof(options), "Options value cannot be null");
+        _logger = logger;
 
         // Lazy initialization for thread-safe singleton pattern
         _client = new Lazy<Client>(() => InitializeClient(), LazyThreadSafetyMode.ExecutionAndPublication);
