@@ -42,10 +42,30 @@ public abstract class AuditableEntity<TId> : Entity<TId> where TId : notnull
     }
 
     /// <summary>
+    /// Sets the audit information for entity creation.
+    /// </summary>
+    /// <param name="userId">The identifier of the user creating the entity (optional).</param>
+    protected void SetCreatedAudit(Guid? userId)
+    {
+        CreatedAt = DateTimeOffset.UtcNow;
+        CreatedBy = userId;
+    }
+
+    /// <summary>
     /// Sets the audit information for entity update.
     /// </summary>
     /// <param name="userId">The identifier of the user updating the entity.</param>
     protected void SetUpdatedAudit(Guid userId)
+    {
+        UpdatedAt = DateTimeOffset.UtcNow;
+        UpdatedBy = userId;
+    }
+
+    /// <summary>
+    /// Sets the audit information for entity update.
+    /// </summary>
+    /// <param name="userId">The identifier of the user updating the entity (optional).</param>
+    protected void SetUpdatedAudit(Guid? userId)
     {
         UpdatedAt = DateTimeOffset.UtcNow;
         UpdatedBy = userId;
