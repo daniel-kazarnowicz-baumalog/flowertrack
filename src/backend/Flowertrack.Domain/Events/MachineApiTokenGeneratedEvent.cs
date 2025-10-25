@@ -1,3 +1,5 @@
+using Flowertrack.Domain.Common;
+
 namespace Flowertrack.Domain.Events;
 
 using Flowertrack.Domain.Common;
