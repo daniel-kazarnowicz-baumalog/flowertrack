@@ -1,7 +1,7 @@
-using Flowertrack.Api.Domain.Entities;
-using Flowertrack.Api.Domain.Enums;
-using Flowertrack.Api.Domain.Events;
-using Flowertrack.Api.Exceptions;
+using Flowertrack.Domain.Entities;
+using Flowertrack.Domain.Enums;
+using Flowertrack.Domain.Events;
+using Flowertrack.Domain.Exceptions;
 
 namespace Flowertrack.Domain.Tests;
 
