@@ -10,7 +10,7 @@ namespace Flowertrack.Domain.Entities;
 /// </summary>
 public sealed class Ticket : AuditableEntity<Guid>, IAggregateRoot
 {
-    private Ticket() { } // EF Core constructor
+    private Ticket() : base(Guid.NewGuid()) { } // EF Core constructor
 
     // Private constructor for domain logic
     private Ticket(
@@ -21,7 +21,7 @@ public sealed class Ticket : AuditableEntity<Guid>, IAggregateRoot
         Guid organizationId,
         Guid machineId,
         Priority priority,
-        Guid createdByUserId)
+        Guid createdByUserId) : base(id)
     {
         if (string.IsNullOrWhiteSpace(title))
         {
