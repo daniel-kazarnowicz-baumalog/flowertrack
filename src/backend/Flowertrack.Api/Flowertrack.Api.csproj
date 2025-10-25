@@ -26,4 +26,8 @@
     <ProjectReference Include="..\Flowertrack.Contracts\Flowertrack.Contracts.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Flowertrack.Application\Flowertrack.Application.csproj" />
+  </ItemGroup>
+
 </Project>
