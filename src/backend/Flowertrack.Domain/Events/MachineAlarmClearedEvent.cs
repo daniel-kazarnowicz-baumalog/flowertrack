@@ -2,17 +2,44 @@ using Flowertrack.Domain.Common;
 
 namespace Flowertrack.Domain.Events;
 
+using Flowertrack.Domain.Common;
+
 /// <summary>
-/// Event raised when an alarm is cleared on a machine
+/// Event raised when a machine alarm is cleared or resolved.
+/// This indicates that the alarm condition has been addressed.
 /// </summary>
 public sealed class MachineAlarmClearedEvent : DomainEvent
 {
-    public Guid MachineId { get; init; }
-    public string Reason { get; init; }
+    /// <summary>
+    /// Unique identifier of the machine
+    /// </summary>
+    public Guid MachineId { get; }
 
-    public MachineAlarmClearedEvent(Guid machineId, string reason)
+    /// <summary>
+    /// Reason or explanation for clearing the alarm
+    /// </summary>
+    public string ClearedReason { get; }
+
+    /// <summary>
+    /// When the alarm was cleared
+    /// </summary>
+    public DateTimeOffset ClearedAt { get; }
+
+    /// <summary>
+    /// User who cleared the alarm
+    /// </summary>
+    public Guid ClearedBy { get; }
+
+    public MachineAlarmClearedEvent(
+        Guid machineId,
+        string clearedReason,
+        DateTimeOffset clearedAt,
+        Guid clearedBy)
+        : base(machineId)
     {
         MachineId = machineId;
-        Reason = reason;
+        ClearedReason = clearedReason;
+        ClearedAt = clearedAt;
+        ClearedBy = clearedBy;
     }
 }

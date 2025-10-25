@@ -10,6 +10,7 @@
       "Bash(taskkill /F /PID 18180)",
       "Bash(dotnet run)",
       "Bash(timeout:*)"
+      "Bash(git stash:*)"
     ],
     "deny": [],
     "ask": []

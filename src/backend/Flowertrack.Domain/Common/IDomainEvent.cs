@@ -7,7 +7,17 @@ namespace Flowertrack.Domain.Common;
 public interface IDomainEvent
 {
     /// <summary>
+    /// Unique identifier for this event instance
+    /// </summary>
+    Guid EventId { get; }
+
+    /// <summary>
     /// The date and time when the event occurred.
     /// </summary>
     DateTimeOffset OccurredOn { get; }
+
+    /// <summary>
+    /// Optional identifier of the aggregate that produced this event
+    /// </summary>
+    Guid? AggregateId { get; }
 }
