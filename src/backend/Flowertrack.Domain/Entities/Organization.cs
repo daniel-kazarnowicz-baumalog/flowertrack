@@ -9,13 +9,17 @@ namespace Flowertrack.Domain.Entities;
 public sealed class Organization : AuditableEntity<Guid>
 {
     // Private constructor for EF Core
-    private Organization() : base(Guid.NewGuid()) { }
-    
+    private Organization()
+    {
+        Id = Guid.NewGuid();
+    }
+
     /// <summary>
     /// Constructor for creating a new organization
     /// </summary>
-    public Organization(string name, string email, string? phone = null) : base(Guid.NewGuid())
+    public Organization(string name, string email, string? phone = null)
     {
+        Id = Guid.NewGuid();
         Name = name ?? throw new ArgumentNullException(nameof(name));
         Email = email ?? throw new ArgumentNullException(nameof(email));
         Phone = phone;
