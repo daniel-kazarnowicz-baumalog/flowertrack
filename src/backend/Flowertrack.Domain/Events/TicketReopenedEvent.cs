@@ -1,33 +1,33 @@
-namespace Flowertrack.Api.Domain.Events;
+namespace Flowertrack.Domain.Events;
 
-using Flowertrack.Api.Domain.Common;
+using Flowertrack.Domain.Common;
 
 /// <summary>
 /// Event raised when a previously closed ticket is reopened.
 /// This typically happens when an issue recurs or was not fully resolved.
 /// In MVP, clients can reopen tickets within 14 days of resolution.
 /// </summary>
-public sealed record TicketReopenedEvent : DomainEvent
+public sealed class TicketReopenedEvent : DomainEvent
 {
     /// <summary>
     /// Unique identifier of the ticket
     /// </summary>
-    public Guid TicketId { get; init; }
+    public Guid TicketId { get; }
 
     /// <summary>
     /// User who reopened the ticket
     /// </summary>
-    public Guid ReopenedBy { get; init; }
+    public Guid ReopenedBy { get; }
 
     /// <summary>
     /// When the ticket was reopened
     /// </summary>
-    public DateTimeOffset ReopenedAt { get; init; }
+    public DateTimeOffset ReopenedAt { get; }
 
     /// <summary>
     /// Reason for reopening the ticket
     /// </summary>
-    public string Reason { get; init; }
+    public string Reason { get; }
 
     public TicketReopenedEvent(
         Guid ticketId,

@@ -1,7 +1,7 @@
 namespace Flowertrack.Domain.Tests.Events;
 
-using Flowertrack.Api.Domain.Common;
-using Flowertrack.Api.Domain.Events;
+using Flowertrack.Domain.Common;
+using Flowertrack.Domain.Events;
 
 public class DomainEventTests
 {

@@ -1,37 +1,37 @@
-namespace Flowertrack.Api.Domain.Events;
+namespace Flowertrack.Domain.Events;
 
-using Flowertrack.Api.Domain.Common;
+using Flowertrack.Domain.Common;
 
 /// <summary>
 /// Event raised when a new machine is registered in the system.
 /// This event captures the initial registration of production equipment.
 /// </summary>
-public sealed record MachineRegisteredEvent : DomainEvent
+public sealed class MachineRegisteredEvent : DomainEvent
 {
     /// <summary>
     /// Unique identifier of the machine
     /// </summary>
-    public Guid MachineId { get; init; }
+    public Guid MachineId { get; }
 
     /// <summary>
     /// Organization that owns this machine
     /// </summary>
-    public Guid OrganizationId { get; init; }
+    public Guid OrganizationId { get; }
 
     /// <summary>
     /// Serial number of the machine (unique identifier from manufacturer)
     /// </summary>
-    public required string SerialNumber { get; init; }
+    public string SerialNumber { get; }
 
     /// <summary>
     /// Brand/manufacturer of the machine
     /// </summary>
-    public required string Brand { get; init; }
+    public string Brand { get; }
 
     /// <summary>
     /// Model identifier of the machine
     /// </summary>
-    public required string Model { get; init; }
+    public string Model { get; }
 
     public MachineRegisteredEvent(
         Guid machineId,

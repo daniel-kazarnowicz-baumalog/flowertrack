@@ -1,32 +1,32 @@
-namespace Flowertrack.Api.Domain.Events;
+namespace Flowertrack.Domain.Events;
 
-using Flowertrack.Api.Domain.Common;
+using Flowertrack.Domain.Common;
 
 /// <summary>
 /// Event raised when preventive maintenance is scheduled for a machine.
 /// This helps track maintenance schedules and intervals.
 /// </summary>
-public sealed record MachineMaintenanceScheduledEvent : DomainEvent
+public sealed class MachineMaintenanceScheduledEvent : DomainEvent
 {
     /// <summary>
     /// Unique identifier of the machine
     /// </summary>
-    public Guid MachineId { get; init; }
+    public Guid MachineId { get; }
 
     /// <summary>
     /// Date when maintenance is scheduled
     /// </summary>
-    public DateTimeOffset ScheduledDate { get; init; }
+    public DateTimeOffset ScheduledDate { get; }
 
     /// <summary>
     /// Maintenance interval in days (for recurring maintenance)
     /// </summary>
-    public int IntervalDays { get; init; }
+    public int IntervalDays { get; }
 
     /// <summary>
     /// User who scheduled the maintenance
     /// </summary>
-    public Guid ScheduledBy { get; init; }
+    public Guid ScheduledBy { get; }
 
     public MachineMaintenanceScheduledEvent(
         Guid machineId,

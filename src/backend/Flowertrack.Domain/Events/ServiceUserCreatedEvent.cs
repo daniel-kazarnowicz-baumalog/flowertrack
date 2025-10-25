@@ -1,32 +1,32 @@
-namespace Flowertrack.Api.Domain.Events;
+namespace Flowertrack.Domain.Events;
 
-using Flowertrack.Api.Domain.Common;
+using Flowertrack.Domain.Common;
 
 /// <summary>
 /// Event raised when a new service user (technician or administrator) is created.
 /// Service users are employees of the service company.
 /// </summary>
-public sealed record ServiceUserCreatedEvent : DomainEvent
+public sealed class ServiceUserCreatedEvent : DomainEvent
 {
     /// <summary>
     /// Unique identifier of the user
     /// </summary>
-    public Guid UserId { get; init; }
+    public Guid UserId { get; }
 
     /// <summary>
     /// Email address of the user
     /// </summary>
-    public required string Email { get; init; }
+    public string Email { get; }
 
     /// <summary>
     /// Full name of the user
     /// </summary>
-    public required string FullName { get; init; }
+    public string FullName { get; }
 
     /// <summary>
     /// When the user account was created
     /// </summary>
-    public DateTimeOffset CreatedAt { get; init; }
+    public DateTimeOffset CreatedAt { get; }
 
     public ServiceUserCreatedEvent(
         Guid userId,
