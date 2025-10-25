@@ -218,7 +218,7 @@ public class MachineApiKeyTests
                 var key1WithoutPrefix = keys[i].Substring(4);
                 var key2WithoutPrefix = keys[j].Substring(4);
 
-                Assert.DoesNotContain(key2WithoutPrefix.Substring(0, Math.Min(10, key2WithoutPrefix.Length)), key1WithoutPrefix);
+                Assert.DoesNotContain(key2WithoutPrefix[..Math.Min(10, key2WithoutPrefix.Length)], key1WithoutPrefix);
             }
         }
     }
