@@ -108,8 +108,8 @@ public class OrganizationUser : AuditableEntity<Guid>
         if (role.Length > 50)
             throw new ValidationException("Role", "Role cannot exceed 50 characters");
 
-        if (!IsValidRole(role))
-            throw new ValidationException("Role", "Invalid role. Must be Owner, Admin, or User");
+        if (!OrganizationUserRole.IsValid(role))
+            throw new ValidationException("Role", $"Invalid role. Must be one of: {string.Join(", ", OrganizationUserRole.ValidRoles)}");
 
         if (phoneNumber != null && phoneNumber.Length > 50)
             throw new ValidationException("PhoneNumber", "Phone number cannot exceed 50 characters");
@@ -224,8 +224,8 @@ public class OrganizationUser : AuditableEntity<Guid>
         if (role.Length > 50)
             throw new ValidationException("Role", "Role cannot exceed 50 characters");
 
-        if (!IsValidRole(role))
-            throw new ValidationException("Role", "Invalid role. Must be Owner, Admin, or User");
+        if (!OrganizationUserRole.IsValid(role))
+            throw new ValidationException("Role", $"Invalid role. Must be one of: {string.Join(", ", OrganizationUserRole.ValidRoles)}");
 
         var oldRole = Role;
         var newRole = role.Trim();
@@ -256,14 +256,5 @@ public class OrganizationUser : AuditableEntity<Guid>
         {
             return false;
         }
-    }
-
-    /// <summary>
-    /// Validates role value
-    /// </summary>
-    private static bool IsValidRole(string role)
-    {
-        var validRoles = new[] { "Owner", "Admin", "User" };
-        return validRoles.Contains(role, StringComparer.OrdinalIgnoreCase);
     }
 }
