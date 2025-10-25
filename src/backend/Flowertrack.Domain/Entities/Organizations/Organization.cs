@@ -186,12 +186,6 @@ public sealed class Organization : AuditableEntity<Guid>, IAggregateRoot
             previousStatus,
             status,
             reason));
-
-        // Check if contract has expired and update status accordingly
-        if (status == ServiceStatus.Expired && ContractEndDate.HasValue && ContractEndDate.Value < DateTimeOffset.UtcNow)
-        {
-            // Status correctly set to Expired
-        }
     }
 
     /// <summary>
@@ -330,10 +324,7 @@ public sealed class Organization : AuditableEntity<Guid>, IAggregateRoot
 
         // Generate a secure random API key
         var randomBytes = new byte[32];
-        using (var rng = RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(randomBytes);
-        }
+        RandomNumberGenerator.Fill(randomBytes);
 
         ApiKey = Convert.ToBase64String(randomBytes)
             .Replace("+", "-")
