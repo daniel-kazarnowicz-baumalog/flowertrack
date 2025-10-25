@@ -31,7 +31,8 @@ Write-Host ""
 try {
     $dotnetVersion = dotnet --version
     Write-Host "✓ .NET SDK found (version $dotnetVersion)" -ForegroundColor Green
-} catch {
+}
+catch {
     Write-Host "❌ Error: .NET SDK is not installed" -ForegroundColor Red
     Write-Host "Please install .NET 9.0 SDK from: https://dotnet.microsoft.com/download" -ForegroundColor Yellow
     exit 1
@@ -48,7 +49,8 @@ Write-Host ""
 Write-Host "Initializing user secrets..." -ForegroundColor Yellow
 try {
     dotnet user-secrets init --project $ProjectDir 2>&1 | Out-Null
-} catch {
+}
+catch {
     # Ignore if already initialized
 }
 Write-Host "✓ User secrets initialized" -ForegroundColor Green
@@ -121,7 +123,8 @@ Write-Host "====================================================================
 Write-Host ""
 try {
     dotnet user-secrets list --project $ProjectDir
-} catch {
+}
+catch {
     Write-Host "Unable to list secrets" -ForegroundColor Yellow
 }
 Write-Host ""
@@ -144,10 +147,12 @@ if ($testConnection -eq "y" -or $testConnection -eq "Y") {
         $migrationOutput = dotnet ef database update 2>&1 | Out-String
         if ($migrationOutput -match "Done") {
             Write-Host "✓ Database connection successful!" -ForegroundColor Green
-        } else {
+        }
+        else {
             Write-Host "❌ Database connection failed. Please check your connection string." -ForegroundColor Red
         }
-    } catch {
+    }
+    catch {
         Write-Host "⚠ Project build failed. Please ensure all dependencies are installed." -ForegroundColor Yellow
     }
 }
@@ -164,5 +169,5 @@ Write-Host "  3. Configure RLS policies (see storage-policies.sql)"
 Write-Host "  4. Run: dotnet run --project Flowertrack.Api"
 Write-Host "  5. Test health endpoint: curl http://localhost:5102/health/supabase"
 Write-Host ""
-Write-Host "Happy coding! 🚀" -ForegroundColor Green
+Write-Host "Happy coding!" -ForegroundColor Green
 Write-Host ""
