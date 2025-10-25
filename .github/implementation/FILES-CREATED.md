@@ -1,7 +1,8 @@
 # 📦 Utworzone Pliki - Podsumowanie
 
-**Data:** 2025-10-25  
-**Faza:** 0 & 1 - Setup & Domain Foundation
+**Data:** 2025-10-25 23:30  
+**Faza:** 0 & 1 - Setup & Domain Foundation  
+**Build Status:** ✅ SUCCESS (0 errors, 16 warnings)
 
 ---
 
@@ -41,22 +42,74 @@ src/backend/
 
 | File | Path | Status | Description |
 |------|------|--------|-------------|
-| `Priority.cs` | `Domain/ValueObjects/` | ✅ | Ticket priority enum |
-| `TicketStatus.cs` | `Domain/ValueObjects/` | ✅ | Ticket status workflow |
-| `MachineStatus.cs` | `Domain/ValueObjects/` | ✅ | Machine operational status |
-| `ServiceStatus.cs` | `Domain/ValueObjects/` | ✅ | Organization service status |
-| `UserStatus.cs` | `Domain/ValueObjects/` | ✅ | User activation status |
+| `Priority.cs` | `Domain/Enums/` | ✅ | Ticket priority enum (Low, Medium, High, Critical) |
+| `TicketStatus.cs` | `Domain/Enums/` | ✅ | Ticket status workflow (8 states) |
+| `MachineStatus.cs` | `Domain/Enums/` | ✅ | Machine operational status (4 states) |
+| `ServiceStatus.cs` | `Domain/Enums/` | ✅ | Organization service status (3 states) |
+| `UserStatus.cs` | `Domain/Enums/` | ✅ | User activation status (4 states) |
+| `OrganizationUserRole.cs` | `Domain/Enums/` | ✅ | User role static class (Owner, Admin, User) |
+
+### Value Objects (Complex)
+
+| File | Path | Status | Description |
+|------|------|--------|-------------|
+| `TicketNumber.cs` | `Domain/ValueObjects/` | ✅ | TICK-YYYY-XXXXX format with validation |
+| `Email.cs` | `Domain/ValueObjects/` | ✅ | Email with RFC validation and normalization |
+| `MachineApiKey.cs` | `Domain/ValueObjects/` | ✅ | Secure API key generation (mch_ prefix) |
+
+### Domain Entities (Aggregate Roots)
+
+| File | Path | Status | Description |
+|------|------|--------|-------------|
+| `Ticket.cs` | `Domain/Entities/` | ✅ | Service ticket aggregate root |
+| `Organization.cs` | `Domain/Entities/` | ✅ | Client organization aggregate root |
+| `Machine.cs` | `Domain/Entities/Machines/` | ✅ | Production machine aggregate root |
+| `ServiceUser.cs` | `Domain/Entities/` | ✅ | Service technician profile entity |
+| `OrganizationUser.cs` | `Domain/Entities/` | ✅ | Client user profile entity |
+
+### Domain Events (22 events)
+
+| File | Path | Status | Description |
+|------|------|--------|-------------|
+| **Ticket Events (6)** |
+| `TicketCreatedEvent.cs` | `Domain/Events/` | ✅ | Ticket creation event |
+| `TicketStatusChangedEvent.cs` | `Domain/Events/` | ✅ | Status transition event |
+| `TicketAssignedEvent.cs` | `Domain/Events/` | ✅ | Assignment to technician |
+| `TicketResolvedEvent.cs` | `Domain/Events/` | ✅ | Ticket resolution event |
+| `TicketClosedEvent.cs` | `Domain/Events/` | ✅ | Ticket closure event |
+| `TicketReopenedEvent.cs` | `Domain/Events/` | ✅ | Ticket reopening event |
+| **Machine Events (6)** |
+| `MachineRegisteredEvent.cs` | `Domain/Events/` | ✅ | Machine registration |
+| `MachineStatusChangedEvent.cs` | `Domain/Events/` | ✅ | Status change event |
+| `MachineApiTokenGeneratedEvent.cs` | `Domain/Events/` | ✅ | API token generation |
+| `MachineMaintenanceScheduledEvent.cs` | `Domain/Events/` | ✅ | Maintenance scheduling |
+| `MachineAlarmActivatedEvent.cs` | `Domain/Events/` | ✅ | Alarm activation |
+| `MachineAlarmClearedEvent.cs` | `Domain/Events/` | ✅ | Alarm clearing |
+| **Organization Events (4)** |
+| `OrganizationCreatedEvent.cs` | `Domain/Events/` | ✅ | Organization creation |
+| `OrganizationServiceStatusChangedEvent.cs` | `Domain/Events/` | ✅ | Service status change |
+| `OrganizationServiceSuspendedEvent.cs` | `Domain/Events/` | ✅ | Service suspension |
+| `OrganizationContractRenewedEvent.cs` | `Domain/Events/` | ✅ | Contract renewal |
+| **User Events (6)** |
+| `ServiceUserCreatedEvent.cs` | `Domain/Events/` | ✅ | Service user creation |
+| `ServiceUserActivatedEvent.cs` | `Domain/Events/` | ✅ | Service user activation |
+| `ServiceUserDeactivatedEvent.cs` | `Domain/Events/` | ✅ | Service user deactivation |
+| `OrganizationUserCreatedEvent.cs` | `Domain/Events/` | ✅ | Organization user creation |
+| `OrganizationUserRoleChangedEvent.cs` | `Domain/Events/` | ✅ NEW | User role change event |
 
 ### Folder Structure (Created)
 
 ```
 Flowertrack.Domain/
 ├── Common/              ✅ 5 files
-├── Entities/            ✅ Created (empty)
-├── ValueObjects/        ✅ 5 files
-├── Events/              ✅ Created (empty)
-├── Exceptions/          ✅ Created (empty)
-├── Repositories/        ✅ Created (empty)
+├── Entities/            ✅ 5 entities
+│   ├── Machines/        ✅ Created (Machine.cs)
+│   └── Users/           ✅ Created (empty - structure ready)
+├── Enums/               ✅ 6 enums
+├── ValueObjects/        ✅ 3 value objects
+├── Events/              ✅ 22 domain events
+├── Exceptions/          ✅ Created (placeholder files)
+├── Repositories/        ✅ Created (empty - ready for interfaces)
 └── Services/            ✅ Created (empty)
 ```
 
@@ -92,12 +145,35 @@ Flowertrack.Domain/
 
 ### Projekty
 - **Utworzone nowe:** 8 projektów
-- **Zaktualizowane:** 1 projekt (Flowertrack.Api)
+- **Zaktualizowane:** 2 projekty (Flowertrack.Api, Flowertrack.Api.Tests)
 - **Solution:** Zaktualizowany z wszystkimi projektami
-- **Build Status:** ✅ SUCCESS (5.2s)
+- **Build Status:** ✅ SUCCESS (0 errors, 16 warnings)
 
 ### Kod
-- **Pliki C#:** 10 files
+- **Pliki C#:** 41 files
+  - Common base classes: 5 files
+  - Enums: 6 files
+  - Value Objects: 3 files
+  - Entities: 5 files
+  - Domain Events: 22 files
+- **Lines of Code (LOC):** ~3,500 lines
+- **Test Projects:** 4 (ready for unit tests)
+
+### GitHub Issues
+- **Closed:** 2 issues (#4 User Entities, #6 Domain Events)
+- **Open:** 5 issues (#1, #2, #5, #9, #12)
+- **Progress:** 7/7 issues tracked
+
+### Session Summary (2025-10-25 23:30)
+- ✅ Fixed 21+ compilation errors
+- ✅ Implemented 5 domain entities
+- ✅ Created 22 domain events
+- ✅ Implemented 3 value objects
+- ✅ Removed 5 duplicate files
+- ✅ Fixed UserStatus enum conflict
+- ✅ Created OrganizationUserRoleChangedEvent
+- ✅ Updated Flowertrack.Api.Tests to net10.0
+- ✅ Closed 2 GitHub issues with detailed completion reports
 - **Linie kodu:** ~350 lines
 - **Namespaces:** 2 (Common, ValueObjects)
 - **Classes:** 5 base classes + 5 enums

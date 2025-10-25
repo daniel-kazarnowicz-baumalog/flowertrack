@@ -87,9 +87,10 @@ public sealed class Ticket : AuditableEntity<Guid>, IAggregateRoot
         ticket.RaiseDomainEvent(new TicketCreatedEvent(
             ticket.Id,
             ticket.TicketNumber.Value,
-            ticket.Title,
             ticket.OrganizationId,
-            ticket.CreatedByUserId));
+            ticket.MachineId,
+            ticket.CreatedByUserId,
+            ticket.Priority.ToString()));
 
         return ticket;
     }
@@ -116,10 +117,11 @@ public sealed class Ticket : AuditableEntity<Guid>, IAggregateRoot
 
         RaiseDomainEvent(new TicketStatusChangedEvent(
             Id,
-            oldStatus,
-            newStatus,
+            oldStatus.ToString(),
+            newStatus.ToString(),
             reason,
-            userId));
+            userId,
+            DateTimeOffset.UtcNow));
     }
 
     /// <summary>
@@ -160,16 +162,17 @@ public sealed class Ticket : AuditableEntity<Guid>, IAggregateRoot
 
         RaiseDomainEvent(new TicketStatusChangedEvent(
             Id,
-            oldStatus,
-            TicketStatus.Resolved,
+            oldStatus.ToString(),
+            TicketStatus.Resolved.ToString(),
             reason,
-            userId));
+            userId,
+            DateTimeOffset.UtcNow));
 
         RaiseDomainEvent(new TicketResolvedEvent(
             Id,
-            reason,
             userId,
-            ResolvedAt.Value));
+            ResolvedAt.Value,
+            reason));
     }
 
     /// <summary>
@@ -195,16 +198,17 @@ public sealed class Ticket : AuditableEntity<Guid>, IAggregateRoot
 
         RaiseDomainEvent(new TicketStatusChangedEvent(
             Id,
-            oldStatus,
-            TicketStatus.Closed,
+            oldStatus.ToString(),
+            TicketStatus.Closed.ToString(),
             reason,
-            userId));
+            userId,
+            DateTimeOffset.UtcNow));
 
         RaiseDomainEvent(new TicketClosedEvent(
             Id,
-            reason,
             userId,
-            ClosedAt.Value));
+            ClosedAt.Value,
+            reason));
     }
 
     /// <summary>
@@ -231,10 +235,11 @@ public sealed class Ticket : AuditableEntity<Guid>, IAggregateRoot
 
         RaiseDomainEvent(new TicketStatusChangedEvent(
             Id,
-            oldStatus,
-            TicketStatus.Reopened,
+            oldStatus.ToString(),
+            TicketStatus.Reopened.ToString(),
             reason,
-            userId));
+            userId,
+            DateTimeOffset.UtcNow));
     }
 
     /// <summary>
