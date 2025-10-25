@@ -1,22 +1,39 @@
 namespace Flowertrack.Domain.Common;
 
 /// <summary>
-/// Base class for all entities in the domain
+/// Base class for all domain entities
 /// </summary>
-/// <typeparam name="TId">The type of the entity identifier</typeparam>
+/// <typeparam name="TId">Type of the entity identifier</typeparam>
 public abstract class Entity<TId> : IEquatable<Entity<TId>> where TId : notnull
 {
     private readonly List<DomainEvent> _domainEvents = new();
 
+    protected Entity(TId id)
+    {
+        Id = id;
+    }
+
+    /// <summary>
+    /// Entity identifier
+    /// </summary>
     public TId Id { get; protected set; } = default!;
 
+    /// <summary>
+    /// Domain events raised by this entity
+    /// </summary>
     public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
+    /// <summary>
+    /// Adds a domain event to the entity
+    /// </summary>
     protected void RaiseDomainEvent(DomainEvent domainEvent)
     {
         _domainEvents.Add(domainEvent);
     }
 
+    /// <summary>
+    /// Clears all domain events
+    /// </summary>
     public void ClearDomainEvents()
     {
         _domainEvents.Clear();
@@ -36,7 +53,7 @@ public abstract class Entity<TId> : IEquatable<Entity<TId>> where TId : notnull
 
     public override int GetHashCode()
     {
-        return Id.GetHashCode();
+        return EqualityComparer<TId>.Default.GetHashCode(Id);
     }
 
     public static bool operator ==(Entity<TId>? left, Entity<TId>? right)
