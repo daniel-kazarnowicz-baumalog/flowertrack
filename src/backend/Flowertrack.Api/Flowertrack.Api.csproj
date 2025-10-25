@@ -14,4 +14,8 @@
     <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Flowertrack.Application\Flowertrack.Application.csproj" />
+  </ItemGroup>
+
 </Project>
