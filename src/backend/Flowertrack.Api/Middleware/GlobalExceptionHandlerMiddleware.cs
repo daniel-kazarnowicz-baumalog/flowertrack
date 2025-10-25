@@ -41,7 +41,7 @@ public class GlobalExceptionHandlerMiddleware
     {
         var (statusCode, type, title) = GetErrorDetails(exception);
 
-        _logger.LogError(exception, "An error occurred: {ErrorType} - {ErrorMessage}", 
+        _logger.LogError(exception, "An error occurred: {ErrorType} - {ErrorMessage}",
             exception.GetType().Name, exception.Message);
 
         var response = new ErrorResponse

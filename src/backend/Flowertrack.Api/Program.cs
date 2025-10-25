@@ -64,7 +64,7 @@ try
     var app = builder.Build();
 
     // Configure the HTTP request pipeline
-    
+
     // Add Global Exception Handler (must be first)
     app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
