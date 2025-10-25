@@ -133,20 +133,53 @@ VITE_API_URL=https://localhost:5001/api
 VITE_APP_NAME=FLOWerTRACK
 ```
 
-**Backend** (`src/backend/Flowertrack.Api/appsettings.Development.json`):
+**Backend - Using User Secrets (Recommended for Development)**:
+
+The recommended approach for local development is to use .NET User Secrets to store sensitive configuration:
+
+```bash
+# Navigate to the API project
+cd src/backend/Flowertrack.Api
+
+# Initialize user secrets
+dotnet user-secrets init
+
+# Set Supabase configuration
+dotnet user-secrets set "Supabase:Url" "https://your-project.supabase.co"
+dotnet user-secrets set "Supabase:AnonKey" "your-anon-key"
+dotnet user-secrets set "Supabase:ServiceKey" "your-service-role-key"
+dotnet user-secrets set "Supabase:JwtSecret" "your-jwt-secret"
+
+# Set database connection
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=db.your-project.supabase.co;Port=5432;Database=postgres;Username=postgres;Password=your-password"
+
+# Verify secrets are set
+dotnet user-secrets list
+```
+
+**Backend - Alternative: appsettings.Development.json (Not Recommended for Secrets)**:
+
+⚠️ **Warning**: Never commit actual secrets to appsettings files. This is shown for reference only.
+
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Database=flowertrack_dev;Username=your_username;Password=your_password"
+    "DefaultConnection": "Host=db.xxx.supabase.co;Port=5432;Database=postgres;Username=postgres;Password=xxx"
   },
-  "Jwt": {
-    "Secret": "your-secret-key-min-32-characters",
-    "Issuer": "FlowertrackApi",
-    "Audience": "FlowertrackClient",
-    "ExpirationMinutes": 60
+  "Database": {
+    "CommandTimeout": 30,
+    "EnableSensitiveDataLogging": false
+  },
+  "Supabase": {
+    "Url": "https://your-project.supabase.co",
+    "AnonKey": "",
+    "ServiceKey": "",
+    "JwtSecret": ""
   }
 }
 ```
+
+📚 **For detailed Supabase setup instructions**, see [docs/SUPABASE-SETUP.md](docs/SUPABASE-SETUP.md)
 
 ### Running the Application
 

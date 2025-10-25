@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet run)",
+      "Bash(npm run dev:*)",
+      "Bash(npx supabase:*)",
+      "Bash(npm install:*)",
+      "Bash(timeout /t 5)",
+      "Bash(dotnet ef migrations add:*)",
+      "Bash(mkdir:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
