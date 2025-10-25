@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flowertrack.Domain", "Flowe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flowertrack.Domain.Tests", "Flowertrack.Domain.Tests\Flowertrack.Domain.Tests.csproj", "{7B249FA5-FF9F-4958-9F37-A41B3DEF8428}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flowertrack.Application", "Flowertrack.Application\Flowertrack.Application.csproj", "{EA9DD51B-3BF2-443C-A813-468F11CB550A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{7B249FA5-FF9F-4958-9F37-A41B3DEF8428}.Release|x64.Build.0 = Release|Any CPU
 		{7B249FA5-FF9F-4958-9F37-A41B3DEF8428}.Release|x86.ActiveCfg = Release|Any CPU
 		{7B249FA5-FF9F-4958-9F37-A41B3DEF8428}.Release|x86.Build.0 = Release|Any CPU
+		{EA9DD51B-3BF2-443C-A813-468F11CB550A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA9DD51B-3BF2-443C-A813-468F11CB550A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA9DD51B-3BF2-443C-A813-468F11CB550A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EA9DD51B-3BF2-443C-A813-468F11CB550A}.Debug|x64.Build.0 = Debug|Any CPU
+		{EA9DD51B-3BF2-443C-A813-468F11CB550A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EA9DD51B-3BF2-443C-A813-468F11CB550A}.Debug|x86.Build.0 = Debug|Any CPU
+		{EA9DD51B-3BF2-443C-A813-468F11CB550A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA9DD51B-3BF2-443C-A813-468F11CB550A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA9DD51B-3BF2-443C-A813-468F11CB550A}.Release|x64.ActiveCfg = Release|Any CPU
+		{EA9DD51B-3BF2-443C-A813-468F11CB550A}.Release|x64.Build.0 = Release|Any CPU
+		{EA9DD51B-3BF2-443C-A813-468F11CB550A}.Release|x86.ActiveCfg = Release|Any CPU
+		{EA9DD51B-3BF2-443C-A813-468F11CB550A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
