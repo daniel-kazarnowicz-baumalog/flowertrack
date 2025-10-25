@@ -1,40 +1,58 @@
 namespace Flowertrack.Domain.Common;
 
 /// <summary>
-/// Base class for entities with audit information
+/// Base class for entities that need audit tracking.
+/// Provides standard audit fields and domain event collection management.
 /// </summary>
-public abstract class AuditableEntity<TId> : Entity<TId> where TId : notnull
+/// <typeparam name="TId">The type of the entity's identifier.</typeparam>
+public abstract class AuditableEntity<TId> where TId : notnull
 {
-    protected AuditableEntity(TId id) : base(id)
+    private readonly List<IDomainEvent> _domainEvents = new();
+
+    /// <summary>
+    /// Gets or sets the unique identifier for the entity.
+    /// </summary>
+    public TId Id { get; protected set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the date and time when the entity was created.
+    /// </summary>
+    public DateTimeOffset CreatedAt { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier of the user who created the entity.
+    /// </summary>
+    public Guid? CreatedBy { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date and time when the entity was last updated.
+    /// </summary>
+    public DateTimeOffset? UpdatedAt { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier of the user who last updated the entity.
+    /// </summary>
+    public Guid? UpdatedBy { get; set; }
+
+    /// <summary>
+    /// Gets the collection of domain events associated with this entity.
+    /// </summary>
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+    /// <summary>
+    /// Adds a domain event to the entity's event collection.
+    /// </summary>
+    /// <param name="domainEvent">The domain event to add.</param>
+    protected void AddDomainEvent(IDomainEvent domainEvent)
     {
-        CreatedAt = DateTimeOffset.UtcNow;
-        UpdatedAt = DateTimeOffset.UtcNow;
+        _domainEvents.Add(domainEvent);
     }
-    
-    /// <summary>
-    /// Date and time when the entity was created
-    /// </summary>
-    public DateTimeOffset CreatedAt { get; protected set; }
 
     /// <summary>
-    /// Date and time when the entity was last updated
+    /// Clears all domain events from the entity's event collection.
     /// </summary>
-    public DateTimeOffset UpdatedAt { get; protected set; }
-
-    /// <summary>
-    /// Sets creation timestamp
-    /// </summary>
-    protected void SetCreatedAt(DateTimeOffset timestamp)
+    public void ClearDomainEvents()
     {
-        CreatedAt = timestamp;
-        UpdatedAt = timestamp;
-    }
-
-    /// <summary>
-    /// Updates the modification timestamp
-    /// </summary>
-    protected void SetUpdatedAt(DateTimeOffset timestamp)
-    {
-        UpdatedAt = timestamp;
+        _domainEvents.Clear();
     }
 }

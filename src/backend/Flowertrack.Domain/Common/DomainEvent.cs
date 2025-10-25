@@ -1,17 +1,18 @@
 namespace Flowertrack.Domain.Common;
 
 /// <summary>
-/// Base class for all domain events
+/// Base class for domain events.
 /// </summary>
-public abstract class DomainEvent
+public abstract class DomainEvent : IDomainEvent
 {
     /// <summary>
-    /// Unique identifier of the event
+    /// Initializes a new instance of the <see cref="DomainEvent"/> class.
     /// </summary>
-    public Guid EventId { get; } = Guid.NewGuid();
+    protected DomainEvent()
+    {
+        OccurredOn = DateTimeOffset.UtcNow;
+    }
 
-    /// <summary>
-    /// Date and time when the event occurred
-    /// </summary>
-    public DateTimeOffset OccurredOn { get; } = DateTimeOffset.UtcNow;
+    /// <inheritdoc/>
+    public DateTimeOffset OccurredOn { get; }
 }
