@@ -2,19 +2,38 @@ using Flowertrack.Domain.Common;
 
 namespace Flowertrack.Domain.Events;
 
+using Flowertrack.Domain.Common;
+
 /// <summary>
-/// Event raised when a machine's API token is generated or regenerated
+/// Event raised when an API token is generated for a machine.
+/// This allows the machine to authenticate and send logs/data to the system.
+/// Note: The actual token value is not stored in this event for security reasons.
 /// </summary>
 public sealed class MachineApiTokenGeneratedEvent : DomainEvent
 {
-    public Guid MachineId { get; init; }
-    public bool IsRegeneration { get; init; }
-    public string Reason { get; init; }
+    /// <summary>
+    /// Unique identifier of the machine
+    /// </summary>
+    public Guid MachineId { get; }
 
-    public MachineApiTokenGeneratedEvent(Guid machineId, bool isRegeneration, string reason)
+    /// <summary>
+    /// When the token was generated
+    /// </summary>
+    public DateTimeOffset TokenGeneratedAt { get; }
+
+    /// <summary>
+    /// User who generated the token
+    /// </summary>
+    public Guid GeneratedBy { get; }
+
+    public MachineApiTokenGeneratedEvent(
+        Guid machineId,
+        DateTimeOffset tokenGeneratedAt,
+        Guid generatedBy)
+        : base(machineId)
     {
         MachineId = machineId;
-        IsRegeneration = isRegeneration;
-        Reason = reason;
+        TokenGeneratedAt = tokenGeneratedAt;
+        GeneratedBy = generatedBy;
     }
 }
