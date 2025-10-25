@@ -1,94 +1,142 @@
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
+using Flowertrack.Domain.Common;
 
 namespace Flowertrack.Domain.ValueObjects;
 
 /// <summary>
-/// Represents a secure API key for machine authentication
+/// Value Object representing a secure API key for machine authentication.
+/// Format: mch_{base64_token}
 /// </summary>
-public sealed class MachineApiKey
+public sealed class MachineApiKey : ValueObject
 {
-    private const int TokenLength = 32;
-    private static readonly char[] AllowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".ToCharArray();
+    private const string Pattern = @"^mch_[a-zA-Z0-9-]{32,40}$";
+    private static readonly Regex ValidationRegex = new(Pattern, RegexOptions.Compiled);
 
-    /// <summary>
-    /// The API token value
-    /// </summary>
-    public string Value { get; private set; }
+    private const string Prefix = "mch_";
+    private const int TokenByteLength = 24; // Will generate 32 base64 characters
 
-    /// <summary>
-    /// When the token was generated
-    /// </summary>
-    public DateTime GeneratedAt { get; private set; }
+    public string Value { get; }
 
     private MachineApiKey(string value)
     {
-        if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException("API token value cannot be empty", nameof(value));
-
-        if (value.Length < TokenLength)
-            throw new ArgumentException($"API token must be at least {TokenLength} characters", nameof(value));
-
+        Validate(value);
         Value = value;
-        GeneratedAt = DateTime.UtcNow;
     }
 
     /// <summary>
-    /// Generate a new secure API token
+    /// Generates a new secure MachineApiKey using cryptographically secure random number generation.
     /// </summary>
+    /// <returns>A new MachineApiKey instance with a randomly generated token.</returns>
     public static MachineApiKey Generate()
     {
-        var tokenBytes = new byte[TokenLength];
-        using var rng = RandomNumberGenerator.Create();
-        rng.GetBytes(tokenBytes);
+        var randomBytes = RandomNumberGenerator.GetBytes(TokenByteLength);
+        var base64Token = Convert.ToBase64String(randomBytes)
+            .Replace("+", "-")
+            .Replace("/", "-")
+            .Replace("=", "");
 
-        // Convert to base62-like string using allowed characters
-        var token = new char[TokenLength];
-        for (int i = 0; i < TokenLength; i++)
+        // Ensure we have at least 32 characters
+        if (base64Token.Length < 32)
         {
-            token[i] = AllowedChars[tokenBytes[i] % AllowedChars.Length];
+            // Generate more bytes if needed
+            var additionalBytes = RandomNumberGenerator.GetBytes(8);
+            base64Token += Convert.ToBase64String(additionalBytes)
+                .Replace("+", "-")
+                .Replace("/", "-")
+                .Replace("=", "");
         }
 
-        return new MachineApiKey(new string(token));
+        // Take exactly 32 characters for consistent length
+        base64Token = base64Token[..32];
+
+        var value = $"{Prefix}{base64Token}";
+        return new MachineApiKey(value);
     }
 
     /// <summary>
-    /// Create an API key from an existing token value (for reconstitution from database)
+    /// Creates a MachineApiKey from an existing token string.
     /// </summary>
-    public static MachineApiKey FromValue(string value)
+    /// <param name="value">The API key token string.</param>
+    /// <returns>A MachineApiKey instance.</returns>
+    /// <exception cref="ArgumentException">Thrown when the format is invalid.</exception>
+    public static MachineApiKey Create(string value)
     {
         return new MachineApiKey(value);
     }
 
-    public override bool Equals(object? obj)
+    /// <summary>
+    /// Tries to create a MachineApiKey from an existing token string.
+    /// </summary>
+    /// <param name="value">The API key token string.</param>
+    /// <param name="result">The resulting MachineApiKey if creation succeeds, null otherwise.</param>
+    /// <returns>True if creation succeeds, false otherwise.</returns>
+    public static bool TryCreate(string? value, out MachineApiKey? result)
     {
-        if (obj is not MachineApiKey other)
+        result = null;
+
+        if (string.IsNullOrWhiteSpace(value))
+        {
             return false;
+        }
 
-        return Value == other.Value;
-    }
+        try
+        {
+            if (!value.StartsWith(Prefix))
+            {
+                return false;
+            }
 
-    public override int GetHashCode()
-    {
-        return Value.GetHashCode();
-    }
+            if (!ValidationRegex.IsMatch(value))
+            {
+                return false;
+            }
 
-    public override string ToString()
-    {
-        // Only show first 8 characters for security
-        return Value.Length > 8 ? $"{Value[..8]}..." : Value;
-    }
-
-    public static bool operator ==(MachineApiKey? left, MachineApiKey? right)
-    {
-        if (left is null && right is null)
+            result = new MachineApiKey(value);
             return true;
-        if (left is null || right is null)
+        }
+        catch
+        {
             return false;
-        return left.Equals(right);
+        }
     }
 
-    public static bool operator !=(MachineApiKey? left, MachineApiKey? right)
+    public override string ToString() => Value;
+
+    protected override IEnumerable<object?> GetEqualityComponents()
     {
-        return !(left == right);
+        yield return Value;
+    }
+
+    /// <summary>
+    /// Implicit conversion from MachineApiKey to string.
+    /// </summary>
+    public static implicit operator string(MachineApiKey apiKey) => apiKey.Value;
+
+    /// <summary>
+    /// Explicit conversion from string to MachineApiKey.
+    /// </summary>
+    public static explicit operator MachineApiKey(string value) => Create(value);
+
+    private static void Validate(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            throw new ArgumentException("Machine API key cannot be null or empty.", nameof(value));
+        }
+
+        if (!value.StartsWith(Prefix))
+        {
+            throw new ArgumentException(
+                $"Machine API key must start with '{Prefix}'. Got: {value}",
+                nameof(value));
+        }
+
+        if (!ValidationRegex.IsMatch(value))
+        {
+            throw new ArgumentException(
+                $"Machine API key has invalid format. Expected format: mch_{{32-40 alphanumeric characters}}. Got: {value}",
+                nameof(value));
+        }
     }
 }
