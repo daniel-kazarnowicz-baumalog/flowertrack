@@ -1,3 +1,6 @@
+using Flowertrack.Domain.Common;
+using Flowertrack.Domain.Enums;
+
 namespace Flowertrack.Domain.Events;
 
 using Flowertrack.Domain.Common;
