@@ -12,11 +12,6 @@ public abstract class AuditableEntity<TId> : Entity<TId> where TId : notnull
     }
 
     /// <summary>
-    /// Gets or sets the unique identifier for the entity.
-    /// </summary>
-    public TId Id { get; protected set; } = default!;
-
-    /// <summary>
     /// Gets or sets the date and time when the entity was created.
     /// </summary>
     public DateTimeOffset CreatedAt { get; protected set; }

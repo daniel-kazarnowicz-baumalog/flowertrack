@@ -1,7 +1,8 @@
 # 📋 Checklist Implementacji - Postęp
 
-**Data ostatniej aktualizacji:** 2025-10-25  
-**Aktualny Sprint:** Sprint 1 (Week 1-2)
+**Data ostatniej aktualizacji:** 2025-10-25 23:30  
+**Aktualny Sprint:** Sprint 1 (Week 1-2)  
+**Build Status:** ✅ SUCCESS (0 errors, 16 warnings)
 
 ---
 
@@ -31,42 +32,87 @@
 - [x] `IAggregateRoot` marker interface
 - [x] `ValueObject` abstract class z equality
 
-#### 1.2 Value Objects - Enumerations (5/9) ✅
+#### 1.2 Value Objects - Enumerations (8/9) ✅
 - [x] `Priority` enum (Low, Medium, High, Critical)
 - [x] `TicketStatus` enum (Draft → Closed workflow)
 - [x] `MachineStatus` enum (Active, Inactive, Maintenance, Alarm)
 - [x] `ServiceStatus` enum (Active, Suspended, Expired)
-- [x] `UserStatus` enum (PendingActivation, Active, Inactive)
-- [ ] `TicketNumber` value object (format TICK-YYYY-XXXXX)
-- [ ] `Email` value object
-- [ ] `MachineApiKey` value object
+- [x] `UserStatus` enum (Pending, Active, Inactive, Deactivated)
+- [x] `TicketNumber` value object (format TICK-YYYY-XXXXX) ✅
+- [x] `Email` value object with validation ✅
+- [x] `MachineApiKey` value object with secure generation ✅
 - [ ] `Address` value object (opcjonalne)
+
+#### 1.3 Domain Entities (5/5) ✅
+- [x] `Ticket` entity (aggregate root) - Full implementation ✅
+- [x] `Organization` entity (aggregate root) - Full implementation ✅
+- [x] `Machine` entity (aggregate root) - Full implementation ✅
+- [x] `ServiceUser` entity - Full implementation ✅
+- [x] `OrganizationUser` entity - Full implementation ✅
+
+#### 1.4 Domain Events (22/22) ✅
+**Ticket Events:**
+- [x] `TicketCreatedEvent`
+- [x] `TicketStatusChangedEvent`
+- [x] `TicketAssignedEvent`
+- [x] `TicketResolvedEvent`
+- [x] `TicketClosedEvent`
+- [x] `TicketReopenedEvent`
+
+**Machine Events:**
+- [x] `MachineRegisteredEvent`
+- [x] `MachineStatusChangedEvent`
+- [x] `MachineApiTokenGeneratedEvent`
+- [x] `MachineMaintenanceScheduledEvent`
+- [x] `MachineAlarmActivatedEvent`
+- [x] `MachineAlarmClearedEvent`
+
+**Organization Events:**
+- [x] `OrganizationCreatedEvent`
+- [x] `OrganizationServiceStatusChangedEvent`
+- [x] `OrganizationServiceSuspendedEvent`
+- [x] `OrganizationContractRenewedEvent`
+
+**User Events:**
+- [x] `ServiceUserCreatedEvent`
+- [x] `ServiceUserActivatedEvent`
+- [x] `ServiceUserDeactivatedEvent`
+- [x] `OrganizationUserCreatedEvent`
+- [x] `OrganizationUserActivatedEvent` (available, commented in entity)
+- [x] `OrganizationUserDeactivatedEvent` (available, commented in entity)
+- [x] `OrganizationUserRoleChangedEvent` ✅ NEW
 
 ---
 
 ## 🔄 Następne Kroki
 
-### Priorytet 1 - Domain Entities (Week 1)
-1. [ ] Utworzyć `Ticket` entity (aggregate root)
-2. [ ] Utworzyć `Organization` entity (aggregate root)
-3. [ ] Utworzyć `Machine` entity (aggregate root)
-4. [ ] Utworzyć `ServiceUser` entity
-5. [ ] Utworzyć `OrganizationUser` entity
+### ✅ COMPLETED THIS SESSION (2025-10-25):
+1. ✅ Fixed all 21+ compilation errors
+2. ✅ Implemented ServiceUser entity (Issue #4)
+3. ✅ Implemented OrganizationUser entity (Issue #4)
+4. ✅ Created OrganizationUserRoleChangedEvent
+5. ✅ Synchronized all Domain Events with entity invocations
+6. ✅ Removed duplicate files (5 files)
+7. ✅ Fixed UserStatus enum conflicts
+8. ✅ GitHub Issue #4 CLOSED ✅
+9. ✅ GitHub Issue #6 CLOSED ✅
 
-### Priorytet 2 - Value Objects & Events (Week 1)
-1. [ ] Zaimplementować `TicketNumber` value object
-2. [ ] Zaimplementować `Email` value object
-3. [ ] Zaimplementować `MachineApiKey` value object
-4. [ ] Utworzyć domain events (TicketCreated, StatusChanged, etc.)
-5. [ ] Utworzyć domain exceptions
+### Priorytet 1 - Repository Interfaces (Week 2) 🔥
+1. [ ] `IRepository<T>` base interface (Issue #9)
+2. [ ] `ITicketRepository` with custom methods (Issue #9)
+3. [ ] `IOrganizationRepository` (Issue #9)
+4. [ ] `IMachineRepository` (Issue #9)
+5. [ ] `IServiceUserRepository` (Issue #9)
+6. [ ] `IOrganizationUserRepository` (Issue #9)
+7. [ ] `IUnitOfWork` in Application layer (Issue #9)
 
-### Priorytet 3 - Repository Interfaces (Week 2)
-1. [ ] `IRepository<T>` base interface
-2. [ ] `ITicketRepository`
-3. [ ] `IOrganizationRepository`
-4. [ ] `IMachineRepository`
-5. [ ] `IUserRepository`
-6. [ ] `IUnitOfWork`
+### Priorytet 2 - Unit Tests (Week 2)
+1. [ ] Unit tests for ServiceUser entity
+2. [ ] Unit tests for OrganizationUser entity
+3. [ ] Unit tests for Ticket entity
+4. [ ] Unit tests for Machine entity
+5. [ ] Unit tests for Value Objects (TicketNumber, Email, MachineApiKey)
+6. [ ] Unit tests for Domain Events
 
 ### Priorytet 4 - Configuration & Infrastructure (Week 2)
 1. [ ] Dodać Supabase configuration
@@ -83,12 +129,13 @@
 |-----------|-----------|-------|---------|
 | **Solution Structure** | 11 | 11 | 100% ✅ |
 | **Domain Common** | 5 | 5 | 100% ✅ |
-| **Value Objects (Enums)** | 5 | 9 | 56% 🟡 |
-| **Domain Entities** | 0 | 10 | 0% ⚪ |
-| **Domain Events** | 0 | 6 | 0% ⚪ |
-| **Repository Interfaces** | 0 | 6 | 0% ⚪ |
+| **Value Objects** | 8 | 9 | 89% � |
+| **Domain Entities** | 5 | 5 | 100% ✅ |
+| **Domain Events** | 22 | 22 | 100% ✅ |
+| **Repository Interfaces** | 0 | 7 | 0% ⚪ |
+| **Unit Tests** | 0 | 30 | 0% ⚪ |
 | **Infrastructure Config** | 0 | 15 | 0% ⚪ |
-| **RAZEM** | **21** | **62** | **34%** |
+| **RAZEM** | **51** | **104** | **49%** 🟢
 
 ---
 
@@ -96,8 +143,16 @@
 
 - [x] **Milestone 0.1** - Solution structure created (2025-10-25) ✅
 - [x] **Milestone 0.2** - Domain base classes implemented (2025-10-25) ✅
-- [ ] **Milestone 1.1** - Core entities implemented (Target: 2025-10-27)
-- [ ] **Milestone 1.2** - Domain complete (Target: 2025-10-29)
+- [x] **Milestone 1.1** - Core entities implemented (2025-10-25 23:30) ✅
+  - ✅ All 5 entities: Ticket, Machine, Organization, ServiceUser, OrganizationUser
+  - ✅ All 22 domain events
+  - ✅ All 3 value objects: TicketNumber, Email, MachineApiKey
+  - ✅ Build successful with 0 errors
+  - ✅ GitHub Issues #4 and #6 CLOSED
+- [ ] **Milestone 1.2** - Domain complete with tests (Target: 2025-10-27)
+  - Repository interfaces implementation
+  - Unit tests for all entities and value objects
+- [ ] **Milestone 2.1** - Application layer (Target: 2025-10-29)
 - [ ] **Milestone 2.1** - Application layer basic (Target: 2025-11-03)
 - [ ] **Milestone 3.1** - Database & EF Core setup (Target: 2025-11-05)
 

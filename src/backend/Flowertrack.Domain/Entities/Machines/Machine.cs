@@ -135,8 +135,8 @@ public sealed class Machine : AuditableEntity<Guid>, IAggregateRoot
 
         RaiseDomainEvent(new MachineApiTokenGeneratedEvent(
             Id,
-            isRegeneration: false,
-            reason: "Initial API token generation"));
+            DateTimeOffset.UtcNow,
+            updatedBy ?? Guid.Empty));
     }
 
     /// <summary>
@@ -152,8 +152,8 @@ public sealed class Machine : AuditableEntity<Guid>, IAggregateRoot
 
         RaiseDomainEvent(new MachineApiTokenGeneratedEvent(
             Id,
-            isRegeneration: true,
-            reason: reason));
+            DateTimeOffset.UtcNow,
+            updatedBy ?? Guid.Empty));
     }
 
     /// <summary>
@@ -178,9 +178,10 @@ public sealed class Machine : AuditableEntity<Guid>, IAggregateRoot
 
         RaiseDomainEvent(new MachineStatusChangedEvent(
             Id,
-            previousStatus,
-            newStatus,
-            reason));
+            previousStatus.ToString(),
+            newStatus.ToString(),
+            reason,
+            DateTimeOffset.UtcNow));
     }
 
     /// <summary>
@@ -203,8 +204,9 @@ public sealed class Machine : AuditableEntity<Guid>, IAggregateRoot
 
         RaiseDomainEvent(new MachineMaintenanceScheduledEvent(
             Id,
-            date,
-            interval?.Id));
+            date.ToDateTime(TimeOnly.MinValue),
+            interval?.Days ?? 0,
+            updatedBy ?? Guid.Empty));
     }
 
     /// <summary>
@@ -226,8 +228,9 @@ public sealed class Machine : AuditableEntity<Guid>, IAggregateRoot
 
             RaiseDomainEvent(new MachineMaintenanceScheduledEvent(
                 Id,
-                nextDate,
-                interval.Id));
+                nextDate.ToDateTime(TimeOnly.MinValue),
+                interval.Days,
+                updatedBy ?? Guid.Empty));
         }
         else
         {
@@ -256,7 +259,8 @@ public sealed class Machine : AuditableEntity<Guid>, IAggregateRoot
         RaiseDomainEvent(new MachineAlarmActivatedEvent(
             Id,
             reason,
-            previousStatus));
+            DateTimeOffset.UtcNow,
+            "High")); // Default severity
     }
 
     /// <summary>
@@ -276,13 +280,16 @@ public sealed class Machine : AuditableEntity<Guid>, IAggregateRoot
 
         RaiseDomainEvent(new MachineAlarmClearedEvent(
             Id,
-            reason));
+            reason,
+            DateTimeOffset.UtcNow,
+            updatedBy ?? Guid.Empty));
 
         RaiseDomainEvent(new MachineStatusChangedEvent(
             Id,
-            MachineStatus.Alarm,
-            MachineStatus.Active,
-            reason));
+            MachineStatus.Alarm.ToString(),
+            MachineStatus.Active.ToString(),
+            reason,
+            DateTimeOffset.UtcNow));
     }
 
     /// <summary>

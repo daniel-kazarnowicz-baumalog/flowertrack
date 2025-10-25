@@ -51,7 +51,6 @@ public sealed class TicketCreatedEvent : DomainEvent
     {
         TicketId = ticketId;
         TicketNumber = ticketNumber;
-        Title = title;
         OrganizationId = organizationId;
         MachineId = machineId;
         CreatedBy = createdBy;
