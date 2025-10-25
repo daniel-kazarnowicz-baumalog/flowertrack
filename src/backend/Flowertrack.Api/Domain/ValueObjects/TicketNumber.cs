@@ -10,7 +10,7 @@ public sealed class TicketNumber : ValueObject
 {
     private const string Pattern = @"^TICK-\d{4}-\d{5}$";
     private static readonly Regex ValidationRegex = new(Pattern, RegexOptions.Compiled);
-    
+
     private const int MinYear = 2020;
     private const int MinSequential = 1;
     private const int MaxSequential = 99999;
@@ -122,11 +122,11 @@ public sealed class TicketNumber : ValueObject
     private static void ValidateYear(int year)
     {
         var maxYear = DateTime.UtcNow.Year + 1;
-        
+
         if (year < MinYear || year > maxYear)
         {
             throw new ArgumentException(
-                $"Year must be between {MinYear} and {maxYear}. Got: {year}", 
+                $"Year must be between {MinYear} and {maxYear}. Got: {year}",
                 nameof(year));
         }
     }
@@ -136,7 +136,7 @@ public sealed class TicketNumber : ValueObject
         if (sequential < MinSequential || sequential > MaxSequential)
         {
             throw new ArgumentException(
-                $"Sequential must be between {MinSequential} and {MaxSequential}. Got: {sequential}", 
+                $"Sequential must be between {MinSequential} and {MaxSequential}. Got: {sequential}",
                 nameof(sequential));
         }
     }

@@ -11,7 +11,7 @@ public sealed class MachineApiKey : ValueObject
 {
     private const string Pattern = @"^mch_[a-zA-Z0-9-]{32,40}$";
     private static readonly Regex ValidationRegex = new(Pattern, RegexOptions.Compiled);
-    
+
     private const string Prefix = "mch_";
     private const int TokenByteLength = 24; // Will generate 32 base64 characters
 
@@ -34,7 +34,7 @@ public sealed class MachineApiKey : ValueObject
             .Replace("+", "-")
             .Replace("/", "-")
             .Replace("=", "");
-        
+
         // Ensure we have at least 32 characters
         if (base64Token.Length < 32)
         {
@@ -45,10 +45,10 @@ public sealed class MachineApiKey : ValueObject
                 .Replace("/", "-")
                 .Replace("=", "");
         }
-        
+
         // Take exactly 32 characters for consistent length
         base64Token = base64Token.Substring(0, 32);
-        
+
         var value = $"{Prefix}{base64Token}";
         return new MachineApiKey(value);
     }
@@ -127,14 +127,14 @@ public sealed class MachineApiKey : ValueObject
         if (!value.StartsWith(Prefix))
         {
             throw new ArgumentException(
-                $"Machine API key must start with '{Prefix}'. Got: {value}", 
+                $"Machine API key must start with '{Prefix}'. Got: {value}",
                 nameof(value));
         }
 
         if (!ValidationRegex.IsMatch(value))
         {
             throw new ArgumentException(
-                $"Machine API key has invalid format. Expected format: mch_{{32-40 alphanumeric characters}}. Got: {value}", 
+                $"Machine API key has invalid format. Expected format: mch_{{32-40 alphanumeric characters}}. Got: {value}",
                 nameof(value));
         }
     }

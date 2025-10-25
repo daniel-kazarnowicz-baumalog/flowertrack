@@ -203,7 +203,7 @@ public class MachineApiKeyTests
     {
         // Arrange - Generate multiple keys and check that they don't follow a predictable pattern
         var keys = new List<string>();
-        
+
         // Act
         for (int i = 0; i < 10; i++)
         {
@@ -217,7 +217,7 @@ public class MachineApiKeyTests
             {
                 var key1WithoutPrefix = keys[i].Substring(4);
                 var key2WithoutPrefix = keys[j].Substring(4);
-                
+
                 Assert.DoesNotContain(key2WithoutPrefix.Substring(0, Math.Min(10, key2WithoutPrefix.Length)), key1WithoutPrefix);
             }
         }
