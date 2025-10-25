@@ -275,19 +275,19 @@ function App() {
             <h4>Produkt</h4>
             <a href="#features">Funkcje</a>
             <a href="#benefits">Korzyści</a>
-            <a href="#">Demo</a>
+            <a href="/demo">Demo</a>
           </div>
           <div className="footer-column">
             <h4>Firma</h4>
-            <a href="#">O nas</a>
-            <a href="#">Blog</a>
+            <a href="/about">O nas</a>
+            <a href="/blog">Blog</a>
             <a href="#contact">Kontakt</a>
           </div>
           <div className="footer-column">
             <h4>Wsparcie</h4>
-            <a href="#">Dokumentacja</a>
-            <a href="#">FAQ</a>
-            <a href="#">Pomoc</a>
+            <a href="/docs">Dokumentacja</a>
+            <a href="/faq">FAQ</a>
+            <a href="/support">Pomoc</a>
           </div>
         </div>
         <div className="footer-bottom">
