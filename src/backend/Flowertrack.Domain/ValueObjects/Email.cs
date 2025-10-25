@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
+using Flowertrack.Domain.Common;
 
-namespace Flowertrack.Api.Domain.ValueObjects;
+namespace Flowertrack.Domain.ValueObjects;
 
 /// <summary>
 /// Value Object representing an email address with RFC 5322 compliant validation (simplified).

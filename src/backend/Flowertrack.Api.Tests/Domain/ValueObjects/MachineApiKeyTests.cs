@@ -1,4 +1,4 @@
-using Flowertrack.Api.Domain.ValueObjects;
+using Flowertrack.Domain.ValueObjects;
 
 namespace Flowertrack.Api.Tests.Domain.ValueObjects;
 
@@ -215,8 +215,8 @@ public class MachineApiKeyTests
         {
             for (int j = i + 1; j < keys.Count; j++)
             {
-                var key1WithoutPrefix = keys[i].Substring(4);
-                var key2WithoutPrefix = keys[j].Substring(4);
+                var key1WithoutPrefix = keys[i][4..];
+                var key2WithoutPrefix = keys[j][4..];
 
                 Assert.DoesNotContain(key2WithoutPrefix[..Math.Min(10, key2WithoutPrefix.Length)], key1WithoutPrefix);
             }

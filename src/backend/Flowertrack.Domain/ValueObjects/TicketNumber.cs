@@ -1,133 +1,144 @@
+using System.Text.RegularExpressions;
+using Flowertrack.Domain.Common;
+
 namespace Flowertrack.Domain.ValueObjects;
 
 /// <summary>
-/// Value object representing a ticket number in the format TICK-YYYY-XXXXX
+/// Value Object representing a ticket number in the format TICK-{year}-{sequential}.
+/// Example: TICK-2025-00001
 /// </summary>
-public sealed class TicketNumber : IEquatable<TicketNumber>
+public sealed class TicketNumber : ValueObject
 {
-    private const string Prefix = "TICK";
-    private const int SequenceLength = 5;
+    private const string Pattern = @"^TICK-\d{4}-\d{5}$";
+    private static readonly Regex ValidationRegex = new(Pattern, RegexOptions.Compiled);
 
+    private const int MinYear = 2020;
+    private const int MinSequential = 1;
+    private const int MaxSequential = 99999;
+
+    public int Year { get; }
+    public int Sequential { get; }
     public string Value { get; }
 
-    private TicketNumber(string value)
+    private TicketNumber(int year, int sequential)
     {
-        Value = value;
+        ValidateYear(year);
+        ValidateSequential(sequential);
+
+        Year = year;
+        Sequential = sequential;
+        Value = $"TICK-{year:D4}-{sequential:D5}";
     }
 
     /// <summary>
-    /// Creates a new ticket number for the given year and sequence
+    /// Creates a new TicketNumber with the specified year and sequential number.
     /// </summary>
-    /// <param name="year">The year (e.g., 2025)</param>
-    /// <param name="sequence">The sequence number (1-99999)</param>
-    /// <returns>A new TicketNumber instance</returns>
-    /// <exception cref="ArgumentException">Thrown when year or sequence is invalid</exception>
-    public static TicketNumber Create(int year, int sequence)
+    /// <param name="year">Year (must be >= 2020 and <= current year + 1)</param>
+    /// <param name="sequential">Sequential number (must be > 0 and < 100000)</param>
+    /// <returns>A new TicketNumber instance.</returns>
+    /// <exception cref="ArgumentException">Thrown when year or sequential are invalid.</exception>
+    public static TicketNumber Create(int year, int sequential)
     {
-        if (year < 2000 || year > 9999)
-        {
-            throw new ArgumentException("Year must be between 2000 and 9999", nameof(year));
-        }
-
-        if (sequence < 1 || sequence > 99999)
-        {
-            throw new ArgumentException("Sequence must be between 1 and 99999", nameof(sequence));
-        }
-
-        var sequenceStr = sequence.ToString().PadLeft(SequenceLength, '0');
-        var value = $"{Prefix}-{year}-{sequenceStr}";
-
-        return new TicketNumber(value);
+        return new TicketNumber(year, sequential);
     }
 
     /// <summary>
-    /// Parses a ticket number from a string
+    /// Parses a ticket number string into a TicketNumber instance.
     /// </summary>
-    /// <param name="value">The string value to parse</param>
-    /// <returns>A TicketNumber instance</returns>
-    /// <exception cref="ArgumentException">Thrown when the format is invalid</exception>
+    /// <param name="value">The ticket number string to parse.</param>
+    /// <returns>A TicketNumber instance.</returns>
+    /// <exception cref="ArgumentException">Thrown when the format is invalid.</exception>
     public static TicketNumber Parse(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
-            throw new ArgumentException("Ticket number cannot be null or empty", nameof(value));
+            throw new ArgumentException("Ticket number cannot be null or empty.", nameof(value));
+        }
+
+        if (!ValidationRegex.IsMatch(value))
+        {
+            throw new ArgumentException($"Invalid ticket number format. Expected format: TICK-YYYY-NNNNN. Got: {value}", nameof(value));
         }
 
         var parts = value.Split('-');
-        if (parts.Length != 3)
-        {
-            throw new ArgumentException($"Invalid ticket number format: {value}. Expected format: TICK-YYYY-XXXXX", nameof(value));
-        }
+        var year = int.Parse(parts[1]);
+        var sequential = int.Parse(parts[2]);
 
-        if (parts[0] != Prefix)
-        {
-            throw new ArgumentException($"Invalid ticket number prefix: {parts[0]}. Expected: {Prefix}", nameof(value));
-        }
-
-        if (!int.TryParse(parts[1], out var year) || year < 2000 || year > 9999)
-        {
-            throw new ArgumentException($"Invalid year in ticket number: {parts[1]}", nameof(value));
-        }
-
-        if (!int.TryParse(parts[2], out var sequence) || parts[2].Length != SequenceLength)
-        {
-            throw new ArgumentException($"Invalid sequence in ticket number: {parts[2]}", nameof(value));
-        }
-
-        return new TicketNumber(value);
+        return new TicketNumber(year, sequential);
     }
 
     /// <summary>
-    /// Tries to parse a ticket number from a string
+    /// Tries to parse a ticket number string into a TicketNumber instance.
     /// </summary>
-    public static bool TryParse(string value, out TicketNumber? ticketNumber)
+    /// <param name="value">The ticket number string to parse.</param>
+    /// <param name="result">The resulting TicketNumber if parsing succeeds, null otherwise.</param>
+    /// <returns>True if parsing succeeds, false otherwise.</returns>
+    public static bool TryParse(string? value, out TicketNumber? result)
     {
+        result = null;
+
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return false;
+        }
+
+        if (!ValidationRegex.IsMatch(value))
+        {
+            return false;
+        }
+
         try
         {
-            ticketNumber = Parse(value);
+            var parts = value.Split('-');
+            var year = int.Parse(parts[1]);
+            var sequential = int.Parse(parts[2]);
+
+            result = new TicketNumber(year, sequential);
             return true;
         }
         catch
         {
-            ticketNumber = null;
             return false;
         }
     }
 
-    public bool Equals(TicketNumber? other)
+    public override string ToString() => Value;
+
+    protected override IEnumerable<object?> GetEqualityComponents()
     {
-        if (other is null) return false;
-        if (ReferenceEquals(this, other)) return true;
-        return Value == other.Value;
+        yield return Year;
+        yield return Sequential;
     }
 
-    public override bool Equals(object? obj)
+    /// <summary>
+    /// Implicit conversion from TicketNumber to string.
+    /// </summary>
+    public static implicit operator string(TicketNumber ticketNumber) => ticketNumber.Value;
+
+    /// <summary>
+    /// Explicit conversion from string to TicketNumber.
+    /// </summary>
+    public static explicit operator TicketNumber(string value) => Parse(value);
+
+    private static void ValidateYear(int year)
     {
-        return obj is TicketNumber other && Equals(other);
+        var maxYear = DateTime.UtcNow.Year + 1;
+
+        if (year < MinYear || year > maxYear)
+        {
+            throw new ArgumentException(
+                $"Year must be between {MinYear} and {maxYear}. Got: {year}",
+                nameof(year));
+        }
     }
 
-    public override int GetHashCode()
+    private static void ValidateSequential(int sequential)
     {
-        return Value.GetHashCode();
-    }
-
-    public override string ToString()
-    {
-        return Value;
-    }
-
-    public static bool operator ==(TicketNumber? left, TicketNumber? right)
-    {
-        return Equals(left, right);
-    }
-
-    public static bool operator !=(TicketNumber? left, TicketNumber? right)
-    {
-        return !Equals(left, right);
-    }
-
-    public static implicit operator string(TicketNumber ticketNumber)
-    {
-        return ticketNumber.Value;
+        if (sequential < MinSequential || sequential > MaxSequential)
+        {
+            throw new ArgumentException(
+                $"Sequential must be between {MinSequential} and {MaxSequential}. Got: {sequential}",
+                nameof(sequential));
+        }
     }
 }

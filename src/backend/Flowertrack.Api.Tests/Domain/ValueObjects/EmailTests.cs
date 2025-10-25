@@ -1,4 +1,4 @@
-using Flowertrack.Api.Domain.ValueObjects;
+using Flowertrack.Domain.ValueObjects;
 
 namespace Flowertrack.Api.Tests.Domain.ValueObjects;
 
