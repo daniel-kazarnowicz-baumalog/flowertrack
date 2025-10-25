@@ -1,32 +1,32 @@
-namespace Flowertrack.Api.Domain.Events;
+namespace Flowertrack.Domain.Events;
 
-using Flowertrack.Api.Domain.Common;
+using Flowertrack.Domain.Common;
 
 /// <summary>
 /// Event raised when a ticket is assigned to a service technician.
 /// This event tracks who assigned the ticket and to whom, along with any previous assignee.
 /// </summary>
-public sealed record TicketAssignedEvent : DomainEvent
+public sealed class TicketAssignedEvent : DomainEvent
 {
     /// <summary>
     /// Unique identifier of the ticket
     /// </summary>
-    public Guid TicketId { get; init; }
+    public Guid TicketId { get; }
 
     /// <summary>
     /// User ID of the technician the ticket was assigned to
     /// </summary>
-    public Guid AssignedToUserId { get; init; }
+    public Guid AssignedToUserId { get; }
 
     /// <summary>
     /// User who performed the assignment
     /// </summary>
-    public Guid AssignedBy { get; init; }
+    public Guid AssignedBy { get; }
 
     /// <summary>
     /// Previous assignee if the ticket was reassigned (null if first assignment)
     /// </summary>
-    public Guid? PreviousAssignee { get; init; }
+    public Guid? PreviousAssignee { get; }
 
     public TicketAssignedEvent(
         Guid ticketId,

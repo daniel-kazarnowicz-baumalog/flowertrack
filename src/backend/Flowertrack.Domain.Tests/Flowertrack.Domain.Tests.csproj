@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Flowertrack.Api\Flowertrack.Api.csproj" />
+    <ProjectReference Include="..\Flowertrack.Domain\Flowertrack.Domain.csproj" />
   </ItemGroup>
 
 </Project>

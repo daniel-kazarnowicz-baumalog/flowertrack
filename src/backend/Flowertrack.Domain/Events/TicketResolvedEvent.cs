@@ -1,32 +1,32 @@
-namespace Flowertrack.Api.Domain.Events;
+namespace Flowertrack.Domain.Events;
 
-using Flowertrack.Api.Domain.Common;
+using Flowertrack.Domain.Common;
 
 /// <summary>
 /// Event raised when a ticket is marked as resolved.
 /// This indicates that the issue has been fixed and is awaiting client verification or closure.
 /// </summary>
-public sealed record TicketResolvedEvent : DomainEvent
+public sealed class TicketResolvedEvent : DomainEvent
 {
     /// <summary>
     /// Unique identifier of the ticket
     /// </summary>
-    public Guid TicketId { get; init; }
+    public Guid TicketId { get; }
 
     /// <summary>
     /// User who resolved the ticket
     /// </summary>
-    public Guid ResolvedBy { get; init; }
+    public Guid ResolvedBy { get; }
 
     /// <summary>
     /// When the ticket was resolved
     /// </summary>
-    public DateTimeOffset ResolvedAt { get; init; }
+    public DateTimeOffset ResolvedAt { get; }
 
     /// <summary>
     /// Resolution note explaining how the issue was fixed
     /// </summary>
-    public string ResolutionNote { get; init; }
+    public string ResolutionNote { get; }
 
     public TicketResolvedEvent(
         Guid ticketId,

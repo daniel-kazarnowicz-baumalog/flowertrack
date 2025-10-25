@@ -1,11 +1,11 @@
-namespace Flowertrack.Api.Domain.Common;
+namespace Flowertrack.Domain.Common;
 
 /// <summary>
 /// Interface for handling domain events.
 /// Implementations of this interface will be invoked when a domain event is published.
 /// </summary>
 /// <typeparam name="TEvent">The type of domain event to handle</typeparam>
-public interface IDomainEventHandler<in TEvent> where TEvent : DomainEvent
+public interface IDomainEventHandler<in TEvent> where TEvent : IDomainEvent
 {
     /// <summary>
     /// Handles the domain event

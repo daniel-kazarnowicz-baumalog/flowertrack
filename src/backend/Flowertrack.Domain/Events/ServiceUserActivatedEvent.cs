@@ -1,27 +1,27 @@
-namespace Flowertrack.Api.Domain.Events;
+namespace Flowertrack.Domain.Events;
 
-using Flowertrack.Api.Domain.Common;
+using Flowertrack.Domain.Common;
 
 /// <summary>
 /// Event raised when a service user account is activated.
 /// This typically happens after account verification or approval.
 /// </summary>
-public sealed record ServiceUserActivatedEvent : DomainEvent
+public sealed class ServiceUserActivatedEvent : DomainEvent
 {
     /// <summary>
     /// Unique identifier of the user
     /// </summary>
-    public Guid UserId { get; init; }
+    public Guid UserId { get; }
 
     /// <summary>
     /// When the account was activated
     /// </summary>
-    public DateTimeOffset ActivatedAt { get; init; }
+    public DateTimeOffset ActivatedAt { get; }
 
     /// <summary>
     /// User who activated the account (typically an administrator)
     /// </summary>
-    public Guid ActivatedBy { get; init; }
+    public Guid ActivatedBy { get; }
 
     public ServiceUserActivatedEvent(
         Guid userId,

@@ -1,37 +1,37 @@
-namespace Flowertrack.Api.Domain.Events;
+namespace Flowertrack.Domain.Events;
 
-using Flowertrack.Api.Domain.Common;
+using Flowertrack.Domain.Common;
 
 /// <summary>
 /// Event raised when a new organization user (client user) is created.
 /// Organization users are employees of client companies (operators or administrators).
 /// </summary>
-public sealed record OrganizationUserCreatedEvent : DomainEvent
+public sealed class OrganizationUserCreatedEvent : DomainEvent
 {
     /// <summary>
     /// Unique identifier of the user
     /// </summary>
-    public Guid UserId { get; init; }
+    public Guid UserId { get; }
 
     /// <summary>
     /// Organization the user belongs to
     /// </summary>
-    public Guid OrganizationId { get; init; }
+    public Guid OrganizationId { get; }
 
     /// <summary>
     /// Email address of the user
     /// </summary>
-    public string Email { get; init; }
+    public string Email { get; }
 
     /// <summary>
     /// Role of the user within the organization (e.g., Admin, Operator)
     /// </summary>
-    public string Role { get; init; }
+    public string Role { get; }
 
     /// <summary>
     /// When the user account was created
     /// </summary>
-    public DateTimeOffset CreatedAt { get; init; }
+    public DateTimeOffset CreatedAt { get; }
 
     public OrganizationUserCreatedEvent(
         Guid userId,
