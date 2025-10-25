@@ -70,22 +70,4 @@ public abstract class AuditableEntity<TId> : Entity<TId> where TId : notnull
         UpdatedAt = DateTimeOffset.UtcNow;
         UpdatedBy = userId;
     }
-
-    /// <summary>
-    /// Sets the created audit information.
-    /// </summary>
-    protected void SetCreatedAudit(Guid? createdBy)
-    {
-        CreatedAt = DateTimeOffset.UtcNow;
-        CreatedBy = createdBy;
-    }
-
-    /// <summary>
-    /// Sets the updated audit information.
-    /// </summary>
-    protected void SetUpdatedAudit(Guid? updatedBy)
-    {
-        UpdatedAt = DateTimeOffset.UtcNow;
-        UpdatedBy = updatedBy;
-    }
 }

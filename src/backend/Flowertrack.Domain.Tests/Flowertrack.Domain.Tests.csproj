@@ -24,4 +24,8 @@
     <ProjectReference Include="..\Flowertrack.Domain\Flowertrack.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ValueObjects\" />
+  </ItemGroup>
+
 </Project>
