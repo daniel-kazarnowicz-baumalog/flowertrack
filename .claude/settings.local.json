@@ -3,7 +3,13 @@
     "allow": [
       "Bash(git fetch:*)",
       "Bash(git checkout:*)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(dotnet build:*)",
+      "Bash(taskkill /F /PID 18180)",
+      "Bash(dotnet run)",
+      "Bash(timeout:*)"
     ],
     "deny": [],
     "ask": []
