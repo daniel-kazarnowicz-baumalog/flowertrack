@@ -1,4 +1,4 @@
-namespace Flowertrack.Api.Exceptions;
+namespace Flowertrack.Domain.Exceptions;
 
 /// <summary>
 /// Exception thrown when validation fails
