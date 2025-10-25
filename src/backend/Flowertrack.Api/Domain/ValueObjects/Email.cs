@@ -10,7 +10,7 @@ public sealed class Email : ValueObject
 {
     private const string Pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
     private static readonly Regex ValidationRegex = new(Pattern, RegexOptions.Compiled);
-    
+
     private const int MaxLength = 255;
 
     public string Value { get; }
@@ -62,7 +62,7 @@ public sealed class Email : ValueObject
         try
         {
             var normalized = Normalize(value);
-            
+
             if (normalized.Length > MaxLength)
             {
                 return false;
@@ -107,12 +107,12 @@ public sealed class Email : ValueObject
         }
 
         var trimmed = value.Trim().ToLowerInvariant();
-        
+
         // Check length before further processing
         if (trimmed.Length > MaxLength)
         {
             throw new ArgumentException(
-                $"Email cannot exceed {MaxLength} characters. Got: {trimmed.Length}", 
+                $"Email cannot exceed {MaxLength} characters. Got: {trimmed.Length}",
                 nameof(value));
         }
 
@@ -124,14 +124,14 @@ public sealed class Email : ValueObject
         if (normalizedEmail.Length > MaxLength)
         {
             throw new ArgumentException(
-                $"Email cannot exceed {MaxLength} characters. Got: {normalizedEmail.Length}", 
+                $"Email cannot exceed {MaxLength} characters. Got: {normalizedEmail.Length}",
                 nameof(normalizedEmail));
         }
 
         if (!ValidationRegex.IsMatch(normalizedEmail))
         {
             throw new ArgumentException(
-                $"Invalid email format. Got: {normalizedEmail}", 
+                $"Invalid email format. Got: {normalizedEmail}",
                 nameof(normalizedEmail));
         }
 
@@ -139,7 +139,7 @@ public sealed class Email : ValueObject
         if (normalizedEmail.Contains(".."))
         {
             throw new ArgumentException(
-                $"Invalid email format. Got: {normalizedEmail}", 
+                $"Invalid email format. Got: {normalizedEmail}",
                 nameof(normalizedEmail));
         }
     }
