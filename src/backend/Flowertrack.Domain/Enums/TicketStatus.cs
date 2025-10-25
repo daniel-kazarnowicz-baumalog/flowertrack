@@ -1,42 +1,32 @@
 namespace Flowertrack.Domain.Enums;
 
 /// <summary>
-/// Represents the status of a ticket in the system.
+/// Represents the status of a ticket in the system
 /// </summary>
 public enum TicketStatus
 {
     /// <summary>
-    /// Ticket has been created but not yet submitted.
+    /// Ticket has been created and awaiting assignment or action
     /// </summary>
-    Draft = 0,
+    New = 0,
 
     /// <summary>
-    /// Ticket has been submitted and is waiting for assignment.
+    /// Ticket is being actively worked on by a technician
     /// </summary>
-    New = 1,
+    InProgress = 1,
 
     /// <summary>
-    /// Ticket has been assigned to a service technician.
+    /// Issue has been resolved but ticket is not yet closed
     /// </summary>
-    Assigned = 2,
+    Resolved = 2,
 
     /// <summary>
-    /// Technician is actively working on the ticket.
+    /// Ticket has been closed and no further action is expected
     /// </summary>
-    InProgress = 3,
+    Closed = 3,
 
     /// <summary>
-    /// Ticket has been resolved but not yet closed.
+    /// Previously resolved ticket that has been reopened
     /// </summary>
-    Resolved = 4,
-
-    /// <summary>
-    /// Ticket has been closed.
-    /// </summary>
-    Closed = 5,
-
-    /// <summary>
-    /// Ticket has been reopened after being resolved.
-    /// </summary>
-    Reopened = 6
+    Reopened = 4
 }
