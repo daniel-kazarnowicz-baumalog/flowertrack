@@ -8,7 +8,9 @@ function App() {
         <div className="nav-container">
           <div className="logo">
             <span className="logo-icon">⚙️</span>
-            <span className="logo-text">FLOW<span className="highlight">er</span>TRACK</span>
+            <span className="logo-text">
+              FLOW<span className="highlight">er</span>TRACK
+            </span>
           </div>
           <div className="nav-links">
             <a href="#features">Funkcje</a>
@@ -26,12 +28,13 @@ function App() {
             <span className="badge-text">🚀 Nowa generacja zarządzania serwisem</span>
           </div>
           <h1 className="hero-title">
-            Centralne zarządzanie<br />
+            Centralne zarządzanie
+            <br />
             zgłoszeniami <span className="gradient-text">serwisowymi</span>
           </h1>
           <p className="hero-subtitle">
-            Kompleksowa platforma dla firm zajmujących się serwisem urządzeń produkcyjnych.
-            Skróć czas reakcji, zwiększ transparentność i zautomatyzuj workflow zgłoszeń.
+            Kompleksowa platforma dla firm zajmujących się serwisem urządzeń produkcyjnych. Skróć
+            czas reakcji, zwiększ transparentność i zautomatyzuj workflow zgłoszeń.
           </p>
           <div className="hero-cta">
             <button className="btn-primary">
@@ -58,7 +61,7 @@ function App() {
             </div>
           </div>
         </div>
-        
+
         {/* Animated background elements */}
         <div className="hero-background">
           <div className="floating-icon icon-1">🔧</div>
@@ -73,16 +76,22 @@ function App() {
       <section id="features" className="features">
         <div className="section-header">
           <span className="section-badge">Funkcjonalności</span>
-          <h2 className="section-title">Wszystko czego potrzebujesz<br />w jednym miejscu</h2>
+          <h2 className="section-title">
+            Wszystko czego potrzebujesz
+            <br />w jednym miejscu
+          </h2>
         </div>
-        
+
         <div className="features-grid">
           <div className="feature-card">
             <div className="feature-icon-wrapper">
               <div className="feature-icon">🎯</div>
             </div>
             <h3>Portal Serwisu</h3>
-            <p>Kompleksowy dashboard dla zespołu serwisowego z KPI, automatycznym przydzielaniem zadań i pełnym audytem zmian.</p>
+            <p>
+              Kompleksowy dashboard dla zespołu serwisowego z KPI, automatycznym przydzielaniem
+              zadań i pełnym audytem zmian.
+            </p>
             <ul className="feature-list">
               <li>Dashboard z kafelkami KPI</li>
               <li>Zarządzanie zgłoszeniami</li>
@@ -96,7 +105,10 @@ function App() {
               <div className="feature-icon">👥</div>
             </div>
             <h3>Portal Klienta</h3>
-            <p>Dedykowany portal dla operatorów i administratorów klientów z pełną transparentnością procesu serwisowego.</p>
+            <p>
+              Dedykowany portal dla operatorów i administratorów klientów z pełną transparentnością
+              procesu serwisowego.
+            </p>
             <ul className="feature-list">
               <li>Śledzenie statusu maszyn</li>
               <li>Tworzenie zgłoszeń</li>
@@ -109,7 +121,10 @@ function App() {
               <div className="feature-icon">📊</div>
             </div>
             <h3>Integracja Logów</h3>
-            <p>Automatyczne wysyłanie logów z maszyn produkcyjnych do systemu. Wszystkie informacje w jednym miejscu.</p>
+            <p>
+              Automatyczne wysyłanie logów z maszyn produkcyjnych do systemu. Wszystkie informacje w
+              jednym miejscu.
+            </p>
             <ul className="feature-list">
               <li>Automatyczne zbieranie danych</li>
               <li>Historia problemów</li>
@@ -122,7 +137,10 @@ function App() {
               <div className="feature-icon">�</div>
             </div>
             <h3>Scentralizowana Komunikacja</h3>
-            <p>Komentarze, załączniki, oś czasu - cała komunikacja między serwisem a klientem w kontekście ticketu.</p>
+            <p>
+              Komentarze, załączniki, oś czasu - cała komunikacja między serwisem a klientem w
+              kontekście ticketu.
+            </p>
             <ul className="feature-list">
               <li>Timeline zmian</li>
               <li>Załączniki i galeria</li>
@@ -135,7 +153,10 @@ function App() {
               <div className="feature-icon">🔒</div>
             </div>
             <h3>Bezpieczeństwo</h3>
-            <p>Wielopoziomowy system uprawnień, tokeny API dla organizacji i bezpieczne sesje użytkowników.</p>
+            <p>
+              Wielopoziomowy system uprawnień, tokeny API dla organizacji i bezpieczne sesje
+              użytkowników.
+            </p>
             <ul className="feature-list">
               <li>Role i uprawnienia</li>
               <li>Tokeny API</li>
@@ -148,7 +169,10 @@ function App() {
               <div className="feature-icon">⚡</div>
             </div>
             <h3>Szybkość i Efektywność</h3>
-            <p>Automatyzacja procesów, masowe akcje i szybkie filtry znacząco skracają czas obsługi zgłoszeń.</p>
+            <p>
+              Automatyzacja procesów, masowe akcje i szybkie filtry znacząco skracają czas obsługi
+              zgłoszeń.
+            </p>
             <ul className="feature-list">
               <li>Masowe akcje</li>
               <li>Zaawansowane filtry</li>
@@ -169,21 +193,27 @@ function App() {
                 <div className="benefit-icon">✅</div>
                 <div>
                   <h4>Pełna transparentność</h4>
-                  <p>Klienci widzą status naprawy w czasie rzeczywistym, co zmniejsza liczbę zapytań.</p>
+                  <p>
+                    Klienci widzą status naprawy w czasie rzeczywistym, co zmniejsza liczbę zapytań.
+                  </p>
                 </div>
               </div>
               <div className="benefit-item">
                 <div className="benefit-icon">✅</div>
                 <div>
                   <h4>Centralizacja informacji</h4>
-                  <p>Wszystkie zgłoszenia, logi i komunikacja w jednym miejscu - koniec z chaosem.</p>
+                  <p>
+                    Wszystkie zgłoszenia, logi i komunikacja w jednym miejscu - koniec z chaosem.
+                  </p>
                 </div>
               </div>
               <div className="benefit-item">
                 <div className="benefit-icon">✅</div>
                 <div>
                   <h4>Szybsza reakcja</h4>
-                  <p>Automatyczne zbieranie danych z maszyn i natychmiastowe powiadamianie zespołu.</p>
+                  <p>
+                    Automatyczne zbieranie danych z maszyn i natychmiastowe powiadamianie zespołu.
+                  </p>
                 </div>
               </div>
               <div className="benefit-item">
@@ -199,7 +229,9 @@ function App() {
             <div className="dashboard-preview">
               <div className="preview-header">
                 <div className="preview-dots">
-                  <span></span><span></span><span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
                 </div>
                 <span className="preview-title">FLOWerTRACK Dashboard</span>
               </div>
@@ -234,25 +266,28 @@ function App() {
               <span className="logo-icon">⚙️</span>
               <span>FLOWerTRACK</span>
             </div>
-            <p>Zaawansowany system zarządzania zgłoszeniami serwisowymi dla firm zajmujących się serwisem urządzeń produkcyjnych.</p>
+            <p>
+              Zaawansowany system zarządzania zgłoszeniami serwisowymi dla firm zajmujących się
+              serwisem urządzeń produkcyjnych.
+            </p>
           </div>
           <div className="footer-column">
             <h4>Produkt</h4>
             <a href="#features">Funkcje</a>
             <a href="#benefits">Korzyści</a>
-            <a href="#">Demo</a>
+            <a href="/demo">Demo</a>
           </div>
           <div className="footer-column">
             <h4>Firma</h4>
-            <a href="#">O nas</a>
-            <a href="#">Blog</a>
+            <a href="/about">O nas</a>
+            <a href="/blog">Blog</a>
             <a href="#contact">Kontakt</a>
           </div>
           <div className="footer-column">
             <h4>Wsparcie</h4>
-            <a href="#">Dokumentacja</a>
-            <a href="#">FAQ</a>
-            <a href="#">Pomoc</a>
+            <a href="/docs">Dokumentacja</a>
+            <a href="/faq">FAQ</a>
+            <a href="/support">Pomoc</a>
           </div>
         </div>
         <div className="footer-bottom">
