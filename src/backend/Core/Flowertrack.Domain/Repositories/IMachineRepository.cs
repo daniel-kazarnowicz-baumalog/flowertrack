@@ -31,5 +31,6 @@ public interface IMachineRepository : IRepository<Machine>
     /// <summary>
     /// Gets machines that are due for maintenance within specified days.
     /// </summary>
+    /// <param name="daysThreshold">Number of days from today to look ahead for maintenance due dates.</param>
     Task<List<Machine>> GetMachinesDueForMaintenanceAsync(int daysThreshold, CancellationToken cancellationToken = default);
 }
