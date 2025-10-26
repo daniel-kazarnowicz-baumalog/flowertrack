@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Flowertrack.Api\Flowertrack.Api.csproj" />
-    <ProjectReference Include="..\Flowertrack.Domain\Flowertrack.Domain.csproj" />
+    <ProjectReference Include="..\..\Presentation\Flowertrack.Api\Flowertrack.Api.csproj" />
+    <ProjectReference Include="..\..\Core\Flowertrack.Domain\Flowertrack.Domain.csproj" />
   </ItemGroup>
 
 </Project>
