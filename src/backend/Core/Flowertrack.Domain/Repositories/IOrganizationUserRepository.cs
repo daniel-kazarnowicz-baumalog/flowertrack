@@ -1,35 +1,30 @@
 using Flowertrack.Domain.Entities;
+using Flowertrack.Domain.ValueObjects;
 
 namespace Flowertrack.Domain.Repositories;
 
 /// <summary>
-/// Repository interface for OrganizationUser entity.
-/// Provides specialized query methods for organization user management.
+/// Repository interface for OrganizationUser aggregate.
 /// </summary>
 public interface IOrganizationUserRepository : IRepository<OrganizationUser>
 {
     /// <summary>
-    /// Gets an organization user by their email address.
+    /// Gets an organization user by their user ID (from identity system).
     /// </summary>
-    /// <param name="email">The email address.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>The organization user if found; otherwise, null.</returns>
-    Task<OrganizationUser?> GetByEmailAsync(string email, CancellationToken ct = default);
-
+    Task<OrganizationUser?> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
+    
     /// <summary>
     /// Gets all users for a specific organization.
     /// </summary>
-    /// <param name="organizationId">The organization identifier.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>A read-only list of organization users.</returns>
-    Task<IReadOnlyList<OrganizationUser>> GetByOrganizationIdAsync(Guid organizationId, CancellationToken ct = default);
-
+    Task<List<OrganizationUser>> GetByOrganizationAsync(Guid orgId, CancellationToken cancellationToken = default);
+    
     /// <summary>
-    /// Checks if an email address already exists.
+    /// Gets all active users for a specific organization.
     /// </summary>
-    /// <param name="email">The email address to check.</param>
-    /// <param name="excludeId">Optional user ID to exclude from the check (for updates).</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>True if the email exists; otherwise, false.</returns>
-    Task<bool> EmailExistsAsync(string email, Guid? excludeId = null, CancellationToken ct = default);
+    Task<List<OrganizationUser>> GetActiveByOrganizationAsync(Guid orgId, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Checks if an organization user with the given email already exists.
+    /// </summary>
+    Task<bool> ExistsByEmailAsync(Email email, CancellationToken cancellationToken = default);
 }
