@@ -1,10 +1,12 @@
+using Flowertrack.Domain.Common;
+
 namespace Flowertrack.Domain.Entities;
 
 /// <summary>
 /// Placeholder entity for Organization aggregate root.
 /// Full implementation will be provided in Phase 1.1 (Issue #3).
 /// </summary>
-public class Organization
+public class Organization : IAggregateRoot
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = null!;
