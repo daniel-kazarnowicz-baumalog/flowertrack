@@ -416,7 +416,7 @@ public class MachineTests
         // Arrange
         var machine = Machine.Create(TestOrganizationId, TestSerialNumber);
         var completedDate = DateOnly.FromDateTime(DateTime.UtcNow);
-        var interval = MaintenanceInterval.Create(1, 30, "Monthly");
+        var interval = Flowertrack.Domain.ValueObjects.MaintenanceInterval.Create(1, 30, "Monthly");
 
         // Act
         machine.CompleteMaintenance(completedDate, interval);

@@ -1,4 +1,4 @@
-using Flowertrack.Domain.Entities.Organizations;
+using Flowertrack.Domain.Entities;
 using Flowertrack.Domain.Enums;
 using Flowertrack.Domain.Events;
 

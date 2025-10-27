@@ -1,5 +1,7 @@
+using Flowertrack.Application.Common.Interfaces;
 using Flowertrack.Domain.Common;
-using Flowertrack.Domain.Entities.Organizations;
+using Flowertrack.Domain.Entities;
+using Flowertrack.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Flowertrack.Infrastructure.Persistence;
@@ -7,14 +9,19 @@ namespace Flowertrack.Infrastructure.Persistence;
 /// <summary>
 /// Application database context for FLOWerTRACK
 /// </summary>
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : DbContext, IApplicationDbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
     }
-    
+
+    // DbSets
     public DbSet<Organization> Organizations => Set<Organization>();
+    public DbSet<Machine> Machines => Set<Machine>();
+    public DbSet<ServiceUser> ServiceUsers => Set<ServiceUser>();
+    public DbSet<OrganizationUser> OrganizationUsers => Set<OrganizationUser>();
+    public DbSet<Ticket> Tickets => Set<Ticket>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

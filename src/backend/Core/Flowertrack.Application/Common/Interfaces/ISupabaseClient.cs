@@ -23,4 +23,39 @@ public interface ISupabaseClient
     /// Gets the Storage service
     /// </summary>
     IStorageClient<global::Supabase.Storage.Bucket, global::Supabase.Storage.FileObject> Storage { get; }
+
+    /// <summary>
+    /// Creates a new user in Supabase Auth
+    /// </summary>
+    Task<Guid> CreateUserAsync(
+        string email,
+        string? password = null,
+        object? metadata = null,
+        bool emailConfirm = false,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets a user by email address
+    /// </summary>
+    Task<global::Supabase.Gotrue.User?> GetUserByEmailAsync(
+        string email,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Stores an activation token for a user
+    /// </summary>
+    Task StoreActivationTokenAsync(
+        Guid userId,
+        string token,
+        DateTimeOffset expiry,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Sends an email using Supabase Edge Functions
+    /// </summary>
+    Task SendEmailAsync(
+        string to,
+        string subject,
+        string htmlBody,
+        CancellationToken cancellationToken = default);
 }

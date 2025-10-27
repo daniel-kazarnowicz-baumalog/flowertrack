@@ -1,4 +1,4 @@
-using Flowertrack.Domain.Entities.Organizations;
+using Flowertrack.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

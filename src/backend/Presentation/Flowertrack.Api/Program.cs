@@ -1,4 +1,6 @@
 using System.Text;
+using Flowertrack.Application;
+using Flowertrack.Infrastructure;
 using Flowertrack.Application.Common.Interfaces;
 using Flowertrack.Infrastructure.Configuration;
 using Flowertrack.Infrastructure.Data;
@@ -47,6 +49,10 @@ try
 
     // Add services to the container.
     builder.Services.AddControllers();
+
+    // Add Application and Infrastructure layers
+    builder.Services.AddApplication();
+    builder.Services.AddInfrastructure(builder.Configuration);
 
     // Configure Supabase Options
     builder.Services.Configure<SupabaseOptions>(

@@ -47,6 +47,58 @@ public class SupabaseClientService : ISupabaseClient
     /// </summary>
     public IStorageClient<global::Supabase.Storage.Bucket, global::Supabase.Storage.FileObject> Storage => _client.Value.Storage;
 
+    /// <summary>
+    /// Creates a new user in Supabase Auth
+    /// </summary>
+    public async Task<Guid> CreateUserAsync(
+        string email,
+        string? password = null,
+        object? metadata = null,
+        bool emailConfirm = false,
+        CancellationToken cancellationToken = default)
+    {
+        // TODO: Implement Supabase Admin Auth user creation
+        // This requires using Admin API with service key
+        throw new NotImplementedException("Supabase user creation not yet implemented");
+    }
+
+    /// <summary>
+    /// Gets a user by email address
+    /// </summary>
+    public async Task<global::Supabase.Gotrue.User?> GetUserByEmailAsync(
+        string email,
+        CancellationToken cancellationToken = default)
+    {
+        // TODO: Implement user lookup by email using Admin API
+        throw new NotImplementedException("Supabase user lookup not yet implemented");
+    }
+
+    /// <summary>
+    /// Stores an activation token for a user
+    /// </summary>
+    public async Task StoreActivationTokenAsync(
+        Guid userId,
+        string token,
+        DateTimeOffset expiry,
+        CancellationToken cancellationToken = default)
+    {
+        // TODO: Implement token storage in Supabase database table
+        throw new NotImplementedException("Token storage not yet implemented");
+    }
+
+    /// <summary>
+    /// Sends an email using Supabase Edge Functions
+    /// </summary>
+    public async Task SendEmailAsync(
+        string to,
+        string subject,
+        string htmlBody,
+        CancellationToken cancellationToken = default)
+    {
+        // TODO: Implement email sending via Supabase Edge Functions
+        throw new NotImplementedException("Email sending not yet implemented");
+    }
+
     private Client InitializeClient()
     {
         try
@@ -65,9 +117,9 @@ public class SupabaseClientService : ISupabaseClient
             };
 
             var client = new Client(_options.Url, _options.ServiceKey, supabaseOptions);
-            
+
             _logger.LogInformation("Supabase client initialized successfully");
-            
+
             return client;
         }
         catch (Exception ex)
