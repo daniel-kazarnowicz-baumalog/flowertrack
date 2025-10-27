@@ -1,110 +1,124 @@
-using Flowertrack.Domain.Entities.Organizations;
-using Flowertrack.Domain.Enums;
-using Flowertrack.Infrastructure.Persistence;
+using Flowertrack.Application.Organizations.Commands.OnboardOrganization;
+using Flowertrack.Application.Organizations.Queries.GetOrganizations;
+using Flowertrack.Contracts.Common;
+using Flowertrack.Contracts.Organizations.Requests;
+using Flowertrack.Contracts.Organizations.Responses;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Flowertrack.Api.Controllers;
 
+/// <summary>
+/// Controller for managing organizations
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class OrganizationsController : ControllerBase
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IMediator _mediator;
     private readonly ILogger<OrganizationsController> _logger;
 
     public OrganizationsController(
-        ApplicationDbContext context,
+        IMediator mediator,
         ILogger<OrganizationsController> logger)
     {
-        _context = context;
+        _mediator = mediator;
         _logger = logger;
     }
 
     /// <summary>
-    /// Get all organizations
+    /// Get all organizations with pagination
+    /// US-024: Wyświetlenie listy organizacji z kluczowymi informacjami
     /// </summary>
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll()
+    [ProducesResponseType(typeof(PaginatedResponse<OrganizationResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetAll(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string? searchTerm = null,
+        [FromQuery] string? serviceStatus = null)
     {
-        _logger.LogInformation("Fetching all organizations");
-        
-        var organizations = await _context.Organizations
-            .OrderBy(o => o.Name)
-            .Select(o => new
-            {
-                o.Id,
-                o.Name,
-                o.Email,
-                o.Phone,
-                o.City,
-                o.Country,
-                o.ServiceStatus,
-                o.ContractStartDate,
-                o.CreatedAt,
-                HasApiKey = !string.IsNullOrEmpty(o.ApiKey)
-            })
-            .ToListAsync();
+        var query = new GetOrganizationsQuery
+        {
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            SearchTerm = searchTerm,
+            ServiceStatus = serviceStatus
+        };
 
-        return Ok(organizations);
+        var result = await _mediator.Send(query);
+
+        var response = new PaginatedResponse<OrganizationResponse>
+        {
+            Items = result.Items.Select(o => new OrganizationResponse
+            {
+                Id = o.Id,
+                Name = o.Name,
+                Email = o.Email,
+                Phone = o.Phone,
+                City = o.City,
+                Country = o.Country,
+                ServiceStatus = o.ServiceStatus,
+                ContractStartDate = o.ContractStartDate,
+                ContractEndDate = o.ContractEndDate,
+                HasApiKey = o.HasApiKey,
+                CreatedAt = o.CreatedAt
+            }).ToList(),
+            Pagination = new PaginationMetadata
+            {
+                PageNumber = result.PageNumber,
+                PageSize = result.PageSize,
+                TotalCount = result.TotalCount,
+                TotalPages = result.TotalPages,
+                HasPreviousPage = result.HasPreviousPage,
+                HasNextPage = result.HasNextPage
+            }
+        };
+
+        return Ok(response);
     }
 
     /// <summary>
-    /// Get organization by ID
+    /// Onboard a new organization
+    /// US-025: Inicjowanie onboardingu nowej organizacji
     /// </summary>
-    [HttpGet("{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetById(Guid id)
+    [HttpPost("onboard")]
+    [Authorize(Roles = "ServiceAdministrator")]
+    [ProducesResponseType(typeof(OnboardingConfirmationResponse), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> OnboardOrganization([FromBody] OnboardOrganizationRequest request)
     {
-        _logger.LogInformation("Fetching organization with ID: {OrganizationId}", id);
-        
-        var organization = await _context.Organizations
-            .Where(o => o.Id == id)
-            .Select(o => new
-            {
-                o.Id,
-                o.Name,
-                o.Email,
-                o.Phone,
-                o.Address,
-                o.City,
-                o.PostalCode,
-                o.Country,
-                o.ServiceStatus,
-                o.ContractStartDate,
-                o.ContractEndDate,
-                o.Notes,
-                o.CreatedAt,
-                o.UpdatedAt,
-                HasApiKey = !string.IsNullOrEmpty(o.ApiKey)
-            })
-            .FirstOrDefaultAsync();
-
-        if (organization == null)
+        var command = new OnboardOrganizationCommand
         {
-            return NotFound(new { Message = $"Organization with ID {id} not found" });
+            Name = request.Name,
+            AdminEmail = request.AdminEmail,
+            AdminFirstName = request.AdminFirstName,
+            AdminLastName = request.AdminLastName,
+            Phone = request.Phone,
+            Address = request.Address,
+            City = request.City,
+            PostalCode = request.PostalCode,
+            Country = request.Country,
+            Notes = request.Notes
+        };
+
+        var result = await _mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(new ErrorResponse(result.Error!));
         }
 
-        return Ok(organization);
-    }
-
-    /// <summary>
-    /// Get organizations count
-    /// </summary>
-    [HttpGet("count")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetCount()
-    {
-        var count = await _context.Organizations.CountAsync();
-        
-        return Ok(new
+        return Accepted(new OnboardingConfirmationResponse
         {
-            Total = count,
-            Active = await _context.Organizations.CountAsync(o => o.ServiceStatus == ServiceStatus.Active),
-            Suspended = await _context.Organizations.CountAsync(o => o.ServiceStatus == ServiceStatus.Suspended),
-            Expired = await _context.Organizations.CountAsync(o => o.ServiceStatus == ServiceStatus.Expired)
+            OrganizationId = result.Value,
+            Message = "Invitation email sent to organization administrator",
+            InvitationValidUntil = DateTimeOffset.UtcNow.AddDays(7)
         });
     }
 }
