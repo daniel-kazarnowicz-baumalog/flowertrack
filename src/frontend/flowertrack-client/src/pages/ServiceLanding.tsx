@@ -77,8 +77,7 @@ const ServiceLanding = () => {
     {
       icon: '⚙️',
       title: 'Administracja Zespołu',
-      description:
-        'Zarządzanie serwisantami, nadawanie uprawnień i monitoring aktywności zespołu.',
+      description: 'Zarządzanie serwisantami, nadawanie uprawnień i monitoring aktywności zespołu.',
       features: [
         'Dodawanie/edycja serwisantów',
         'Role i uprawnienia (Admin/Technician)',

@@ -1,0 +1,129 @@
+/* Button Component Styles */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  font-family: inherit;
+  position: relative;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Sizes */
+.btn--sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.btn--md {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.btn--lg {
+  padding: 0.625rem 1.25rem;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+/* Variants */
+.btn--primary {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.btn--primary:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.btn--primary:active:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.btn--secondary {
+  background-color: #6b7280;
+  color: white;
+}
+
+.btn--secondary:hover:not(:disabled) {
+  background-color: #4b5563;
+}
+
+.btn--secondary:active:not(:disabled) {
+  background-color: #374151;
+}
+
+.btn--danger {
+  background-color: #ef4444;
+  color: white;
+}
+
+.btn--danger:hover:not(:disabled) {
+  background-color: #dc2626;
+}
+
+.btn--danger:active:not(:disabled) {
+  background-color: #b91c1c;
+}
+
+.btn--ghost {
+  background-color: transparent;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn--ghost:hover:not(:disabled) {
+  background-color: #f3f4f6;
+}
+
+.btn--ghost:active:not(:disabled) {
+  background-color: #e5e7eb;
+}
+
+/* Full width */
+.btn--full-width {
+  width: 100%;
+}
+
+/* Loading state */
+.btn--loading {
+  position: relative;
+}
+
+.btn__spinner {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.btn__text--hidden {
+  opacity: 0;
+}
+
+@keyframes spin {
+  from {
+    transform: translateX(-50%) rotate(0deg);
+  }
+  to {
+    transform: translateX(-50%) rotate(360deg);
+  }
+}

@@ -1,5 +1,3 @@
-import { ReactNode } from 'react';
-
 interface Stat {
   value: string;
   label: string;
