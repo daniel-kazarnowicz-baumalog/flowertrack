@@ -101,10 +101,44 @@ try
 
     // Add Swagger/OpenAPI
     builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
+    builder.Services.AddSwaggerGen(options =>
+    {
+        options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+        {
+            Title = "FLOWerTRACK API",
+            Version = "v1",
+            Description = "Service Ticket Management System API"
+        });
+
+        // Add JWT Authentication to Swagger
+        options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+        {
+            Description = "Supabase JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below. Example: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'",
+            Name = "Authorization",
+            In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+            Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT"
+        });
+
+        options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+        {
+            {
+                new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                    {
+                        Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                Array.Empty<string>()
+            }
+        });
+    });
     builder.Services.AddOpenApi();
 
-    // Configure JWT Authentication
+    // Configure JWT Authentication for Supabase
     var supabaseUrl = builder.Configuration["Supabase:Url"] ?? "";
     var jwtSecret = builder.Configuration["Supabase:JwtSecret"] ?? "";
 
@@ -112,37 +146,81 @@ try
     {
         var jwtSecretBytes = Encoding.UTF8.GetBytes(jwtSecret);
 
-        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
             {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = supabaseUrl,
-                    ValidAudience = supabaseUrl,
-                    IssuerSigningKey = new SymmetricSecurityKey(jwtSecretBytes),
-                    ClockSkew = TimeSpan.Zero
-                };
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(jwtSecretBytes),
+                ValidateIssuer = true,
+                ValidIssuer = supabaseUrl,
+                ValidateAudience = true,
+                ValidAudience = "authenticated", // Supabase uses "authenticated" as audience
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero,
+                // Extract user ID from 'sub' claim
+                NameClaimType = "sub"
+            };
 
-                options.Events = new JwtBearerEvents
+            options.Events = new JwtBearerEvents
+            {
+                OnAuthenticationFailed = context =>
                 {
-                    OnAuthenticationFailed = context =>
-                    {
-                        var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-                        logger.LogWarning("Authentication failed: {Error}", context.Exception.Message);
-                        return Task.CompletedTask;
-                    },
-                    OnTokenValidated = context =>
-                    {
-                        var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-                        logger.LogInformation("Token validated for user: {User}", context.Principal?.Identity?.Name ?? "Unknown");
-                        return Task.CompletedTask;
-                    }
-                };
-            });
+                    var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                    logger.LogWarning("JWT Authentication failed: {Error}", context.Exception.Message);
+                    return Task.CompletedTask;
+                },
+                OnTokenValidated = context =>
+                {
+                    var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                    var userId = context.Principal?.FindFirst("sub")?.Value ?? "Unknown";
+                    var email = context.Principal?.FindFirst("email")?.Value ?? "Unknown";
+                    logger.LogInformation("JWT Token validated for user: {UserId}, Email: {Email}", userId, email);
+                    return Task.CompletedTask;
+                },
+                OnChallenge = context =>
+                {
+                    var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                    logger.LogWarning("JWT Authentication challenge: {Error}", context.Error ?? "No token provided");
+                    return Task.CompletedTask;
+                }
+            };
+        });
+
+        // Add Authorization Policies
+        builder.Services.AddAuthorization(options =>
+        {
+            // Service user policies
+            options.AddPolicy("RequireServiceAdmin", policy =>
+                policy.RequireAuthenticatedUser()
+                      .RequireClaim("user_metadata.role", "service_admin"));
+
+            options.AddPolicy("RequireServiceUser", policy =>
+                policy.RequireAuthenticatedUser()
+                      .RequireClaim("user_metadata.role", "service_admin", "service_technician"));
+
+            // Organization user policies
+            options.AddPolicy("RequireOrganizationAdmin", policy =>
+                policy.RequireAuthenticatedUser()
+                      .RequireClaim("user_metadata.role", "organization_admin"));
+
+            options.AddPolicy("RequireOrganizationUser", policy =>
+                policy.RequireAuthenticatedUser()
+                      .RequireClaim("user_metadata.role", "organization_admin", "organization_operator"));
+
+            // General authenticated user policy
+            options.AddPolicy("RequireAuthenticatedUser", policy =>
+                policy.RequireAuthenticatedUser());
+        });
+    }
+    else
+    {
+        Log.Warning("Supabase JWT Secret not configured. Authentication will not work properly.");
     }
 
     // Configure CORS
