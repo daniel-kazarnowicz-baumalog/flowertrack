@@ -1,3 +1,4 @@
+using Flowertrack.Application.Tickets.Commands.AssignTicket;
 using Flowertrack.Application.Tickets.Commands.CreateTicket;
 using Flowertrack.Application.Tickets.Commands.DeleteTicket;
 using Flowertrack.Application.Tickets.Commands.UpdateTicket;
@@ -409,6 +410,79 @@ public class TicketsController : ControllerBase
             "Successfully updated status for ticket {TicketId} to {Status}",
             id,
             (TicketStatus)request.Status);
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Assign a ticket to a service technician
+    /// US-015: Przypisanie zgłoszenia serwisowego do technika
+    /// </summary>
+    /// <param name="id">Ticket ID</param>
+    /// <param name="request">Assignment details</param>
+    /// <returns>No content on success</returns>
+    [HttpPatch("{id:guid}/assign")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> AssignTicket(
+        [FromRoute] Guid id,
+        [FromBody] AssignTicketRequest request)
+    {
+        // Get current user ID from claims
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            _logger.LogWarning("User ID not found in claims or invalid format");
+            return Unauthorized(new ErrorResponse("User authentication required"));
+        }
+
+        _logger.LogInformation(
+            "Assigning ticket {TicketId} to user {AssignedToUserId}",
+            id,
+            request.AssignedToUserId);
+
+        var command = new AssignTicketCommand(id, request.AssignedToUserId, userId);
+
+        var result = await _mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            _logger.LogWarning(
+                "Failed to assign ticket {TicketId}: {Error}",
+                id,
+                result.Error);
+
+            if (result.Error!.Contains("not found", StringComparison.OrdinalIgnoreCase))
+            {
+                return NotFound(new ErrorResponse(result.Error));
+            }
+
+            if (result.Error.Contains("permission", StringComparison.OrdinalIgnoreCase) ||
+                result.Error.Contains("forbidden", StringComparison.OrdinalIgnoreCase) ||
+                result.Error.Contains("not a member", StringComparison.OrdinalIgnoreCase))
+            {
+                return StatusCode(
+                    StatusCodes.Status403Forbidden,
+                    new ErrorResponse(result.Error));
+            }
+
+            if (result.Error.Contains("closed", StringComparison.OrdinalIgnoreCase) ||
+                result.Error.Contains("cannot assign", StringComparison.OrdinalIgnoreCase))
+            {
+                return Conflict(new ErrorResponse(result.Error));
+            }
+
+            return BadRequest(new ErrorResponse(result.Error));
+        }
+
+        _logger.LogInformation(
+            "Successfully assigned ticket {TicketId} to user {AssignedToUserId}",
+            id,
+            request.AssignedToUserId);
 
         return NoContent();
     }

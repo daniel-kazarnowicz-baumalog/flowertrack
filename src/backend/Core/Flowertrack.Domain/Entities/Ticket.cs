@@ -184,8 +184,11 @@ public sealed class Ticket : AuditableEntity<Guid>, IAggregateRoot
     }
 
     /// <summary>
-    /// Assigns the ticket to a user
+    /// Assigns the ticket to a user (service technician)
     /// </summary>
+    /// <param name="userId">User ID to assign the ticket to</param>
+    /// <param name="assignedBy">User ID who is performing the assignment</param>
+    /// <exception cref="ArgumentException">Thrown when userId is empty</exception>
     public void AssignTo(Guid userId, Guid assignedBy)
     {
         if (userId == Guid.Empty)
@@ -193,10 +196,11 @@ public sealed class Ticket : AuditableEntity<Guid>, IAggregateRoot
             throw new ArgumentException("User ID cannot be empty", nameof(userId));
         }
 
+        var previousAssignee = AssignedToUserId;
         AssignedToUserId = userId;
         SetUpdatedAudit(assignedBy);
 
-        RaiseDomainEvent(new TicketAssignedEvent(Id, userId, assignedBy));
+        RaiseDomainEvent(new TicketAssignedEvent(Id, userId, assignedBy, previousAssignee));
     }
 
     /// <summary>
