@@ -32,6 +32,21 @@ public abstract class AuditableEntity<TId> : Entity<TId> where TId : notnull
     public Guid? UpdatedBy { get; protected set; }
 
     /// <summary>
+    /// Gets or sets whether the entity has been soft deleted.
+    /// </summary>
+    public bool IsDeleted { get; protected set; }
+
+    /// <summary>
+    /// Gets or sets the date and time when the entity was deleted.
+    /// </summary>
+    public DateTimeOffset? DeletedAt { get; protected set; }
+
+    /// <summary>
+    /// Gets or sets the identifier of the user who deleted the entity.
+    /// </summary>
+    public Guid? DeletedBy { get; protected set; }
+
+    /// <summary>
     /// Sets the audit information for entity creation.
     /// </summary>
     /// <param name="userId">The identifier of the user creating the entity.</param>
@@ -69,5 +84,29 @@ public abstract class AuditableEntity<TId> : Entity<TId> where TId : notnull
     {
         UpdatedAt = DateTimeOffset.UtcNow;
         UpdatedBy = userId;
+    }
+
+    /// <summary>
+    /// Sets the audit information for entity deletion (soft delete).
+    /// </summary>
+    /// <param name="userId">The identifier of the user deleting the entity.</param>
+    protected void SetDeletedAudit(Guid userId)
+    {
+        IsDeleted = true;
+        DeletedAt = DateTimeOffset.UtcNow;
+        DeletedBy = userId;
+        SetUpdatedAudit(userId);
+    }
+
+    /// <summary>
+    /// Sets the audit information for entity deletion (soft delete).
+    /// </summary>
+    /// <param name="userId">The identifier of the user deleting the entity (optional).</param>
+    protected void SetDeletedAudit(Guid? userId)
+    {
+        IsDeleted = true;
+        DeletedAt = DateTimeOffset.UtcNow;
+        DeletedBy = userId;
+        SetUpdatedAudit(userId);
     }
 }
