@@ -48,6 +48,7 @@ public static class DependencyInjection
         services.AddScoped<IMachineRepository, MachineRepository>();
         services.AddScoped<IServiceUserRepository, ServiceUserRepository>();
         services.AddScoped<IOrganizationUserRepository, OrganizationUserRepository>();
+        services.AddScoped<ITicketRepository, TicketRepository>();
 
         // Infrastructure Services
         services.AddScoped<IEmailService, EmailService>();
