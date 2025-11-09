@@ -16,7 +16,26 @@ public sealed class OrganizationUserConfiguration : IEntityTypeConfiguration<Org
         builder.HasKey(ou => ou.Id);
 
         builder.Property(ou => ou.Id)
-            .ValueGeneratedNever(); // ID comes from Supabase Auth
+            .ValueGeneratedOnAdd(); // Internal domain ID
+
+        // Supabase User ID - nullable FK to auth.users
+        builder.Property(ou => ou.SupabaseUserId)
+            .IsRequired(false);
+
+        builder.HasIndex(ou => ou.SupabaseUserId)
+            .IsUnique()
+            .HasFilter("\"SupabaseUserId\" IS NOT NULL")
+            .HasDatabaseName("IX_OrganizationUsers_SupabaseUserId");
+
+        // Activation fields
+        builder.Property(ou => ou.IsActivated)
+            .IsRequired()
+            .HasDefaultValue(false);
+
+        builder.Property(ou => ou.InvitationToken)
+            .HasMaxLength(500);
+
+        builder.Property(ou => ou.InvitationTokenExpiresAt);
 
         // Basic properties
         builder.Property(ou => ou.FirstName)
