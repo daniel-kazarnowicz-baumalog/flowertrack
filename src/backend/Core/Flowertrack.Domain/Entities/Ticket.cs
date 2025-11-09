@@ -127,13 +127,24 @@ public sealed class Ticket : AuditableEntity<Guid>, IAggregateRoot
     }
 
     /// <summary>
-    /// Updates the ticket status with validation
+    /// Updates the ticket status with validation and reason tracking
     /// </summary>
-    public void UpdateStatus(TicketStatus newStatus, string reason, Guid userId)
+    /// <remarks>
+    /// Valid state transitions:
+    /// - New → Accepted, Closed
+    /// - Accepted → InProgress, Closed
+    /// - InProgress → Resolved, Closed
+    /// - Resolved → Closed, Reopened (within 14 days)
+    /// - Reopened → InProgress, Resolved, Closed
+    /// - Closed → (no transitions, final state)
+    /// </remarks>
+    public void UpdateStatus(TicketStatus newStatus, string? reason, Guid userId)
     {
-        if (string.IsNullOrWhiteSpace(reason))
+        // Validate reason is provided for required transitions
+        if ((newStatus == TicketStatus.Resolved || newStatus == TicketStatus.Closed) 
+            && string.IsNullOrWhiteSpace(reason))
         {
-            throw new ArgumentException("Reason for status change is required", nameof(reason));
+            throw new ArgumentException("Reason is required when resolving or closing a ticket", nameof(reason));
         }
 
         if (!IsValidStatusTransition(Status, newStatus))
@@ -144,13 +155,30 @@ public sealed class Ticket : AuditableEntity<Guid>, IAggregateRoot
 
         var oldStatus = Status;
         Status = newStatus;
+
+        // Set timestamps for specific statuses
+        if (newStatus == TicketStatus.Resolved)
+        {
+            ResolvedAt = DateTimeOffset.UtcNow;
+        }
+        else if (newStatus == TicketStatus.Closed)
+        {
+            ClosedAt = DateTimeOffset.UtcNow;
+        }
+        else if (newStatus == TicketStatus.Reopened)
+        {
+            // Clear resolved/closed timestamps when reopening
+            ResolvedAt = null;
+            ClosedAt = null;
+        }
+
         SetUpdatedAudit(userId);
 
         RaiseDomainEvent(new TicketStatusChangedEvent(
             Id,
             oldStatus.ToString(),
             newStatus.ToString(),
-            reason,
+            reason ?? string.Empty,
             userId,
             DateTimeOffset.UtcNow));
     }
@@ -293,9 +321,9 @@ public sealed class Ticket : AuditableEntity<Guid>, IAggregateRoot
     }
 
     /// <summary>
-    /// Validates if a status transition is allowed
+    /// Validates if a status transition is allowed based on the state machine
     /// </summary>
-    private static bool IsValidStatusTransition(TicketStatus currentStatus, TicketStatus newStatus)
+    private bool IsValidStatusTransition(TicketStatus currentStatus, TicketStatus newStatus)
     {
         // Same status is not a valid transition
         if (currentStatus == newStatus)
@@ -303,14 +331,29 @@ public sealed class Ticket : AuditableEntity<Guid>, IAggregateRoot
             return false;
         }
 
-        return currentStatus switch
+        // Define valid transitions based on state machine
+        var isValid = currentStatus switch
         {
-            TicketStatus.New => newStatus is TicketStatus.InProgress or TicketStatus.Resolved,
-            TicketStatus.InProgress => newStatus is TicketStatus.Resolved or TicketStatus.New,
+            TicketStatus.New => newStatus is TicketStatus.Accepted or TicketStatus.Closed,
+            TicketStatus.Accepted => newStatus is TicketStatus.InProgress or TicketStatus.Closed,
+            TicketStatus.InProgress => newStatus is TicketStatus.Resolved or TicketStatus.Closed,
             TicketStatus.Resolved => newStatus is TicketStatus.Closed or TicketStatus.Reopened,
-            TicketStatus.Closed => newStatus == TicketStatus.Reopened,
-            TicketStatus.Reopened => newStatus is TicketStatus.InProgress or TicketStatus.Resolved,
+            TicketStatus.Reopened => newStatus is TicketStatus.InProgress or TicketStatus.Resolved or TicketStatus.Closed,
+            TicketStatus.Closed => false, // Closed is final state
             _ => false
         };
+
+        // Special rule: Resolved → Reopened only within 14 days
+        if (isValid && currentStatus == TicketStatus.Resolved && newStatus == TicketStatus.Reopened)
+        {
+            if (ResolvedAt.HasValue)
+            {
+                var daysSinceResolved = (DateTimeOffset.UtcNow - ResolvedAt.Value).TotalDays;
+                return daysSinceResolved <= 14;
+            }
+            return false; // Cannot reopen if never properly resolved
+        }
+
+        return isValid;
     }
 }
