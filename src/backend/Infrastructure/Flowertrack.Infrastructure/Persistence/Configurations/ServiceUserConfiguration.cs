@@ -16,7 +16,16 @@ public sealed class ServiceUserConfiguration : IEntityTypeConfiguration<ServiceU
         builder.HasKey(su => su.Id);
 
         builder.Property(su => su.Id)
-            .ValueGeneratedNever(); // ID comes from Supabase Auth
+            .ValueGeneratedOnAdd(); // Internal domain ID
+
+        // Supabase User ID - nullable FK to auth.users
+        builder.Property(su => su.SupabaseUserId)
+            .IsRequired(false);
+
+        builder.HasIndex(su => su.SupabaseUserId)
+            .IsUnique()
+            .HasFilter("\"SupabaseUserId\" IS NOT NULL")
+            .HasDatabaseName("IX_ServiceUsers_SupabaseUserId");
 
         // Basic properties
         builder.Property(su => su.FirstName)
