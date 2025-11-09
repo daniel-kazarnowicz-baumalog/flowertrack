@@ -1,5 +1,6 @@
 using Flowertrack.Application.Common.Interfaces;
 using Flowertrack.Domain.Repositories;
+using Flowertrack.Infrastructure.Configuration;
 using Flowertrack.Infrastructure.Persistence;
 using Flowertrack.Infrastructure.Persistence.Repositories;
 using Flowertrack.Infrastructure.Services;
@@ -50,6 +51,10 @@ public static class DependencyInjection
         services.AddScoped<IServiceUserRepository, ServiceUserRepository>();
         services.AddScoped<IOrganizationUserRepository, OrganizationUserRepository>();
         services.AddScoped<ITicketRepository, TicketRepository>();
+        services.AddScoped<ITicketHistoryRepository, TicketHistoryRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<IRoleRepository, RoleRepository>();
+        services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 
         // Infrastructure Services
         services.AddScoped<IEmailService, EmailService>();
@@ -57,6 +62,13 @@ public static class DependencyInjection
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IAuthService, SupabaseAuthService>();
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+
+        // JWT Token Generator
+        services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
+        services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+
+        // Password Hasher
+        services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 
         // Supabase Client (already registered in Api layer, but we expose the interface)
         // services.AddScoped<ISupabaseClient, SupabaseClientService>();

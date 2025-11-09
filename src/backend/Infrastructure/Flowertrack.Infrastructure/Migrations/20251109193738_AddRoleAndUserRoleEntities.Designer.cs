@@ -3,6 +3,7 @@ using System;
 using Flowertrack.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Flowertrack.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251109193738_AddRoleAndUserRoleEntities")]
+    partial class AddRoleAndUserRoleEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -639,93 +642,6 @@ namespace Flowertrack.Infrastructure.Migrations
                     b.ToTable("TicketComments", (string)null);
                 });
 
-            modelBuilder.Entity("Flowertrack.Domain.Entities.Tickets.TicketHistory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("AttachmentFileName")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("attachment_file_name");
-
-                    b.Property<string>("AttachmentFilePath")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("attachment_file_path");
-
-                    b.Property<long?>("AttachmentFileSize")
-                        .HasColumnType("bigint")
-                        .HasColumnName("attachment_file_size");
-
-                    b.Property<string>("Content")
-                        .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)")
-                        .HasColumnName("content");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("HistoryType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("history_type");
-
-                    b.Property<bool>("IsInternal")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_internal");
-
-                    b.Property<string>("NewValue")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("new_value");
-
-                    b.Property<string>("OldValue")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("old_value");
-
-                    b.Property<Guid>("TicketId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("ticket_id");
-
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("user_name");
-
-                    b.Property<string>("UserType")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("user_type");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedAt")
-                        .HasDatabaseName("ix_ticket_history_created_at");
-
-                    b.HasIndex("TicketId")
-                        .HasDatabaseName("ix_ticket_history_ticket_id");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_ticket_history_user_id");
-
-                    b.HasIndex("TicketId", "CreatedAt")
-                        .HasDatabaseName("ix_ticket_history_ticket_created");
-
-                    b.ToTable("ticket_history", (string)null);
-                });
-
             modelBuilder.Entity("Flowertrack.Domain.Entities.Users.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -966,17 +882,6 @@ namespace Flowertrack.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Ticket");
-                });
-
-            modelBuilder.Entity("Flowertrack.Domain.Entities.Tickets.TicketHistory", b =>
-                {
-                    b.HasOne("Flowertrack.Domain.Entities.Ticket", "Ticket")
-                        .WithMany()
-                        .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Ticket");

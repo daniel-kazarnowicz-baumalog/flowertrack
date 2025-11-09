@@ -1,3 +1,5 @@
+using Flowertrack.Application.Auth.Commands.Login;
+using Flowertrack.Application.Auth.Commands.RefreshToken;
 using Flowertrack.Application.Users.Commands.ActivateOrganizationUser;
 using Flowertrack.Application.Users.Commands.ForgotPassword;
 using Flowertrack.Application.Users.Commands.InviteOrganizationUser;
@@ -423,4 +425,128 @@ public class AuthController : ControllerBase
     }
 
     #endregion
+
+    #region Unified Authentication (Phase A)
+
+    /// <summary>
+    /// Unified login endpoint for both service users and organization users
+    /// </summary>
+    /// <param name="request">Login credentials</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Access token, refresh token, and user information</returns>
+    [HttpPost("login")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(Application.Auth.DTOs.LoginResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        _logger.LogInformation("Unified login attempt for email: {Email}", request.Email);
+
+        var command = new LoginCommand(request.Email, request.Password, GetClientIpAddress());
+        var result = await _mediator.Send(command, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            _logger.LogWarning("Login failed for email: {Email}, Reason: {Error}", request.Email, result.Error);
+            return Unauthorized(new ProblemDetails
+            {
+                Title = "Authentication failed",
+                Detail = result.Error,
+                Status = StatusCodes.Status401Unauthorized
+            });
+        }
+
+        _logger.LogInformation("Login successful for email: {Email}", request.Email);
+        return Ok(result.Value);
+    }
+
+    /// <summary>
+    /// Refresh access token using refresh token
+    /// </summary>
+    /// <param name="request">Access token and refresh token</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>New access token and refresh token</returns>
+    [HttpPost("refresh")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(Application.Auth.DTOs.LoginResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        _logger.LogInformation("Refresh token attempt");
+
+        var command = new RefreshTokenCommand(
+            request.AccessToken,
+            request.RefreshToken,
+            GetClientIpAddress()
+        );
+
+        var result = await _mediator.Send(command, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            _logger.LogWarning("Refresh token failed: {Error}", result.Error);
+            return Unauthorized(new ProblemDetails
+            {
+                Title = "Token refresh failed",
+                Detail = result.Error,
+                Status = StatusCodes.Status401Unauthorized
+            });
+        }
+
+        _logger.LogInformation("Refresh token successful");
+        return Ok(result.Value);
+    }
+
+    /// <summary>
+    /// Get client IP address from request
+    /// </summary>
+    private string? GetClientIpAddress()
+    {
+        // Try X-Forwarded-For header first (for reverse proxies)
+        if (Request.Headers.TryGetValue("X-Forwarded-For", out var forwardedFor))
+        {
+            var ip = forwardedFor.ToString().Split(',').FirstOrDefault()?.Trim();
+            if (!string.IsNullOrEmpty(ip))
+            {
+                return ip;
+            }
+        }
+
+        // Try X-Real-IP header
+        if (Request.Headers.TryGetValue("X-Real-IP", out var realIp))
+        {
+            var ip = realIp.ToString();
+            if (!string.IsNullOrEmpty(ip))
+            {
+                return ip;
+            }
+        }
+
+        // Fall back to RemoteIpAddress
+        return HttpContext.Connection.RemoteIpAddress?.ToString();
+    }
+
+    #endregion
 }
+
+/// <summary>
+/// Login request DTO for unified authentication
+/// </summary>
+public sealed record LoginRequest(string Email, string Password);
+
+/// <summary>
+/// Refresh token request DTO
+/// </summary>
+public sealed record RefreshTokenRequest(string AccessToken, string RefreshToken);
