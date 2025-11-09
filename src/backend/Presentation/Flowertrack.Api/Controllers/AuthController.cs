@@ -1,5 +1,8 @@
 using Flowertrack.Application.Auth.Commands.Login;
 using Flowertrack.Application.Auth.Commands.RefreshToken;
+using Flowertrack.Application.Auth.Queries.GetCurrentServiceUser;
+using Flowertrack.Application.Auth.Queries.GetCurrentOrganizationUser;
+using Flowertrack.Application.Common.Models;
 using Flowertrack.Application.Users.Commands.ActivateOrganizationUser;
 using Flowertrack.Application.Users.Commands.ForgotPassword;
 using Flowertrack.Application.Users.Commands.InviteOrganizationUser;
@@ -11,6 +14,7 @@ using Flowertrack.Contracts.Users;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Flowertrack.Api.Controllers;
 
@@ -71,7 +75,7 @@ public class AuthController : ControllerBase
             AccessToken = authResult.AccessToken ?? string.Empty,
             RefreshToken = authResult.RefreshToken ?? string.Empty,
             ExpiresAt = authResult.ExpiresAt ?? DateTimeOffset.UtcNow.AddHours(1),
-            User = new ServiceUserDto
+            User = new Flowertrack.Contracts.Users.ServiceUserDto
             {
                 Id = Guid.Parse(authResult.User!.Id),
                 Email = authResult.User.Email ?? string.Empty,
@@ -216,19 +220,36 @@ public class AuthController : ControllerBase
     /// <returns>Current user information</returns>
     [HttpGet("service/me")]
     [Authorize]
-    [ProducesResponseType(typeof(ServiceUserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Flowertrack.Contracts.Users.ServiceUserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetCurrentUser()
     {
-        // TODO: Implement GetCurrentUserQuery
-        return Ok(new ServiceUserDto 
-        { 
-            Id = Guid.NewGuid(), 
-            Email = "temp@example.com",
-            FullName = "Temp User",
-            Role = "service_admin",
-            Status = "Active"
-        });
+        // Extract user ID from JWT claims
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized();
+        }
+
+        var query = new GetCurrentServiceUserQuery(userId);
+        var result = await _mediator.Send(query);
+
+        if (result.IsFailure)
+        {
+            return NotFound(result.Error);
+        }
+
+        // Map Application DTO to Contracts DTO
+        var response = new Flowertrack.Contracts.Users.ServiceUserDto
+        {
+            Id = result.Value.Id,
+            Email = result.Value.Email,
+            FullName = result.Value.FullName,
+            Role = result.Value.Role,
+            Status = result.Value.Status
+        };
+
+        return Ok(response);
     }
 
     #endregion
@@ -273,7 +294,7 @@ public class AuthController : ControllerBase
             AccessToken = loginResult.AccessToken,
             RefreshToken = loginResult.RefreshToken,
             ExpiresAt = loginResult.ExpiresAt,
-            User = new OrganizationUserDto
+            User = new Flowertrack.Contracts.Users.OrganizationUserDto
             {
                 Id = loginResult.UserId,
                 OrganizationId = loginResult.OrganizationId,
@@ -406,22 +427,39 @@ public class AuthController : ControllerBase
     /// <returns>Current user information</returns>
     [HttpGet("client/me")]
     [Authorize]
-    [ProducesResponseType(typeof(OrganizationUserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Flowertrack.Contracts.Users.OrganizationUserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetCurrentOrganizationUser()
     {
-        // TODO: Implement GetCurrentOrganizationUserQuery
-        return Ok(new OrganizationUserDto 
-        { 
-            Id = Guid.NewGuid(),
-            OrganizationId = Guid.NewGuid(),
-            OrganizationName = "Example Organization",
-            Email = "temp@organization.com",
-            FullName = "Temp User",
-            Role = "organization_admin",
-            Status = "Active",
-            IsActivated = true
-        });
+        // Extract user ID from JWT claims
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized();
+        }
+
+        var query = new GetCurrentOrganizationUserQuery(userId);
+        var result = await _mediator.Send(query);
+
+        if (result.IsFailure)
+        {
+            return NotFound(result.Error);
+        }
+
+        // Map Application DTO to Contracts DTO
+        var response = new Flowertrack.Contracts.Users.OrganizationUserDto
+        {
+            Id = result.Value.Id,
+            OrganizationId = result.Value.OrganizationId,
+            OrganizationName = result.Value.OrganizationName,
+            Email = result.Value.Email,
+            FullName = result.Value.FullName,
+            Role = result.Value.Role,
+            Status = result.Value.Status,
+            IsActivated = result.Value.IsActivated
+        };
+
+        return Ok(response);
     }
 
     #endregion

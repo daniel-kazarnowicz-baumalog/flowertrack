@@ -5,6 +5,7 @@ using Flowertrack.Infrastructure.Persistence;
 using Flowertrack.Infrastructure.Persistence.Repositories;
 using Flowertrack.Infrastructure.Services;
 using Flowertrack.Infrastructure.Services.Authentication;
+using Flowertrack.Infrastructure.Supabase;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,6 +53,8 @@ public static class DependencyInjection
         services.AddScoped<IOrganizationUserRepository, OrganizationUserRepository>();
         services.AddScoped<ITicketRepository, TicketRepository>();
         services.AddScoped<ITicketHistoryRepository, TicketHistoryRepository>();
+        services.AddScoped<ITicketCommentRepository, TicketCommentRepository>();
+        services.AddScoped<ITicketAttachmentRepository, TicketAttachmentRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IUserRoleRepository, UserRoleRepository>();
@@ -61,6 +64,7 @@ public static class DependencyInjection
         services.AddScoped<ITokenGenerator, TokenGeneratorService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IAuthService, SupabaseAuthService>();
+        services.AddScoped<IFileStorageService, SupabaseStorageService>();
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
         // JWT Token Generator

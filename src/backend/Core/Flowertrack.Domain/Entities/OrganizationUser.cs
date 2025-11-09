@@ -356,4 +356,12 @@ public sealed class OrganizationUser : AuditableEntity<Guid>, IAggregateRoot
     {
         return _userRoles.Any(ur => roleIds.Contains(ur.RoleId));
     }
+
+    /// <summary>
+    /// Marks the organization user as deleted (soft delete)
+    /// </summary>
+    public void Delete()
+    {
+        SetDeletedAudit(Id);
+    }
 }
