@@ -5,6 +5,7 @@ using Flowertrack.Application.Tickets.Commands.UpdateTicket;
 using Flowertrack.Application.Tickets.Commands.UpdateTicketStatus;
 using Flowertrack.Application.Tickets.Queries.GetTicket;
 using Flowertrack.Application.Tickets.Queries.GetTickets;
+using Flowertrack.Application.Tickets.Queries.GetTicketsGroupedByStatus;
 using Flowertrack.Contracts.Common;
 using Flowertrack.Contracts.Tickets.Requests;
 using Flowertrack.Contracts.Tickets.Responses;
@@ -600,5 +601,75 @@ public class TicketsController : ControllerBase
             request.AssignedToUserId);
 
         return NoContent();
+    }
+
+    /// <summary>
+    /// Get tickets grouped by status with counts and sample tickets
+    /// </summary>
+    /// <param name="organizationId">Optional organization filter</param>
+    /// <param name="sampleSize">Number of sample tickets per group (default: 5, max: 20)</param>
+    /// <returns>Tickets grouped by status</returns>
+    [HttpGet("grouped-by-status")]
+    [ProducesResponseType(typeof(GetTicketsGroupedByStatusResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetTicketsGroupedByStatus(
+        [FromQuery] Guid? organizationId = null,
+        [FromQuery] int sampleSize = 5)
+    {
+        // Get current user ID from claims
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            _logger.LogWarning("User ID not found in claims or invalid format");
+            return Unauthorized(new ErrorResponse("User authentication failed"));
+        }
+
+        var query = new GetTicketsGroupedByStatusQuery
+        {
+            RequestedBy = userId,
+            OrganizationId = organizationId,
+            SampleSize = sampleSize
+        };
+
+        var result = await _mediator.Send(query);
+
+        if (result.IsFailure)
+        {
+            _logger.LogWarning("Failed to get tickets grouped by status: {Error}", result.Error);
+            return BadRequest(new ErrorResponse(result.Error!));
+        }
+
+        var groups = result.Value!;
+
+        // Map from Application DTO (with enums) to Contracts DTO (with ints and names)
+        var response = new GetTicketsGroupedByStatusResponse
+        {
+            Groups = groups.Select(group => new TicketStatusGroup
+            {
+                Status = (int)group.Status,
+                StatusName = group.Status.ToString(),
+                Count = group.Count,
+                SampleTickets = group.SampleTickets.Select(sample => new TicketSample
+                {
+                    Id = sample.Id,
+                    TicketNumber = sample.TicketNumber,
+                    Title = sample.Title,
+                    Priority = (int)sample.Priority,
+                    PriorityName = sample.Priority.ToString(),
+                    OrganizationName = sample.OrganizationName,
+                    MachineSerialNumber = sample.MachineSerialNumber,
+                    CreatedAt = sample.CreatedAt
+                }).ToList()
+            }).ToList()
+        };
+
+        _logger.LogInformation(
+            "Retrieved {GroupCount} status groups with total {TotalTickets} tickets for user {UserId}",
+            response.Groups.Count,
+            response.Groups.Sum(g => g.Count),
+            userId);
+
+        return Ok(response);
     }
 }
