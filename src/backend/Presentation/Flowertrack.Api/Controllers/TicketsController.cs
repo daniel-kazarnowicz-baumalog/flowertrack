@@ -1,10 +1,12 @@
 using Flowertrack.Application.Tickets.Commands.CreateTicket;
 using Flowertrack.Application.Tickets.Commands.DeleteTicket;
 using Flowertrack.Application.Tickets.Commands.UpdateTicket;
+using Flowertrack.Application.Tickets.Commands.UpdateTicketStatus;
 using Flowertrack.Application.Tickets.Queries.GetTicket;
 using Flowertrack.Contracts.Common;
 using Flowertrack.Contracts.Tickets.Requests;
 using Flowertrack.Contracts.Tickets.Responses;
+using Flowertrack.Contracts.Tickets;
 using Flowertrack.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -318,6 +320,95 @@ public class TicketsController : ControllerBase
         }
 
         _logger.LogInformation("Successfully deleted ticket {TicketId}", id);
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Update ticket status with state machine validation
+    /// US-015: Zmiana statusu zgłoszenia serwisowego
+    /// </summary>
+    /// <param name="id">Ticket ID</param>
+    /// <param name="request">Status update details</param>
+    /// <returns>No content on success</returns>
+    /// <remarks>
+    /// Valid state transitions:
+    /// - New → Accepted, Closed
+    /// - Accepted → InProgress, Closed
+    /// - InProgress → Resolved, Closed
+    /// - Resolved → Closed, Reopened (within 14 days)
+    /// - Reopened → InProgress, Resolved, Closed
+    /// - Closed → (no transitions, final state)
+    /// 
+    /// Reason is required for Resolved and Closed transitions.
+    /// </remarks>
+    [HttpPatch("{id:guid}/status")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> UpdateTicketStatus(
+        [FromRoute] Guid id,
+        [FromBody] UpdateTicketStatusRequest request)
+    {
+        // Get current user ID from claims
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            _logger.LogWarning("User ID not found in claims or invalid format");
+            return Unauthorized(new ErrorResponse("User authentication required"));
+        }
+
+        _logger.LogInformation(
+            "Updating status for ticket {TicketId} to {Status}",
+            id,
+            (TicketStatus)request.Status);
+
+        var command = new UpdateTicketStatusCommand(
+            id,
+            (TicketStatus)request.Status,
+            request.Reason,
+            userId);
+
+        var result = await _mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            _logger.LogWarning(
+                "Failed to update ticket {TicketId} status: {Error}",
+                id,
+                result.Error);
+
+            if (result.Error!.Contains("not found", StringComparison.OrdinalIgnoreCase))
+            {
+                return NotFound(new ErrorResponse(result.Error));
+            }
+
+            if (result.Error.Contains("permission", StringComparison.OrdinalIgnoreCase) ||
+                result.Error.Contains("forbidden", StringComparison.OrdinalIgnoreCase) ||
+                result.Error.Contains("not a member", StringComparison.OrdinalIgnoreCase))
+            {
+                return StatusCode(
+                    StatusCodes.Status403Forbidden,
+                    new ErrorResponse(result.Error));
+            }
+
+            if (result.Error.Contains("transition", StringComparison.OrdinalIgnoreCase) ||
+                result.Error.Contains("conflict", StringComparison.OrdinalIgnoreCase) ||
+                result.Error.Contains("Cannot transition", StringComparison.OrdinalIgnoreCase))
+            {
+                return Conflict(new ErrorResponse(result.Error));
+            }
+
+            return BadRequest(new ErrorResponse(result.Error));
+        }
+
+        _logger.LogInformation(
+            "Successfully updated status for ticket {TicketId} to {Status}",
+            id,
+            (TicketStatus)request.Status);
 
         return NoContent();
     }
