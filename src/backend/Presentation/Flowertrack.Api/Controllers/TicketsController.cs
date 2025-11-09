@@ -23,7 +23,7 @@ namespace Flowertrack.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Authorize(Policy = "RequireAuthenticatedUser")] // Default policy: any authenticated user (service or organization)
 public class TicketsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -458,8 +458,11 @@ public class TicketsController : ControllerBase
     /// - Closed → (no transitions, final state)
     /// 
     /// Reason is required for Resolved and Closed transitions.
+    /// 
+    /// **Authorization:** Only service users can change ticket status.
     /// </remarks>
     [HttpPatch("{id:guid}/status")]
+    [Authorize(Policy = "RequireServiceUser")] // Only service users can change status
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
@@ -537,7 +540,11 @@ public class TicketsController : ControllerBase
     /// <param name="id">Ticket ID</param>
     /// <param name="request">Assignment details</param>
     /// <returns>No content on success</returns>
+    /// <remarks>
+    /// **Authorization:** Only service users can assign tickets.
+    /// </remarks>
     [HttpPatch("{id:guid}/assign")]
+    [Authorize(Policy = "RequireServiceUser")] // Only service users can assign tickets
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
