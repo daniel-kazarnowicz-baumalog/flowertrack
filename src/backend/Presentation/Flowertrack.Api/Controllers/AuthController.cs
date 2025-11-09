@@ -1,4 +1,7 @@
+using Flowertrack.Application.Users.Commands.ForgotPassword;
 using Flowertrack.Application.Users.Commands.LoginServiceUser;
+using Flowertrack.Application.Users.Commands.ResetPassword;
+using Flowertrack.Application.Users.Commands.SignupServiceUser;
 using Flowertrack.Contracts.Users;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -89,6 +92,59 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
+    /// Create/signup a new service user account (admin only)
+    /// </summary>
+    /// <param name="request">User creation details</param>
+    /// <returns>Created user information</returns>
+    [HttpPost("service/signup")]
+    [Authorize(Policy = "RequireServiceAdmin")]
+    [ProducesResponseType(typeof(SignupServiceUserResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> SignupServiceUser([FromBody] SignupServiceUserRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var command = new SignupServiceUserCommand
+        {
+            Email = request.Email,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            PhoneNumber = request.PhoneNumber,
+            Specialization = request.Specialization,
+            Password = request.Password
+        };
+
+        var result = await _mediator.Send(command);
+
+        if (!result.IsSuccess || result.Value == null)
+        {
+            _logger.LogWarning("Service user signup failed: {Error}", result.Error);
+            return BadRequest(new { message = result.Error ?? "Failed to create user account" });
+        }
+
+        var signupResult = result.Value;
+
+        var response = new SignupServiceUserResponse
+        {
+            UserId = signupResult.UserId,
+            Email = signupResult.Email,
+            FullName = signupResult.FullName,
+            ActivationToken = signupResult.ActivationToken,
+            ActivationTokenExpiresAt = signupResult.ActivationTokenExpiresAt
+        };
+
+        return CreatedAtAction(
+            nameof(GetCurrentUser),
+            new { id = signupResult.UserId },
+            response
+        );
+    }
+
+    /// <summary>
     /// Send password reset email
     /// </summary>
     /// <param name="request">Email address</param>
@@ -99,8 +155,52 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
     {
-        // TODO: Implement ForgotPasswordCommand
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var command = new ForgotPasswordCommand
+        {
+            Email = request.Email
+        };
+
+        var result = await _mediator.Send(command);
+
+        // Always return success for security reasons (don't reveal if email exists)
         return Ok(new { message = "If the email exists, a password reset link has been sent" });
+    }
+
+    /// <summary>
+    /// Reset password with token from email
+    /// </summary>
+    /// <param name="request">New password and reset token</param>
+    /// <returns>Success status</returns>
+    [HttpPost("service/reset-password")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var command = new ResetPasswordCommand
+        {
+            NewPassword = request.NewPassword,
+            Token = request.Token
+        };
+
+        var result = await _mediator.Send(command);
+
+        if (!result.IsSuccess)
+        {
+            return BadRequest(new { message = result.Error ?? "Failed to reset password" });
+        }
+
+        return Ok(new { message = "Password reset successfully" });
     }
 
     /// <summary>
@@ -123,12 +223,4 @@ public class AuthController : ControllerBase
             Status = "Active"
         });
     }
-}
-
-/// <summary>
-/// Temporary DTO for forgot password request
-/// </summary>
-public record ForgotPasswordRequest
-{
-    public string Email { get; init; } = string.Empty;
 }
