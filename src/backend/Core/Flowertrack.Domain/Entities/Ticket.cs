@@ -326,6 +326,15 @@ public sealed class Ticket : AuditableEntity<Guid>, IAggregateRoot
 
     /// <summary>
     /// Validates if a status transition is allowed based on the state machine
+    /// Public method for external validation (e.g., validators)
+    /// </summary>
+    public bool IsValidStatusTransition(TicketStatus newStatus, DateTimeOffset now)
+    {
+        return IsValidStatusTransition(Status, newStatus);
+    }
+
+    /// <summary>
+    /// Validates if a status transition is allowed based on the state machine
     /// </summary>
     private bool IsValidStatusTransition(TicketStatus currentStatus, TicketStatus newStatus)
     {
