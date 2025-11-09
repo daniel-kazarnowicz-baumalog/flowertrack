@@ -1,9 +1,12 @@
+using Flowertrack.Application.Tickets.Commands.AddComment;
+using Flowertrack.Application.Tickets.Commands.AddNote;
 using Flowertrack.Application.Tickets.Commands.AssignTicket;
 using Flowertrack.Application.Tickets.Commands.CreateTicket;
 using Flowertrack.Application.Tickets.Commands.DeleteTicket;
 using Flowertrack.Application.Tickets.Commands.UpdateTicket;
 using Flowertrack.Application.Tickets.Commands.UpdateTicketStatus;
 using Flowertrack.Application.Tickets.Queries.GetTicket;
+using Flowertrack.Application.Tickets.Queries.GetTicketHistory;
 using Flowertrack.Application.Tickets.Queries.GetTickets;
 using Flowertrack.Application.Tickets.Queries.GetTicketsGroupedByStatus;
 using Flowertrack.Contracts.Common;
@@ -679,4 +682,152 @@ public class TicketsController : ControllerBase
 
         return Ok(response);
     }
+
+    /// <summary>
+    /// Get ticket history/timeline
+    /// </summary>
+    /// <param name="id">Ticket ID</param>
+    /// <param name="includeInternal">Include internal notes (service users only)</param>
+    /// <param name="pageNumber">Page number for pagination (optional)</param>
+    /// <param name="pageSize">Page size for pagination (optional)</param>
+    /// <returns>Ticket history entries</returns>
+    [HttpGet("{id:guid}/history")]
+    [ProducesResponseType(typeof(TicketHistoryResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetHistory(
+        Guid id,
+        [FromQuery] bool includeInternal = false,
+        [FromQuery] int? pageNumber = null,
+        [FromQuery] int? pageSize = null)
+    {
+        _logger.LogInformation("Getting history for ticket {TicketId}", id);
+
+        var query = new GetTicketHistoryQuery(
+            id,
+            includeInternal,
+            pageNumber,
+            pageSize);
+
+        var result = await _mediator.Send(query);
+
+        if (result.IsFailure)
+        {
+            _logger.LogWarning("Failed to get ticket history: {Error}", result.Error);
+            return NotFound(new ErrorResponse(result.Error ?? "Ticket not found"));
+        }
+
+        return Ok(result.Value);
+    }
+
+    /// <summary>
+    /// Add a comment to a ticket
+    /// </summary>
+    /// <param name="id">Ticket ID</param>
+    /// <param name="request">Comment content</param>
+    /// <returns>Created comment</returns>
+    [HttpPost("{id:guid}/comments")]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AddComment(
+        Guid id,
+        [FromBody] AddCommentRequest request)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userNameClaim = User.FindFirst(ClaimTypes.Name)?.Value;
+        var userTypeClaim = User.FindFirst("user_type")?.Value;
+
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized(new ErrorResponse("User authentication required"));
+        }
+
+        _logger.LogInformation("Adding comment to ticket {TicketId} by user {UserId}", id, userId);
+
+        var command = new AddCommentCommand(
+            id,
+            request.Content,
+            userId,
+            userNameClaim ?? "Unknown User",
+            userTypeClaim ?? "Unknown",
+            request.IsInternal);
+
+        var result = await _mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            _logger.LogWarning("Failed to add comment: {Error}", result.Error);
+            return BadRequest(new ErrorResponse(result.Error ?? "Failed to add comment"));
+        }
+
+        return CreatedAtAction(
+            nameof(GetHistory),
+            new { id },
+            result.Value);
+    }
+
+    /// <summary>
+    /// Add an internal note to a ticket (service users only)
+    /// </summary>
+    /// <param name="id">Ticket ID</param>
+    /// <param name="request">Note content</param>
+    /// <returns>Created note</returns>
+    [HttpPost("{id:guid}/notes")]
+    [Authorize(Roles = "ServiceTechnician,ServiceAdministrator")]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AddNote(
+        Guid id,
+        [FromBody] AddNoteRequest request)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userNameClaim = User.FindFirst(ClaimTypes.Name)?.Value;
+        var userTypeClaim = User.FindFirst("user_type")?.Value;
+
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized(new ErrorResponse("User authentication required"));
+        }
+
+        _logger.LogInformation("Adding internal note to ticket {TicketId} by user {UserId}", id, userId);
+
+        var command = new AddNoteCommand(
+            id,
+            request.Content,
+            userId,
+            userNameClaim ?? "Unknown User",
+            userTypeClaim ?? "ServiceUser");
+
+        var result = await _mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            _logger.LogWarning("Failed to add note: {Error}", result.Error);
+            
+            if (result.Error?.Contains("Only service users") == true)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(result.Error));
+            }
+            
+            return BadRequest(new ErrorResponse(result.Error ?? "Failed to add note"));
+        }
+
+        return CreatedAtAction(
+            nameof(GetHistory),
+            new { id },
+            result.Value);
+    }
 }
+
+/// <summary>
+/// Request DTO for adding a comment
+/// </summary>
+public sealed record AddCommentRequest(string Content, bool IsInternal = false);
+
+/// <summary>
+/// Request DTO for adding an internal note
+/// </summary>
+public sealed record AddNoteRequest(string Content);
