@@ -96,6 +96,37 @@ public sealed class Ticket : AuditableEntity<Guid>, IAggregateRoot
     }
 
     /// <summary>
+    /// Updates the ticket's basic information (title, description, priority)
+    /// </summary>
+    public void Update(string? title, string? description, Priority? priority, Guid userId)
+    {
+        if (!string.IsNullOrWhiteSpace(title))
+        {
+            if (title.Length > 255)
+            {
+                throw new ArgumentException("Title cannot exceed 255 characters", nameof(title));
+            }
+            Title = title;
+        }
+
+        if (!string.IsNullOrWhiteSpace(description))
+        {
+            if (description.Length > 5000)
+            {
+                throw new ArgumentException("Description cannot exceed 5000 characters", nameof(description));
+            }
+            Description = description;
+        }
+
+        if (priority.HasValue)
+        {
+            Priority = priority.Value;
+        }
+
+        SetUpdatedAudit(userId);
+    }
+
+    /// <summary>
     /// Updates the ticket status with validation
     /// </summary>
     public void UpdateStatus(TicketStatus newStatus, string reason, Guid userId)
