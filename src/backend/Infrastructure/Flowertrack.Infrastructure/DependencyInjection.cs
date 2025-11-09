@@ -3,6 +3,7 @@ using Flowertrack.Domain.Repositories;
 using Flowertrack.Infrastructure.Persistence;
 using Flowertrack.Infrastructure.Persistence.Repositories;
 using Flowertrack.Infrastructure.Services;
+using Flowertrack.Infrastructure.Services.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -54,6 +55,7 @@ public static class DependencyInjection
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ITokenGenerator, TokenGeneratorService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<IAuthService, SupabaseAuthService>();
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
         // Supabase Client (already registered in Api layer, but we expose the interface)
