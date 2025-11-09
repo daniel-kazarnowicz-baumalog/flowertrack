@@ -1,6 +1,12 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
-import type { ServiceUserDto, OrganizationUserDto } from '../types/api';
+import type {
+  ServiceUserDto,
+  OrganizationUserDto,
+  LoginServiceUserResponse,
+  LoginOrganizationUserResponse,
+} from '../types/api';
+import { apiClient } from '../lib/apiClient';
 
 /**
  * Authentication Context for FLOWerTRACK
@@ -27,6 +33,8 @@ interface AuthContextValue extends AuthState {
     user: ServiceUserDto | OrganizationUserDto,
     userType: UserType
   ) => void;
+  loginService: (email: string, password: string) => Promise<void>;
+  loginClient: (email: string, password: string) => Promise<void>;
   logout: () => void;
   updateUser: (user: ServiceUserDto | OrganizationUserDto) => void;
 }
@@ -149,9 +157,47 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setState((prev) => ({ ...prev, user }));
   }, []);
 
+  const loginService = useCallback(
+    async (email: string, password: string) => {
+      const response = await apiClient.post<LoginServiceUserResponse>('/api/auth/service/login', {
+        email,
+        password,
+      });
+
+      login(
+        response.data.accessToken,
+        response.data.refreshToken,
+        response.data.expiresAt,
+        response.data.user,
+        'service'
+      );
+    },
+    [login]
+  );
+
+  const loginClient = useCallback(
+    async (email: string, password: string) => {
+      const response = await apiClient.post<LoginOrganizationUserResponse>(
+        '/api/auth/client/login',
+        { email, password }
+      );
+
+      login(
+        response.data.accessToken,
+        response.data.refreshToken,
+        response.data.expiresAt,
+        response.data.user,
+        'client'
+      );
+    },
+    [login]
+  );
+
   const value: AuthContextValue = {
     ...state,
     login,
+    loginService,
+    loginClient,
     logout,
     updateUser,
   };
