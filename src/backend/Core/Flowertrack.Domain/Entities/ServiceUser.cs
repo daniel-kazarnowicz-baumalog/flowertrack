@@ -40,9 +40,14 @@ public sealed class ServiceUser : AuditableEntity<Guid>, IAggregateRoot
     }
 
     /// <summary>
-    /// User ID (matches Supabase auth.users.id)
+    /// User ID (internal domain ID)
     /// </summary>
     public new Guid Id { get; private set; }
+
+    /// <summary>
+    /// Supabase User ID (foreign key to auth.users)
+    /// </summary>
+    public Guid? SupabaseUserId { get; private set; }
 
     /// <summary>
     /// First name
@@ -180,6 +185,22 @@ public sealed class ServiceUser : AuditableEntity<Guid>, IAggregateRoot
     public void UpdateSpecialization(string? specialization)
     {
         Specialization = specialization;
+        SetUpdatedAudit(Id);
+    }
+
+    /// <summary>
+    /// Links this service user to a Supabase auth user
+    /// </summary>
+    /// <param name="supabaseUserId">The Supabase auth user ID</param>
+    public void LinkToSupabaseUser(Guid supabaseUserId)
+    {
+        if (supabaseUserId == Guid.Empty)
+            throw new ArgumentException("Supabase User ID cannot be empty", nameof(supabaseUserId));
+
+        if (SupabaseUserId.HasValue && SupabaseUserId.Value != supabaseUserId)
+            throw new InvalidOperationException("Service user is already linked to a different Supabase user");
+
+        SupabaseUserId = supabaseUserId;
         SetUpdatedAudit(Id);
     }
 
