@@ -303,4 +303,35 @@ public sealed class Machine : AuditableEntity<Guid>, IAggregateRoot
         Location = location;
         SetUpdatedAudit(updatedBy);
     }
+
+    /// <summary>
+    /// Update machine information
+    /// </summary>
+    public void Update(string? brand, string? model, string? location, Guid? updatedBy = null)
+    {
+        if (brand?.Length > 100)
+            throw new ArgumentException("Brand cannot exceed 100 characters", nameof(brand));
+
+        if (model?.Length > 100)
+            throw new ArgumentException("Model cannot exceed 100 characters", nameof(model));
+
+        if (location?.Length > 255)
+            throw new ArgumentException("Location cannot exceed 255 characters", nameof(location));
+
+        Brand = brand;
+        Model = model;
+        Location = location;
+        SetUpdatedAudit(updatedBy);
+    }
+
+    /// <summary>
+    /// Soft delete the machine
+    /// </summary>
+    public void Delete(Guid? deletedBy = null)
+    {
+        if (IsDeleted)
+            throw new Exceptions.DomainException("Machine is already deleted");
+
+        SetDeletedAudit(deletedBy);
+    }
 }
