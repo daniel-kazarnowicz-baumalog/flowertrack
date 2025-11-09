@@ -3,6 +3,7 @@ using System;
 using Flowertrack.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Flowertrack.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251109193112_AddRefreshTokenEntity")]
+    partial class AddRefreshTokenEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -297,9 +300,6 @@ namespace Flowertrack.Infrastructure.Migrations
                     b.Property<Guid>("OrganizationId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("text");
-
                     b.Property<string>("PhoneNumber")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
@@ -375,9 +375,6 @@ namespace Flowertrack.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
                         .HasMaxLength(50)
@@ -639,193 +636,6 @@ namespace Flowertrack.Infrastructure.Migrations
                     b.ToTable("TicketComments", (string)null);
                 });
 
-            modelBuilder.Entity("Flowertrack.Domain.Entities.Tickets.TicketHistory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("AttachmentFileName")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("attachment_file_name");
-
-                    b.Property<string>("AttachmentFilePath")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("attachment_file_path");
-
-                    b.Property<long?>("AttachmentFileSize")
-                        .HasColumnType("bigint")
-                        .HasColumnName("attachment_file_size");
-
-                    b.Property<string>("Content")
-                        .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)")
-                        .HasColumnName("content");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("HistoryType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("history_type");
-
-                    b.Property<bool>("IsInternal")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_internal");
-
-                    b.Property<string>("NewValue")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("new_value");
-
-                    b.Property<string>("OldValue")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("old_value");
-
-                    b.Property<Guid>("TicketId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("ticket_id");
-
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("user_name");
-
-                    b.Property<string>("UserType")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("user_type");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedAt")
-                        .HasDatabaseName("ix_ticket_history_created_at");
-
-                    b.HasIndex("TicketId")
-                        .HasDatabaseName("ix_ticket_history_ticket_id");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_ticket_history_user_id");
-
-                    b.HasIndex("TicketId", "CreatedAt")
-                        .HasDatabaseName("ix_ticket_history_ticket_created");
-
-                    b.ToTable("ticket_history", (string)null);
-                });
-
-            modelBuilder.Entity("Flowertrack.Domain.Entities.Users.Role", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("description");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasDatabaseName("ix_roles_name");
-
-                    b.ToTable("roles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Service team administrator with full access to service management",
-                            Name = "ServiceAdministrator"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Service technician with ticket management and resolution capabilities",
-                            Name = "ServiceTechnician"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Organization administrator with team and machine management access",
-                            Name = "OrganizationAdministrator"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Description = "Machine operator with basic ticket creation and viewing capabilities",
-                            Name = "Operator"
-                        });
-                });
-
-            modelBuilder.Entity("Flowertrack.Domain.Entities.Users.UserRole", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTimeOffset>("AssignedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("assigned_at");
-
-                    b.Property<Guid?>("AssignedBy")
-                        .HasColumnType("uuid")
-                        .HasColumnName("assigned_by");
-
-                    b.Property<Guid?>("OrganizationUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("RoleId")
-                        .HasColumnType("integer")
-                        .HasColumnName("role_id");
-
-                    b.Property<Guid?>("ServiceUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrganizationUserId");
-
-                    b.HasIndex("RoleId")
-                        .HasDatabaseName("ix_user_roles_role_id");
-
-                    b.HasIndex("ServiceUserId");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_user_roles_user_id");
-
-                    b.HasIndex("UserId", "RoleId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_user_roles_user_id_role_id");
-
-                    b.ToTable("user_roles", (string)null);
-                });
-
             modelBuilder.Entity("Flowertrack.Domain.Entities.Machine", b =>
                 {
                     b.OwnsOne("Flowertrack.Domain.ValueObjects.MachineApiKey", "ApiToken", b1 =>
@@ -969,46 +779,6 @@ namespace Flowertrack.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Ticket");
-                });
-
-            modelBuilder.Entity("Flowertrack.Domain.Entities.Tickets.TicketHistory", b =>
-                {
-                    b.HasOne("Flowertrack.Domain.Entities.Ticket", "Ticket")
-                        .WithMany()
-                        .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Ticket");
-                });
-
-            modelBuilder.Entity("Flowertrack.Domain.Entities.Users.UserRole", b =>
-                {
-                    b.HasOne("Flowertrack.Domain.Entities.OrganizationUser", null)
-                        .WithMany("UserRoles")
-                        .HasForeignKey("OrganizationUserId");
-
-                    b.HasOne("Flowertrack.Domain.Entities.Users.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Flowertrack.Domain.Entities.ServiceUser", null)
-                        .WithMany("UserRoles")
-                        .HasForeignKey("ServiceUserId");
-
-                    b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("Flowertrack.Domain.Entities.OrganizationUser", b =>
-                {
-                    b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("Flowertrack.Domain.Entities.ServiceUser", b =>
-                {
-                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }

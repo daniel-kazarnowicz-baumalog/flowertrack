@@ -84,8 +84,19 @@ public sealed class ServiceUser : AuditableEntity<Guid>, IAggregateRoot
     /// </summary>
     public bool IsAvailable { get; private set; }
 
+    /// <summary>
+    /// Password hash (for local authentication)
+    /// </summary>
+    public string? PasswordHash { get; private set; }
+
     // Navigation properties
     // public ICollection<Ticket> AssignedTickets { get; private set; } = new List<Ticket>();
+    
+    /// <summary>
+    /// User roles
+    /// </summary>
+    private readonly List<Users.UserRole> _userRoles = new();
+    public IReadOnlyCollection<Users.UserRole> UserRoles => _userRoles.AsReadOnly();
 
     /// <summary>
     /// Factory method to create a new service user
@@ -208,4 +219,66 @@ public sealed class ServiceUser : AuditableEntity<Guid>, IAggregateRoot
     /// Get full name
     /// </summary>
     public string FullName => $"{FirstName} {LastName}";
+
+    /// <summary>
+    /// Sets password hash
+    /// </summary>
+    public void SetPasswordHash(string passwordHash)
+    {
+        if (string.IsNullOrWhiteSpace(passwordHash))
+            throw new ArgumentException("Password hash cannot be empty", nameof(passwordHash));
+
+        PasswordHash = passwordHash;
+        SetUpdatedAudit(Id);
+    }
+
+    /// <summary>
+    /// Assigns a role to the user
+    /// </summary>
+    public void AssignRole(int roleId, Guid? assignedBy = null)
+    {
+        if (_userRoles.Any(ur => ur.RoleId == roleId))
+            return; // Role already assigned
+
+        var userRole = Users.UserRole.Create(Id, roleId, assignedBy);
+        _userRoles.Add(userRole);
+        SetUpdatedAudit(Id);
+    }
+
+    /// <summary>
+    /// Removes a role from the user
+    /// </summary>
+    public void RemoveRole(int roleId)
+    {
+        var userRole = _userRoles.FirstOrDefault(ur => ur.RoleId == roleId);
+        if (userRole != null)
+        {
+            _userRoles.Remove(userRole);
+            SetUpdatedAudit(Id);
+        }
+    }
+
+    /// <summary>
+    /// Gets all role names for this user
+    /// </summary>
+    public IEnumerable<string> GetRoleNames()
+    {
+        return _userRoles.Select(ur => ur.Role.Name);
+    }
+
+    /// <summary>
+    /// Checks if user has a specific role
+    /// </summary>
+    public bool HasRole(int roleId)
+    {
+        return _userRoles.Any(ur => ur.RoleId == roleId);
+    }
+
+    /// <summary>
+    /// Checks if user has any of the specified roles
+    /// </summary>
+    public bool HasAnyRole(params int[] roleIds)
+    {
+        return _userRoles.Any(ur => roleIds.Contains(ur.RoleId));
+    }
 }
