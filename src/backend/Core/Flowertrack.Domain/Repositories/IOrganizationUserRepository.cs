@@ -17,6 +17,22 @@ public interface IOrganizationUserRepository : IRepository<OrganizationUser>
     Task<OrganizationUser?> GetByEmailAsync(string email, CancellationToken ct = default);
 
     /// <summary>
+    /// Gets an organization user by their Supabase user ID.
+    /// </summary>
+    /// <param name="supabaseUserId">The Supabase user identifier.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>The organization user if found; otherwise, null.</returns>
+    Task<OrganizationUser?> GetBySupabaseUserIdAsync(Guid supabaseUserId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Gets an organization user by their invitation token.
+    /// </summary>
+    /// <param name="invitationToken">The invitation token.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>The organization user if found; otherwise, null.</returns>
+    Task<OrganizationUser?> GetByInvitationTokenAsync(string invitationToken, CancellationToken ct = default);
+
+    /// <summary>
     /// Gets all users for a specific organization.
     /// </summary>
     /// <param name="organizationId">The organization identifier.</param>

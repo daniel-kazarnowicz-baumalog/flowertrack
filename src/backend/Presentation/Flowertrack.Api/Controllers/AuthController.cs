@@ -1,4 +1,7 @@
+using Flowertrack.Application.Users.Commands.ActivateOrganizationUser;
 using Flowertrack.Application.Users.Commands.ForgotPassword;
+using Flowertrack.Application.Users.Commands.InviteOrganizationUser;
+using Flowertrack.Application.Users.Commands.LoginOrganizationUser;
 using Flowertrack.Application.Users.Commands.LoginServiceUser;
 using Flowertrack.Application.Users.Commands.ResetPassword;
 using Flowertrack.Application.Users.Commands.SignupServiceUser;
@@ -24,6 +27,8 @@ public class AuthController : ControllerBase
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
+
+    #region Service Portal Authentication
 
     /// <summary>
     /// Login a service user (technician or admin)
@@ -223,4 +228,199 @@ public class AuthController : ControllerBase
             Status = "Active"
         });
     }
+
+    #endregion
+
+    #region Client Portal Authentication
+
+    /// <summary>
+    /// Login an organization user (operator or admin)
+    /// </summary>
+    /// <param name="request">Login credentials</param>
+    /// <returns>Access token and user information</returns>
+    [HttpPost("client/login")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(LoginOrganizationUserResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> LoginOrganizationUser([FromBody] LoginOrganizationUserRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var command = new LoginOrganizationUserCommand
+        {
+            Email = request.Email,
+            Password = request.Password
+        };
+
+        var result = await _mediator.Send(command);
+
+        if (!result.IsSuccess || result.Value == null)
+        {
+            _logger.LogWarning("Organization user login failed: {Error}", result.Error);
+            return Unauthorized(new { message = result.Error ?? "Invalid credentials or account not activated" });
+        }
+
+        var loginResult = result.Value;
+
+        var response = new LoginOrganizationUserResponse
+        {
+            AccessToken = loginResult.AccessToken,
+            RefreshToken = loginResult.RefreshToken,
+            ExpiresAt = loginResult.ExpiresAt,
+            User = new OrganizationUserDto
+            {
+                Id = loginResult.UserId,
+                OrganizationId = loginResult.OrganizationId,
+                OrganizationName = loginResult.OrganizationName,
+                Email = loginResult.Email,
+                FullName = loginResult.FullName,
+                Role = loginResult.Role,
+                Status = loginResult.Status,
+                IsActivated = loginResult.IsActivated
+            }
+        };
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Invite a new organization user (organization admin or service admin only)
+    /// </summary>
+    /// <param name="request">User details</param>
+    /// <returns>Created user information with invitation token</returns>
+    [HttpPost("client/invite")]
+    [Authorize(Policy = "RequireOrganizationAdmin")] // Or RequireServiceAdmin
+    [ProducesResponseType(typeof(InviteOrganizationUserResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> InviteOrganizationUser([FromBody] InviteOrganizationUserRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var command = new InviteOrganizationUserCommand
+        {
+            OrganizationId = request.OrganizationId,
+            Email = request.Email,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            PhoneNumber = request.PhoneNumber,
+            Role = request.Role
+        };
+
+        var result = await _mediator.Send(command);
+
+        if (!result.IsSuccess || result.Value == null)
+        {
+            _logger.LogWarning("Organization user invitation failed: {Error}", result.Error);
+            return BadRequest(new { message = result.Error ?? "Failed to invite user" });
+        }
+
+        var inviteResult = result.Value;
+
+        var response = new InviteOrganizationUserResponse
+        {
+            UserId = inviteResult.UserId,
+            Email = inviteResult.Email,
+            FullName = inviteResult.FullName,
+            InvitationToken = inviteResult.InvitationToken,
+            InvitationTokenExpiresAt = inviteResult.InvitationTokenExpiresAt
+        };
+
+        return CreatedAtAction(
+            nameof(GetCurrentUser), // TODO: Create GetOrganizationUser endpoint
+            new { id = inviteResult.UserId },
+            response
+        );
+    }
+
+    /// <summary>
+    /// Activate organization user account with invitation token
+    /// </summary>
+    /// <param name="request">Activation token and optional password</param>
+    /// <returns>Activation confirmation</returns>
+    [HttpPost("client/activate")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(ActivateAccountResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ActivateAccount([FromBody] ActivateAccountRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var command = new ActivateOrganizationUserCommand
+        {
+            Token = request.Token,
+            Password = request.Password
+        };
+
+        var result = await _mediator.Send(command);
+
+        if (!result.IsSuccess || result.Value == null)
+        {
+            _logger.LogWarning("Account activation failed: {Error}", result.Error);
+            return BadRequest(new { message = result.Error ?? "Activation failed" });
+        }
+
+        var activationResult = result.Value;
+
+        var response = new ActivateAccountResponse
+        {
+            UserId = activationResult.UserId,
+            Email = activationResult.Email,
+            FullName = activationResult.FullName,
+            OrganizationId = activationResult.OrganizationId,
+            Message = activationResult.Message
+        };
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Logout an organization user
+    /// </summary>
+    /// <returns>Success status</returns>
+    [HttpPost("client/logout")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> LogoutOrganizationUser()
+    {
+        // Supabase handles logout - we just return success
+        // In future, we can invalidate tokens on the backend
+        return Ok(new { message = "Logged out successfully" });
+    }
+
+    /// <summary>
+    /// Get current authenticated organization user information
+    /// </summary>
+    /// <returns>Current user information</returns>
+    [HttpGet("client/me")]
+    [Authorize]
+    [ProducesResponseType(typeof(OrganizationUserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetCurrentOrganizationUser()
+    {
+        // TODO: Implement GetCurrentOrganizationUserQuery
+        return Ok(new OrganizationUserDto 
+        { 
+            Id = Guid.NewGuid(),
+            OrganizationId = Guid.NewGuid(),
+            OrganizationName = "Example Organization",
+            Email = "temp@organization.com",
+            FullName = "Temp User",
+            Role = "organization_admin",
+            Status = "Active",
+            IsActivated = true
+        });
+    }
+
+    #endregion
 }
