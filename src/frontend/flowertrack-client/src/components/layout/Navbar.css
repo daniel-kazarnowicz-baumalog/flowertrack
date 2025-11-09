@@ -1,0 +1,141 @@
+/* Navbar Component Styles */
+
+.navbar {
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.navbar--service {
+  border-bottom-color: #3b82f6;
+  border-bottom-width: 2px;
+}
+
+.navbar--client {
+  border-bottom-color: #10b981;
+  border-bottom-width: 2px;
+}
+
+.navbar__container {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 4rem;
+  gap: 2rem;
+}
+
+.navbar__brand {
+  flex-shrink: 0;
+}
+
+.navbar__logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: #111827;
+  font-weight: 600;
+  font-size: 1.25rem;
+  transition: opacity 0.2s;
+}
+
+.navbar__logo:hover {
+  opacity: 0.8;
+}
+
+.navbar__logo-icon {
+  font-size: 1.5rem;
+}
+
+.navbar__logo-text {
+  display: none;
+}
+
+.navbar__menu {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.navbar__link {
+  padding: 0.5rem 1rem;
+  color: #6b7280;
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.navbar__link:hover {
+  color: #111827;
+  background-color: #f3f4f6;
+}
+
+.navbar__link.active {
+  color: #3b82f6;
+  background-color: #dbeafe;
+}
+
+.navbar__user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.navbar__username {
+  font-weight: 500;
+  color: #374151;
+  display: none;
+}
+
+.navbar__role-badge {
+  background-color: #fef3c7;
+  color: #92400e;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: none;
+}
+
+/* Responsive */
+@media (min-width: 640px) {
+  .navbar__logo-text {
+    display: inline;
+  }
+}
+
+@media (min-width: 768px) {
+  .navbar__username {
+    display: inline;
+  }
+
+  .navbar__role-badge {
+    display: inline;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar__container {
+    padding: 0 1rem;
+    gap: 1rem;
+  }
+
+  .navbar__menu {
+    gap: 0.25rem;
+  }
+
+  .navbar__link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+}
