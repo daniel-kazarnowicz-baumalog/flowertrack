@@ -20,6 +20,12 @@ public sealed class ServiceUserRepository : Repository<ServiceUser>, IServiceUse
             .FirstOrDefaultAsync(u => u.Email.Value == email, ct);
     }
 
+    public async Task<ServiceUser?> GetBySupabaseUserIdAsync(Guid supabaseUserId, CancellationToken ct = default)
+    {
+        return await DbSet
+            .FirstOrDefaultAsync(u => u.SupabaseUserId == supabaseUserId, ct);
+    }
+
     public async Task<IReadOnlyList<ServiceUser>> GetActiveUsersAsync(CancellationToken ct = default)
     {
         return await DbSet

@@ -17,6 +17,14 @@ public interface IServiceUserRepository : IRepository<ServiceUser>
     Task<ServiceUser?> GetByEmailAsync(string email, CancellationToken ct = default);
 
     /// <summary>
+    /// Gets a service user by their Supabase User ID.
+    /// </summary>
+    /// <param name="supabaseUserId">The Supabase User ID.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>The service user if found; otherwise, null.</returns>
+    Task<ServiceUser?> GetBySupabaseUserIdAsync(Guid supabaseUserId, CancellationToken ct = default);
+
+    /// <summary>
     /// Gets all active service users.
     /// </summary>
     /// <param name="ct">Cancellation token.</param>
