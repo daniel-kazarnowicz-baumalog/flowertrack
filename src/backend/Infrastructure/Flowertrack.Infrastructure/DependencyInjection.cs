@@ -52,6 +52,8 @@ public static class DependencyInjection
         services.AddScoped<IOrganizationUserRepository, OrganizationUserRepository>();
         services.AddScoped<ITicketRepository, TicketRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<IRoleRepository, RoleRepository>();
+        services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 
         // Infrastructure Services
         services.AddScoped<IEmailService, EmailService>();
@@ -63,6 +65,9 @@ public static class DependencyInjection
         // JWT Token Generator
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+
+        // Password Hasher
+        services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 
         // Supabase Client (already registered in Api layer, but we expose the interface)
         // services.AddScoped<ISupabaseClient, SupabaseClientService>();
