@@ -13,11 +13,7 @@ interface CTASectionProps {
   buttons: CTAButton[];
 }
 
-export const CTASection: React.FC<CTASectionProps> = ({
-  headline,
-  subheadline,
-  buttons,
-}) => {
+export const CTASection: React.FC<CTASectionProps> = ({ headline, subheadline, buttons }) => {
   return (
     <section className="cta-section" id="contact">
       <div className="cta-container">

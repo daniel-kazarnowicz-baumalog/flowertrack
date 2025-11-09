@@ -25,37 +25,22 @@ export const Navbar: React.FC<NavbarProps> = ({ variant }) => {
         </Link>
 
         <div className="navbar-links">
-          <button
-            onClick={() => scrollToSection('features')}
-            className="navbar-link"
-          >
+          <button onClick={() => scrollToSection('features')} className="navbar-link">
             {isService ? 'Funkcje' : 'Możliwości'}
           </button>
-          <button
-            onClick={() => scrollToSection('benefits')}
-            className="navbar-link"
-          >
+          <button onClick={() => scrollToSection('benefits')} className="navbar-link">
             {isService ? 'Korzyści' : 'Jak działa'}
           </button>
-          <Link
-            to={isService ? '/client' : '/service'}
-            className="navbar-link"
-          >
+          <Link to={isService ? '/client' : '/service'} className="navbar-link">
             {isService ? 'Dla Klientów' : 'Dla Serwisu'}
           </Link>
-          <button
-            onClick={() => scrollToSection('contact')}
-            className="navbar-link"
-          >
+          <button onClick={() => scrollToSection('contact')} className="navbar-link">
             Kontakt
           </button>
         </div>
 
         <div className="navbar-actions">
-          <Link
-            to={isService ? '/client' : '/service'}
-            className="navbar-btn navbar-btn-secondary"
-          >
+          <Link to={isService ? '/client' : '/service'} className="navbar-btn navbar-btn-secondary">
             {isService ? 'Portal Klienta' : 'Portal Serwisu'}
           </Link>
           <Link

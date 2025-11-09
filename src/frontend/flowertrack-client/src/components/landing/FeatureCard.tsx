@@ -8,12 +8,7 @@ interface FeatureCardProps {
   features: string[];
 }
 
-export const FeatureCard: React.FC<FeatureCardProps> = ({
-  icon,
-  title,
-  description,
-  features,
-}) => {
+export const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description, features }) => {
   return (
     <div className="feature-card">
       <div className="feature-card-icon">{icon}</div>

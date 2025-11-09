@@ -7,11 +7,7 @@ interface BenefitItemProps {
   description: string;
 }
 
-export const BenefitItem: React.FC<BenefitItemProps> = ({
-  icon,
-  title,
-  description,
-}) => {
+export const BenefitItem: React.FC<BenefitItemProps> = ({ icon, title, description }) => {
   return (
     <div className="benefit-item">
       <div className="benefit-icon">{icon}</div>
