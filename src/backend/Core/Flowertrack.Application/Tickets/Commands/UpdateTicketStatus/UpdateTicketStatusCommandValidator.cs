@@ -80,56 +80,7 @@ public sealed class UpdateTicketStatusCommandValidator : AbstractValidator<Updat
         var ticket = await _ticketRepository.GetByIdAsync(command.TicketId, cancellationToken);
         if (ticket == null) return true; // Will be caught by TicketExists validation
 
-        var currentStatus = ticket.Status;
-        var newStatus = command.NewStatus;
-
-        // Cannot transition from same status to same status
-        if (currentStatus == newStatus)
-        {
-            return false;
-        }
-
-        // Define valid transitions
-        var validTransitions = new Dictionary<TicketStatus, List<TicketStatus>>
-        {
-            { TicketStatus.New, new List<TicketStatus> { TicketStatus.Accepted, TicketStatus.Closed } },
-            { TicketStatus.Accepted, new List<TicketStatus> { TicketStatus.InProgress, TicketStatus.Closed } },
-            { TicketStatus.InProgress, new List<TicketStatus> { TicketStatus.Resolved, TicketStatus.Closed } },
-            { TicketStatus.Resolved, new List<TicketStatus> { TicketStatus.Closed, TicketStatus.Reopened } },
-            { TicketStatus.Reopened, new List<TicketStatus> { TicketStatus.InProgress, TicketStatus.Resolved, TicketStatus.Closed } },
-            { TicketStatus.Closed, new List<TicketStatus>() } // Closed is final state, no transitions allowed
-        };
-
-        if (!validTransitions.ContainsKey(currentStatus))
-        {
-            return false;
-        }
-
-        var allowedTransitions = validTransitions[currentStatus];
-        
-        // Check if transition is allowed
-        if (!allowedTransitions.Contains(newStatus))
-        {
-            return false;
-        }
-
-        // Special rule: Resolved → Reopened only within 14 days
-        if (currentStatus == TicketStatus.Resolved && newStatus == TicketStatus.Reopened)
-        {
-            if (ticket.ResolvedAt.HasValue)
-            {
-                var daysSinceResolved = (DateTimeOffset.UtcNow - ticket.ResolvedAt.Value).TotalDays;
-                if (daysSinceResolved > 14)
-                {
-                    return false; // Cannot reopen after 14 days
-                }
-            }
-            else
-            {
-                return false; // Ticket was never properly resolved
-            }
-        }
-
-        return true;
+        // Delegate transition validation to the domain entity
+        return ticket.IsValidStatusTransition(command.NewStatus, DateTimeOffset.UtcNow);
     }
 }
