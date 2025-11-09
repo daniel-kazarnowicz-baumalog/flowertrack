@@ -138,13 +138,12 @@ try
     });
     builder.Services.AddOpenApi();
 
-    // Configure JWT Authentication for Supabase
-    var supabaseUrl = builder.Configuration["Supabase:Url"] ?? "";
-    var jwtSecret = builder.Configuration["Supabase:JwtSecret"] ?? "";
-
-    if (!string.IsNullOrEmpty(jwtSecret))
+    // Configure JWT Authentication
+    var jwtSettings = builder.Configuration.GetSection("Jwt").Get<Flowertrack.Infrastructure.Configuration.JwtSettings>();
+    
+    if (jwtSettings != null && !string.IsNullOrEmpty(jwtSettings.Secret))
     {
-        var jwtSecretBytes = Encoding.UTF8.GetBytes(jwtSecret);
+        var jwtSecretBytes = Encoding.UTF8.GetBytes(jwtSettings.Secret);
 
         builder.Services.AddAuthentication(options =>
         {
@@ -158,13 +157,13 @@ try
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(jwtSecretBytes),
                 ValidateIssuer = true,
-                ValidIssuer = supabaseUrl,
+                ValidIssuer = jwtSettings.Issuer,
                 ValidateAudience = true,
-                ValidAudience = "authenticated", // Supabase uses "authenticated" as audience
+                ValidAudience = jwtSettings.Audience,
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.Zero,
-                // Extract user ID from 'sub' claim
-                NameClaimType = "sub"
+                NameClaimType = System.Security.Claims.ClaimTypes.NameIdentifier,
+                RoleClaimType = System.Security.Claims.ClaimTypes.Role
             };
 
             options.Events = new JwtBearerEvents
@@ -178,8 +177,8 @@ try
                 OnTokenValidated = context =>
                 {
                     var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-                    var userId = context.Principal?.FindFirst("sub")?.Value ?? "Unknown";
-                    var email = context.Principal?.FindFirst("email")?.Value ?? "Unknown";
+                    var userId = context.Principal?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "Unknown";
+                    var email = context.Principal?.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? "Unknown";
                     logger.LogInformation("JWT Token validated for user: {UserId}, Email: {Email}", userId, email);
                     return Task.CompletedTask;
                 },
@@ -198,20 +197,20 @@ try
             // Service user policies
             options.AddPolicy("RequireServiceAdmin", policy =>
                 policy.RequireAuthenticatedUser()
-                      .RequireClaim("user_metadata.role", "service_admin"));
+                      .RequireRole("ServiceAdministrator"));
 
             options.AddPolicy("RequireServiceUser", policy =>
                 policy.RequireAuthenticatedUser()
-                      .RequireClaim("user_metadata.role", "service_admin", "service_technician"));
+                      .RequireRole("ServiceAdministrator", "ServiceTechnician"));
 
             // Organization user policies
             options.AddPolicy("RequireOrganizationAdmin", policy =>
                 policy.RequireAuthenticatedUser()
-                      .RequireClaim("user_metadata.role", "organization_admin"));
+                      .RequireRole("OrganizationAdministrator"));
 
             options.AddPolicy("RequireOrganizationUser", policy =>
                 policy.RequireAuthenticatedUser()
-                      .RequireClaim("user_metadata.role", "organization_admin", "organization_operator"));
+                      .RequireRole("OrganizationAdministrator", "Operator"));
 
             // General authenticated user policy
             options.AddPolicy("RequireAuthenticatedUser", policy =>
@@ -220,7 +219,7 @@ try
     }
     else
     {
-        Log.Warning("Supabase JWT Secret not configured. Authentication will not work properly.");
+        Log.Warning("JWT Secret not configured. Authentication will not work properly.");
     }
 
     // Configure CORS

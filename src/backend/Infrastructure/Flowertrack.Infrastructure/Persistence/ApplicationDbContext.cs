@@ -1,6 +1,7 @@
 using Flowertrack.Application.Common.Interfaces;
 using Flowertrack.Domain.Common;
 using Flowertrack.Domain.Entities;
+using Flowertrack.Domain.Entities.Authentication;
 using Flowertrack.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,6 +25,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Ticket> Tickets => Set<Ticket>();
     public DbSet<TicketComment> TicketComments => Set<TicketComment>();
     public DbSet<TicketAttachment> TicketAttachments => Set<TicketAttachment>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
