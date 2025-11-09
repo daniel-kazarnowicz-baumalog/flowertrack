@@ -1,4 +1,6 @@
 using Flowertrack.Application.Tickets.Commands.CreateTicket;
+using Flowertrack.Application.Tickets.Commands.UpdateTicket;
+using Flowertrack.Application.Tickets.Queries.GetTicket;
 using Flowertrack.Contracts.Common;
 using Flowertrack.Contracts.Tickets.Requests;
 using Flowertrack.Contracts.Tickets.Responses;
@@ -108,14 +110,147 @@ public class TicketsController : ControllerBase
 
     /// <summary>
     /// Get a specific ticket by ID
-    /// Placeholder - will be implemented in D2
+    /// US-015: Wyświetlanie szczegółów zgłoszenia
     /// </summary>
+    /// <param name="id">Ticket ID</param>
+    /// <returns>Detailed ticket information</returns>
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(TicketResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetTicket(Guid id)
     {
-        // TODO: Implement in D2
-        return NotFound(new ErrorResponse($"Ticket {id} not found - GetTicket not yet implemented"));
+        // Get current user ID from claims
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            _logger.LogWarning("User ID not found in claims or invalid format");
+            return Unauthorized(new ErrorResponse("User authentication failed"));
+        }
+
+        var query = new GetTicketQuery
+        {
+            TicketId = id,
+            RequestedBy = userId
+        };
+
+        var result = await _mediator.Send(query);
+
+        if (result.IsFailure)
+        {
+            _logger.LogWarning("Failed to get ticket {TicketId}: {Error}", id, result.Error);
+
+            if (result.Error!.Contains("not found", StringComparison.OrdinalIgnoreCase))
+            {
+                return NotFound(new ErrorResponse(result.Error));
+            }
+
+            if (result.Error.Contains("permission", StringComparison.OrdinalIgnoreCase))
+            {
+                return StatusCode(
+                    StatusCodes.Status403Forbidden,
+                    new ErrorResponse(result.Error));
+            }
+
+            return BadRequest(new ErrorResponse(result.Error));
+        }
+
+        var ticket = result.Value;
+
+        // Map to response DTO
+        var response = new TicketResponse
+        {
+            Id = ticket.Id,
+            TicketNumber = ticket.TicketNumber,
+            Title = ticket.Title,
+            Description = ticket.Description,
+            Status = ticket.Status,
+            Priority = ticket.Priority,
+            OrganizationId = ticket.OrganizationId,
+            OrganizationName = ticket.OrganizationName,
+            MachineId = ticket.MachineId,
+            MachineSerialNumber = ticket.MachineSerialNumber,
+            MachineModel = $"{ticket.MachineBrand} {ticket.MachineModel}",
+            CreatedByUserId = ticket.CreatedByUserId,
+            CreatedByUserName = ticket.CreatedByUserName,
+            AssignedToUserId = ticket.AssignedToUserId,
+            AssignedToUserName = ticket.AssignedToUserName,
+            ResolvedAt = ticket.ResolvedAt,
+            ClosedAt = ticket.ClosedAt,
+            CreatedAt = ticket.CreatedAt,
+            UpdatedAt = ticket.UpdatedAt,
+            UpdatedBy = ticket.UpdatedBy
+        };
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Update an existing ticket's basic information
+    /// US-015: Edycja zgłoszenia serwisowego
+    /// </summary>
+    /// <param name="id">Ticket ID</param>
+    /// <param name="request">Updated ticket information</param>
+    /// <returns>Success indicator</returns>
+    [HttpPatch("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> UpdateTicket(Guid id, [FromBody] UpdateTicketRequest request)
+    {
+        // Get current user ID from claims
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            _logger.LogWarning("User ID not found in claims or invalid format");
+            return Unauthorized(new ErrorResponse("User authentication failed"));
+        }
+
+        var command = new UpdateTicketCommand
+        {
+            TicketId = id,
+            Title = request.Title,
+            Description = request.Description,
+            Priority = request.Priority.HasValue ? (Priority)request.Priority.Value : null,
+            UpdatedBy = userId
+        };
+
+        var result = await _mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            _logger.LogWarning(
+                "Failed to update ticket {TicketId}: {Error}",
+                id,
+                result.Error);
+
+            if (result.Error!.Contains("not found", StringComparison.OrdinalIgnoreCase))
+            {
+                return NotFound(new ErrorResponse(result.Error));
+            }
+
+            if (result.Error.Contains("permission", StringComparison.OrdinalIgnoreCase) ||
+                result.Error.Contains("forbidden", StringComparison.OrdinalIgnoreCase))
+            {
+                return StatusCode(
+                    StatusCodes.Status403Forbidden,
+                    new ErrorResponse(result.Error));
+            }
+
+            if (result.Error.Contains("closed", StringComparison.OrdinalIgnoreCase))
+            {
+                return Conflict(new ErrorResponse(result.Error));
+            }
+
+            return BadRequest(new ErrorResponse(result.Error));
+        }
+
+        _logger.LogInformation("Successfully updated ticket {TicketId}", id);
+
+        return NoContent();
     }
 }
