@@ -35,6 +35,16 @@ public interface IApplicationDbContext
     DbSet<Ticket> Tickets { get; }
 
     /// <summary>
+    /// Gets the TicketComments DbSet.
+    /// </summary>
+    DbSet<TicketComment> TicketComments { get; }
+
+    /// <summary>
+    /// Gets the TicketAttachments DbSet.
+    /// </summary>
+    DbSet<TicketAttachment> TicketAttachments { get; }
+
+    /// <summary>
     /// Saves all changes made in this context to the database.
     /// </summary>
     /// <param name="cancellationToken">Cancellation token.</param>

@@ -19,6 +19,18 @@ public sealed class OrganizationUserRepository : Repository<OrganizationUser>, I
             .FirstOrDefaultAsync(u => u.Email.Value == email, ct);
     }
 
+    public async Task<OrganizationUser?> GetBySupabaseUserIdAsync(Guid supabaseUserId, CancellationToken ct = default)
+    {
+        return await DbSet
+            .FirstOrDefaultAsync(u => u.SupabaseUserId == supabaseUserId, ct);
+    }
+
+    public async Task<OrganizationUser?> GetByInvitationTokenAsync(string invitationToken, CancellationToken ct = default)
+    {
+        return await DbSet
+            .FirstOrDefaultAsync(u => u.InvitationToken == invitationToken, ct);
+    }
+
     public async Task<IReadOnlyList<OrganizationUser>> GetByOrganizationIdAsync(Guid organizationId, CancellationToken ct = default)
     {
         return await DbSet
