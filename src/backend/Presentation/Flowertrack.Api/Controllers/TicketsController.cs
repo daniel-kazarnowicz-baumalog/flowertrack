@@ -1,4 +1,5 @@
 using Flowertrack.Application.Tickets.Commands.CreateTicket;
+using Flowertrack.Application.Tickets.Commands.DeleteTicket;
 using Flowertrack.Application.Tickets.Commands.UpdateTicket;
 using Flowertrack.Application.Tickets.Queries.GetTicket;
 using Flowertrack.Contracts.Common;
@@ -250,6 +251,73 @@ public class TicketsController : ControllerBase
         }
 
         _logger.LogInformation("Successfully updated ticket {TicketId}", id);
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Soft delete a ticket
+    /// US-015: Usuwanie zgłoszenia serwisowego
+    /// </summary>
+    /// <param name="id">Ticket ID</param>
+    /// <param name="reason">Optional reason for deletion</param>
+    /// <returns>Success indicator</returns>
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> DeleteTicket(Guid id, [FromQuery] string? reason = null)
+    {
+        // Get current user ID from claims
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            _logger.LogWarning("User ID not found in claims or invalid format");
+            return Unauthorized(new ErrorResponse("User authentication failed"));
+        }
+
+        var command = new DeleteTicketCommand
+        {
+            TicketId = id,
+            Reason = reason,
+            DeletedBy = userId
+        };
+
+        var result = await _mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            _logger.LogWarning(
+                "Failed to delete ticket {TicketId}: {Error}",
+                id,
+                result.Error);
+
+            if (result.Error!.Contains("not found", StringComparison.OrdinalIgnoreCase))
+            {
+                return NotFound(new ErrorResponse(result.Error));
+            }
+
+            if (result.Error.Contains("permission", StringComparison.OrdinalIgnoreCase) ||
+                result.Error.Contains("forbidden", StringComparison.OrdinalIgnoreCase))
+            {
+                return StatusCode(
+                    StatusCodes.Status403Forbidden,
+                    new ErrorResponse(result.Error));
+            }
+
+            if (result.Error.Contains("cannot be deleted", StringComparison.OrdinalIgnoreCase) ||
+                result.Error.Contains("already deleted", StringComparison.OrdinalIgnoreCase))
+            {
+                return Conflict(new ErrorResponse(result.Error));
+            }
+
+            return BadRequest(new ErrorResponse(result.Error));
+        }
+
+        _logger.LogInformation("Successfully deleted ticket {TicketId}", id);
 
         return NoContent();
     }

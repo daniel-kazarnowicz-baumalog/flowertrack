@@ -274,6 +274,25 @@ public sealed class Ticket : AuditableEntity<Guid>, IAggregateRoot
     }
 
     /// <summary>
+    /// Soft deletes the ticket by marking it as deleted with audit information
+    /// </summary>
+    public void Delete(string? reason, Guid userId)
+    {
+        if (IsDeleted)
+        {
+            throw new InvalidOperationException("Ticket is already deleted");
+        }
+
+        SetDeletedAudit(userId);
+
+        RaiseDomainEvent(new TicketDeletedEvent(
+            Id,
+            userId,
+            reason,
+            DateTimeOffset.UtcNow));
+    }
+
+    /// <summary>
     /// Validates if a status transition is allowed
     /// </summary>
     private static bool IsValidStatusTransition(TicketStatus currentStatus, TicketStatus newStatus)
