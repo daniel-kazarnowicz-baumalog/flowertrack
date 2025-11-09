@@ -3,7 +3,6 @@ using Flowertrack.Domain.Enums;
 
 namespace Flowertrack.Domain.Events;
 
-using Flowertrack.Domain.Common;
 
 /// <summary>
 /// Event raised when a ticket's status changes.
