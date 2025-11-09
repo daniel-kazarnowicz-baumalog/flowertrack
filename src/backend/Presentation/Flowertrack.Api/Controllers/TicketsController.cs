@@ -4,6 +4,7 @@ using Flowertrack.Application.Tickets.Commands.DeleteTicket;
 using Flowertrack.Application.Tickets.Commands.UpdateTicket;
 using Flowertrack.Application.Tickets.Commands.UpdateTicketStatus;
 using Flowertrack.Application.Tickets.Queries.GetTicket;
+using Flowertrack.Application.Tickets.Queries.GetTickets;
 using Flowertrack.Contracts.Common;
 using Flowertrack.Contracts.Tickets.Requests;
 using Flowertrack.Contracts.Tickets.Responses;
@@ -33,6 +34,120 @@ public class TicketsController : ControllerBase
     {
         _mediator = mediator;
         _logger = logger;
+    }
+
+    /// <summary>
+    /// Get a filtered and paginated list of tickets
+    /// US-015: Pobieranie listy zgłoszeń serwisowych z filtrami
+    /// </summary>
+    /// <param name="organizationId">Filter by organization ID</param>
+    /// <param name="machineId">Filter by machine ID</param>
+    /// <param name="status">Filter by status (0=New, 1=Accepted, 2=InProgress, 3=Resolved, 4=Closed, 5=Reopened)</param>
+    /// <param name="priority">Filter by priority (0=Low, 1=Medium, 2=High, 3=Critical)</param>
+    /// <param name="assignedToUserId">Filter by assigned user ID</param>
+    /// <param name="createdByUserId">Filter by creator user ID</param>
+    /// <param name="createdFrom">Filter by creation date from</param>
+    /// <param name="createdTo">Filter by creation date to</param>
+    /// <param name="searchText">Search in title and description</param>
+    /// <param name="pageNumber">Page number (default 1)</param>
+    /// <param name="pageSize">Page size (default 20, max 100)</param>
+    /// <param name="sortBy">Sort by field (default CreatedAt)</param>
+    /// <param name="sortDirection">Sort direction: Asc or Desc (default Desc)</param>
+    /// <returns>Paginated list of tickets</returns>
+    [HttpGet]
+    [ProducesResponseType(typeof(GetTicketsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetTickets(
+        [FromQuery] Guid? organizationId = null,
+        [FromQuery] Guid? machineId = null,
+        [FromQuery] int? status = null,
+        [FromQuery] int? priority = null,
+        [FromQuery] Guid? assignedToUserId = null,
+        [FromQuery] Guid? createdByUserId = null,
+        [FromQuery] DateTimeOffset? createdFrom = null,
+        [FromQuery] DateTimeOffset? createdTo = null,
+        [FromQuery] string? searchText = null,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string sortBy = "CreatedAt",
+        [FromQuery] string sortDirection = "Desc")
+    {
+        // Get current user ID from claims
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            _logger.LogWarning("User ID not found in claims or invalid format");
+            return Unauthorized(new ErrorResponse("User authentication required"));
+        }
+
+        var query = new GetTicketsQuery
+        {
+            RequestedBy = userId,
+            OrganizationId = organizationId,
+            MachineId = machineId,
+            Status = status.HasValue ? (TicketStatus)status.Value : null,
+            Priority = priority.HasValue ? (Priority)priority.Value : null,
+            AssignedToUserId = assignedToUserId,
+            CreatedByUserId = createdByUserId,
+            CreatedFrom = createdFrom,
+            CreatedTo = createdTo,
+            SearchText = searchText,
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            SortBy = sortBy,
+            SortDirection = sortDirection
+        };
+
+        var result = await _mediator.Send(query);
+
+        if (result.IsFailure)
+        {
+            _logger.LogWarning("Failed to retrieve tickets: {Error}", result.Error);
+            return BadRequest(new ErrorResponse(result.Error!));
+        }
+
+        var pagedResult = result.Value!;
+
+        // Map from Application DTO (with enums) to Contracts DTO (with ints)
+        var response = new GetTicketsResponse
+        {
+            Items = pagedResult.Items.Select(item => new Flowertrack.Contracts.Tickets.TicketListItemDto
+            {
+                Id = item.Id,
+                TicketNumber = item.TicketNumber,
+                Title = item.Title,
+                Status = (int)item.Status,
+                Priority = (int)item.Priority,
+                OrganizationId = item.OrganizationId,
+                OrganizationName = item.OrganizationName,
+                MachineId = item.MachineId,
+                MachineSerialNumber = item.MachineSerialNumber,
+                AssignedToUserId = item.AssignedToUserId,
+                AssignedToUserName = item.AssignedToUserName,
+                CreatedByUserId = item.CreatedByUserId,
+                CreatedByUserName = item.CreatedByUserName,
+                CreatedAt = item.CreatedAt,
+                UpdatedAt = item.UpdatedAt,
+                ResolvedAt = item.ResolvedAt,
+                ClosedAt = item.ClosedAt
+            }).ToList(),
+            PageNumber = pagedResult.PageNumber,
+            PageSize = pagedResult.PageSize,
+            TotalCount = pagedResult.TotalCount,
+            TotalPages = pagedResult.TotalPages,
+            HasPreviousPage = pagedResult.HasPreviousPage,
+            HasNextPage = pagedResult.HasNextPage
+        };
+
+        _logger.LogInformation(
+            "Retrieved {Count} tickets (page {Page}/{TotalPages}) for user {UserId}",
+            response.Items.Count,
+            response.PageNumber,
+            response.TotalPages,
+            userId);
+
+        return Ok(response);
     }
 
     /// <summary>
