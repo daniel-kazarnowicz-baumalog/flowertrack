@@ -67,8 +67,7 @@ export const ServiceLanding: React.FC = () => {
     {
       icon: '⚙️',
       title: 'Administracja Zespołu',
-      description:
-        'Zarządzanie serwisantami, nadawanie uprawnień i monitoring aktywności zespołu.',
+      description: 'Zarządzanie serwisantami, nadawanie uprawnień i monitoring aktywności zespołu.',
       features: [
         'Dodawanie/edycja serwisantów',
         'Role i uprawnienia (Admin/Technician)',
@@ -153,9 +152,7 @@ export const ServiceLanding: React.FC = () => {
         <div className="features-container">
           <div className="features-header">
             <div className="features-badge">Funkcjonalności</div>
-            <h2 className="features-title">
-              Wszystko czego potrzebujesz w jednym miejscu
-            </h2>
+            <h2 className="features-title">Wszystko czego potrzebujesz w jednym miejscu</h2>
           </div>
           <div className="features-grid">
             {features.map((feature, index) => (
@@ -168,9 +165,7 @@ export const ServiceLanding: React.FC = () => {
       <section className="benefits-section" id="benefits">
         <div className="benefits-container">
           <div className="benefits-content">
-            <h2 className="benefits-title">
-              Dlaczego FLOWerTRACK dla Twojego Serwisu?
-            </h2>
+            <h2 className="benefits-title">Dlaczego FLOWerTRACK dla Twojego Serwisu?</h2>
             <div className="benefits-list">
               {benefits.map((benefit, index) => (
                 <BenefitItem key={index} {...benefit} />

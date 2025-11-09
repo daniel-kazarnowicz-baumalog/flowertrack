@@ -39,10 +39,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     <section className="hero-section">
       <div className="hero-background">
         {backgroundIcons.map((icon, index) => (
-          <span
-            key={index}
-            className={`floating-icon floating-icon-${index + 1}`}
-          >
+          <span key={index} className={`floating-icon floating-icon-${index + 1}`}>
             {icon}
           </span>
         ))}
@@ -60,17 +57,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         <p className="hero-subtitle">{subtitle}</p>
 
         <div className="hero-actions">
-          <button
-            className="hero-btn hero-btn-primary"
-            onClick={primaryCTA.onClick}
-          >
+          <button className="hero-btn hero-btn-primary" onClick={primaryCTA.onClick}>
             {primaryCTA.text}
             <span className="hero-btn-icon">{primaryCTA.icon}</span>
           </button>
-          <button
-            className="hero-btn hero-btn-secondary"
-            onClick={secondaryCTA.onClick}
-          >
+          <button className="hero-btn hero-btn-secondary" onClick={secondaryCTA.onClick}>
             <span className="hero-btn-icon">{secondaryCTA.icon}</span>
             {secondaryCTA.text}
           </button>

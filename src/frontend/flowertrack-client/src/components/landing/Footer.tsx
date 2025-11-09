@@ -13,8 +13,8 @@ export const Footer: React.FC = () => {
               <span className="footer-logo-text">FLOWerTRACK</span>
             </div>
             <p className="footer-description">
-              Zaawansowany system zarządzania zgłoszeniami serwisowymi dla firm
-              zajmujących się serwisem urządzeń produkcyjnych.
+              Zaawansowany system zarządzania zgłoszeniami serwisowymi dla firm zajmujących się
+              serwisem urządzeń produkcyjnych.
             </p>
           </div>
 

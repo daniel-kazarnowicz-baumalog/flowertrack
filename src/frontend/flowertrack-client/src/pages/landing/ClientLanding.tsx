@@ -37,11 +37,7 @@ export const ClientLanding: React.FC = () => {
       title: 'Tworzenie Zgłoszeń',
       description:
         'Prosty formularz do zgłaszania problemów. Dodaj opis, załącz zdjęcia i śledź postęp naprawy.',
-      features: [
-        'Wybór maszyny z listy',
-        'Załączniki i zdjęcia',
-        'Status: Szkic → Wysłany',
-      ],
+      features: ['Wybór maszyny z listy', 'Załączniki i zdjęcia', 'Status: Szkic → Wysłany'],
     },
     {
       icon: '👁️',
@@ -170,9 +166,7 @@ export const ClientLanding: React.FC = () => {
         <div className="how-it-works-container">
           <div className="how-it-works-header">
             <h2 className="how-it-works-title">Jak to działa?</h2>
-            <p className="how-it-works-subtitle">
-              Zacznij w 3 prostych krokach
-            </p>
+            <p className="how-it-works-subtitle">Zacznij w 3 prostych krokach</p>
           </div>
           <div className="how-it-works-steps">
             {steps.map((step) => (
@@ -190,18 +184,14 @@ export const ClientLanding: React.FC = () => {
                 <div className="timeline-dot timeline-dot-org"></div>
                 <div className="timeline-content">
                   <div className="timeline-label">[Organizacja]</div>
-                  <div className="timeline-text">
-                    Dodano załącznik: zdjecie_problemu.jpg
-                  </div>
+                  <div className="timeline-text">Dodano załącznik: zdjecie_problemu.jpg</div>
                 </div>
               </div>
               <div className="timeline-item">
                 <div className="timeline-dot timeline-dot-service"></div>
                 <div className="timeline-content">
                   <div className="timeline-label">[Serwis]</div>
-                  <div className="timeline-text">
-                    Status zmieniony: W trakcie
-                  </div>
+                  <div className="timeline-text">Status zmieniony: W trakcie</div>
                 </div>
               </div>
               <div className="timeline-item">
@@ -215,17 +205,13 @@ export const ClientLanding: React.FC = () => {
                 <div className="timeline-dot timeline-dot-service"></div>
                 <div className="timeline-content">
                   <div className="timeline-label">[Serwis]</div>
-                  <div className="timeline-text">
-                    Status zmieniony: Rozwiązany
-                  </div>
+                  <div className="timeline-text">Status zmieniony: Rozwiązany</div>
                 </div>
               </div>
             </div>
           </div>
           <div className="benefits-content">
-            <h2 className="benefits-title">
-              Dlaczego FLOWerTRACK dla Twojej Organizacji?
-            </h2>
+            <h2 className="benefits-title">Dlaczego FLOWerTRACK dla Twojej Organizacji?</h2>
             <div className="benefits-list">
               {benefits.map((benefit, index) => (
                 <BenefitItem key={index} {...benefit} />
