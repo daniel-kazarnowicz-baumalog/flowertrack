@@ -16,3 +16,6 @@ export type { ModalProps, ConfirmModalProps } from './Modal';
 
 export { Loader } from './Loader';
 export type { LoaderProps } from './Loader';
+
+export { default as Toast } from './Toast';
+export type { ToastProps, ToastVariant } from './Toast';
