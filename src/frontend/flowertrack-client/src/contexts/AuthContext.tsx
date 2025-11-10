@@ -198,10 +198,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const loginClient = useCallback(
     async (email: string, password: string) => {
-      const response = await apiClient.post<LoginOrganizationUserResponse>(
-        '/auth/client/login',
-        { email, password }
-      );
+      const response = await apiClient.post<LoginOrganizationUserResponse>('/auth/client/login', {
+        email,
+        password,
+      });
 
       // Map OrganizationUserDto to ClientAuthUser
       const authUser: ClientAuthUser = {

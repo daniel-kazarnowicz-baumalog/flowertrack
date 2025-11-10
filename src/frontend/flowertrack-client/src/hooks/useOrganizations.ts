@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { organizationService } from '../services/organizationService';
 import { useToast } from './useToast';
-import type { CreateOrganizationRequest, UpdateOrganizationRequest } from '../types/api';
+import type { OnboardOrganizationRequest, UpdateOrganizationRequest } from '../types/api';
 
 /**
  * React Query hooks for Organizations
@@ -27,13 +27,15 @@ export const useOrganizations = () => {
 
   // Create organization mutation
   const createMutation = useMutation({
-    mutationFn: (data: CreateOrganizationRequest) => organizationService.onboard(data),
+    mutationFn: (data: OnboardOrganizationRequest) => organizationService.onboard(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['organizations'] });
       showToast('Organization onboarded successfully', 'success');
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Failed to onboard organization';
+    onError: (error: unknown) => {
+      const message =
+        (error as { response?: { data?: { message?: string } } }).response?.data?.message ||
+        'Failed to onboard organization';
       showToast(message, 'error');
     },
   });
@@ -47,8 +49,10 @@ export const useOrganizations = () => {
       queryClient.invalidateQueries({ queryKey: ['organizations', variables.id] });
       showToast('Organization updated successfully', 'success');
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Failed to update organization';
+    onError: (error: unknown) => {
+      const message =
+        (error as { response?: { data?: { message?: string } } }).response?.data?.message ||
+        'Failed to update organization';
       showToast(message, 'error');
     },
   });
@@ -63,8 +67,10 @@ export const useOrganizations = () => {
       navigator.clipboard.writeText(data.apiKey);
       showToast('New API key copied to clipboard', 'info');
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Failed to regenerate API key';
+    onError: (error: unknown) => {
+      const message =
+        (error as { response?: { data?: { message?: string } } }).response?.data?.message ||
+        'Failed to regenerate API key';
       showToast(message, 'error');
     },
   });
