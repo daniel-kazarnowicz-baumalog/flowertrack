@@ -1,0 +1,148 @@
+.clientDashboard {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.clientDashboard__header {
+  margin-bottom: 2rem;
+}
+
+.clientDashboard__title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
+}
+
+.clientDashboard__subtitle {
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+.clientDashboard__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.clientDashboard__statusCard {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.clientDashboard__statusCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.clientDashboard__statusCard--green {
+  border-left: 4px solid #10b981;
+}
+
+.clientDashboard__statusCard--red {
+  border-left: 4px solid #ef4444;
+}
+
+.clientDashboard__statusCard--yellow {
+  border-left: 4px solid #f59e0b;
+}
+
+.clientDashboard__statusCard--gray {
+  border-left: 4px solid #9ca3af;
+}
+
+.clientDashboard__statusLabel {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.clientDashboard__statusValue {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 0.25rem;
+}
+
+.clientDashboard__statusInfo {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.clientDashboard__placeholder {
+  background: white;
+  border-radius: 8px;
+  padding: 3rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.clientDashboard__placeholderTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
+}
+
+.clientDashboard__placeholderText {
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+.clientDashboard__comingSoon {
+  display: inline-block;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.clientDashboard__actionButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-top: 1rem;
+}
+
+.clientDashboard__actionButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.clientDashboard__placeholderBadge {
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .clientDashboard__title {
+    font-size: 1.5rem;
+  }
+
+  .clientDashboard__grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .clientDashboard__statusValue {
+    font-size: 2rem;
+  }
+}

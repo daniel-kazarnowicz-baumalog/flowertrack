@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth, isServiceUser } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../ui';
 import './Navbar.css';
 
@@ -30,7 +30,9 @@ export function Navbar({ portal }: NavbarProps) {
     ? (user as { fullName: string }).fullName
     : `${(user as { firstName: string; lastName: string }).firstName} ${(user as { firstName: string; lastName: string }).lastName}`;
 
-  const isAdmin = isServiceUser(user) ? user.role === 'Admin' : user.isAdmin;
+  const isAdmin = isService
+    ? (user as { isAdmin?: boolean }).isAdmin || false
+    : (user as { isAdmin: boolean }).isAdmin;
 
   return (
     <nav className={`navbar navbar--${portal}`}>

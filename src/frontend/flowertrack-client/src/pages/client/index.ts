@@ -1,1 +1,2 @@
-export { default as ClientLoginPage } from './ClientLoginPage';
+export { ClientLoginPage } from './ClientLoginPage';
+export { ClientDashboard } from './ClientDashboard';

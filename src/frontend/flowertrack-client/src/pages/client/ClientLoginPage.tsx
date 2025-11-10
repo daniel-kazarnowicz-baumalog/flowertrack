@@ -119,3 +119,4 @@ const ClientLoginPage = () => {
 };
 
 export default ClientLoginPage;
+export { ClientLoginPage };

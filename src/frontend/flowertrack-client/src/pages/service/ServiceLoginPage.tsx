@@ -129,3 +129,4 @@ const ServiceLoginPage = () => {
 };
 
 export default ServiceLoginPage;
+export { ServiceLoginPage };
