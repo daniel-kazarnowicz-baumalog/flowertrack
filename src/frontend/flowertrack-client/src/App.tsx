@@ -1,8 +1,13 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './components/auth';
 import { ServiceLayout } from './components/layout';
-import { ServiceLoginPage, ServiceDashboard } from './pages/service';
-import { ClientLoginPage, ClientDashboard } from './pages/client';
+import {
+  ServiceLoginPage,
+  ServiceDashboard,
+  ServiceForgotPasswordPage,
+  ServiceResetPasswordPage,
+} from './pages/service';
+import { ClientLoginPage, ClientDashboard, ClientActivatePage } from './pages/client';
 import { ClientLayout } from './components/layout';
 import NotFound from './pages/NotFound';
 
@@ -16,6 +21,8 @@ function App() {
         {/* Service Portal Routes */}
         <Route path="/service" element={<Navigate to="/service/login" replace />} />
         <Route path="/service/login" element={<ServiceLoginPage />} />
+        <Route path="/service/forgot-password" element={<ServiceForgotPasswordPage />} />
+        <Route path="/service/reset-password/:token" element={<ServiceResetPasswordPage />} />
         <Route
           path="/service/dashboard"
           element={
@@ -60,6 +67,7 @@ function App() {
         {/* Client Portal Routes */}
         <Route path="/client" element={<Navigate to="/client/login" replace />} />
         <Route path="/client/login" element={<ClientLoginPage />} />
+        <Route path="/client/activate/:token" element={<ClientActivatePage />} />
         <Route
           path="/client/dashboard"
           element={
