@@ -15,8 +15,20 @@ import { apiClient } from '../lib/apiClient';
 
 type UserType = 'service' | 'client';
 
+// Extended user type with additional auth properties
+interface AuthUser extends ServiceUserDto {
+  role: UserType;
+  isAdmin?: boolean;
+  firstName?: string;
+  lastName?: string;
+}
+
+interface ClientAuthUser extends OrganizationUserDto {
+  role: UserType;
+}
+
 interface AuthState {
-  user: ServiceUserDto | OrganizationUserDto | null;
+  user: AuthUser | ClientAuthUser | null;
   userType: UserType | null;
   accessToken: string | null;
   refreshToken: string | null;
@@ -30,13 +42,13 @@ interface AuthContextValue extends AuthState {
     accessToken: string,
     refreshToken: string,
     expiresAt: string,
-    user: ServiceUserDto | OrganizationUserDto,
+    user: AuthUser | ClientAuthUser,
     userType: UserType
   ) => void;
   loginService: (email: string, password: string) => Promise<void>;
   loginClient: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  updateUser: (user: ServiceUserDto | OrganizationUserDto) => void;
+  updateUser: (user: AuthUser | ClientAuthUser) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -108,7 +120,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       accessToken: string,
       refreshToken: string,
       expiresAt: string,
-      user: ServiceUserDto | OrganizationUserDto,
+      user: AuthUser | ClientAuthUser,
       userType: UserType
     ) => {
       // Save to localStorage
@@ -152,7 +164,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     });
   }, []);
 
-  const updateUser = useCallback((user: ServiceUserDto | OrganizationUserDto) => {
+  const updateUser = useCallback((user: AuthUser | ClientAuthUser) => {
     localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
     setState((prev) => ({ ...prev, user }));
   }, []);
@@ -164,11 +176,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
         password,
       });
 
+      // Map ServiceUserDto to AuthUser
+      const authUser: AuthUser = {
+        ...response.data.user,
+        role: 'service',
+        isAdmin: response.data.user.role?.toLowerCase() === 'admin',
+        firstName: response.data.user.fullName?.split(' ')[0] || '',
+        lastName: response.data.user.fullName?.split(' ').slice(1).join(' ') || '',
+      };
+
       login(
         response.data.accessToken,
         response.data.refreshToken,
         response.data.expiresAt,
-        response.data.user,
+        authUser,
         'service'
       );
     },
@@ -182,11 +203,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
         { email, password }
       );
 
+      // Map OrganizationUserDto to ClientAuthUser
+      const authUser: ClientAuthUser = {
+        ...response.data.user,
+        role: 'client',
+      };
+
       login(
         response.data.accessToken,
         response.data.refreshToken,
         response.data.expiresAt,
-        response.data.user,
+        authUser,
         'client'
       );
     },

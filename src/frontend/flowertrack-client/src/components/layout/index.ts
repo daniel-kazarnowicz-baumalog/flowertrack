@@ -7,3 +7,5 @@ export type { ClientLayoutProps } from './ClientLayout';
 
 export { Navbar } from './Navbar';
 export type { NavbarProps } from './Navbar';
+
+export { ServiceLayout } from './ServiceLayout';

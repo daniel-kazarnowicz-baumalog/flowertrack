@@ -1,1 +1,2 @@
-export { default as ServiceLoginPage } from './ServiceLoginPage';
+export { ServiceLoginPage } from './ServiceLoginPage';
+export { ServiceDashboard } from './ServiceDashboard';
