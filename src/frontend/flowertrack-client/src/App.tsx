@@ -1,20 +1,21 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ServiceLoginPage } from './pages/service';
 import { ClientLoginPage } from './pages/client';
-import { ServiceLanding, ClientLanding } from './pages/landing';
 import NotFound from './pages/NotFound';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Landing Pages */}
-        <Route path="/" element={<ServiceLanding />} />
-        <Route path="/service" element={<ServiceLanding />} />
-        <Route path="/client" element={<ClientLanding />} />
+        {/* Root redirects to service login */}
+        <Route path="/" element={<Navigate to="/service/login" replace />} />
 
-        {/* Login Pages */}
+        {/* Service Portal Routes */}
+        <Route path="/service" element={<Navigate to="/service/login" replace />} />
         <Route path="/service/login" element={<ServiceLoginPage />} />
+
+        {/* Client Portal Routes */}
+        <Route path="/client" element={<Navigate to="/client/login" replace />} />
         <Route path="/client/login" element={<ClientLoginPage />} />
 
         {/* 404 Not Found */}
