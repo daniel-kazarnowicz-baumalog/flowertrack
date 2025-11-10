@@ -171,7 +171,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const loginService = useCallback(
     async (email: string, password: string) => {
-      const response = await apiClient.post<LoginServiceUserResponse>('/api/auth/service/login', {
+      const response = await apiClient.post<LoginServiceUserResponse>('/auth/service/login', {
         email,
         password,
       });
@@ -199,7 +199,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const loginClient = useCallback(
     async (email: string, password: string) => {
       const response = await apiClient.post<LoginOrganizationUserResponse>(
-        '/api/auth/client/login',
+        '/auth/client/login',
         { email, password }
       );
 
