@@ -5,3 +5,6 @@ export { ServiceResetPasswordPage } from './ServiceResetPasswordPage';
 export { ServiceTicketsPage } from './ServiceTicketsPage';
 export { ServiceTicketDetailPage } from './ServiceTicketDetailPage';
 export { OrganizationsListPage } from './OrganizationsListPage';
+export { OrganizationDetailPage } from './OrganizationDetailPage';
+export { MachinesListPage } from './MachinesListPage';
+export { MachineDetailPage } from './MachineDetailPage';

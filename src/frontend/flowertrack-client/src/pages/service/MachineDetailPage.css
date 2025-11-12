@@ -1,0 +1,330 @@
+/* MachineDetailPage.css */
+
+.machineDetail {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.machineDetail__loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.machineDetail__error {
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.machineDetail__error h2 {
+  color: var(--color-error);
+  margin-bottom: 1rem;
+}
+
+.machineDetail__error p {
+  color: var(--color-text-secondary);
+  margin-bottom: 2rem;
+}
+
+/* Breadcrumb */
+.machineDetail__breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.machineDetail__breadcrumbLink {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.machineDetail__breadcrumbLink:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+.machineDetail__breadcrumbSeparator {
+  color: var(--color-text-secondary);
+}
+
+.machineDetail__breadcrumbCurrent {
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+/* Header */
+.machineDetail__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.machineDetail__headerLeft {
+  flex: 1;
+}
+
+.machineDetail__title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.machineDetail__subtitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+}
+
+.machineDetail__separator {
+  color: var(--color-text-tertiary);
+}
+
+.machineDetail__orgLink {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.machineDetail__orgLink:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+.machineDetail__headerRight {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.machineDetail__statusControl {
+  position: relative;
+}
+
+.machineDetail__statusDropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  min-width: 150px;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.machineDetail__statusOption {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.machineDetail__statusOption:last-child {
+  border-bottom: none;
+}
+
+.machineDetail__statusOption:hover {
+  background-color: var(--color-bg-hover);
+}
+
+/* Overview Section */
+.machineDetail__overview {
+  margin-bottom: 2rem;
+}
+
+.machineDetail__overviewGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.machineDetail__overviewItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.machineDetail__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.machineDetail__value {
+  font-size: 1rem;
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.machineDetail__notes {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.machineDetail__notesText {
+  margin-top: 0.5rem;
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* Section */
+.machineDetail__section {
+  margin-bottom: 2rem;
+}
+
+.machineDetail__sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.machineDetail__sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+/* Empty State */
+.machineDetail__emptyState {
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.machineDetail__emptyText {
+  font-size: 1.125rem;
+  color: var(--color-text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.machineDetail__emptySubtext {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+/* Tickets Table */
+.machineDetail__ticketsTable {
+  overflow-x: auto;
+}
+
+.machineDetail__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.machineDetail__table thead {
+  background-color: var(--color-bg-secondary);
+}
+
+.machineDetail__table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.machineDetail__table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.machineDetail__table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.machineDetail__table tbody tr:hover {
+  background-color: var(--color-bg-hover);
+}
+
+.machineDetail__ticketNumber {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.machineDetail__viewLink {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.machineDetail__viewLink:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .machineDetail {
+    padding: 1rem;
+  }
+
+  .machineDetail__header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .machineDetail__headerRight {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .machineDetail__title {
+    font-size: 1.5rem;
+  }
+
+  .machineDetail__overviewGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .machineDetail__sectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .machineDetail__table {
+    font-size: 0.875rem;
+  }
+
+  .machineDetail__table th,
+  .machineDetail__table td {
+    padding: 0.5rem;
+  }
+
+  .machineDetail__statusDropdown {
+    right: auto;
+    left: 0;
+  }
+}

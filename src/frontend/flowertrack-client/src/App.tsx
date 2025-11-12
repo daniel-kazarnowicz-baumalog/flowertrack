@@ -9,6 +9,9 @@ import {
   ServiceTicketsPage,
   ServiceTicketDetailPage,
   OrganizationsListPage,
+  OrganizationDetailPage,
+  MachinesListPage,
+  MachineDetailPage,
 } from './pages/service';
 import {
   ClientLoginPage,
@@ -68,6 +71,36 @@ function App() {
             <ProtectedRoute requiredRole="service">
               <ServiceLayout>
                 <OrganizationsListPage />
+              </ServiceLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/service/organizations/:id"
+          element={
+            <ProtectedRoute requiredRole="service">
+              <ServiceLayout>
+                <OrganizationDetailPage />
+              </ServiceLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/service/machines"
+          element={
+            <ProtectedRoute requiredRole="service">
+              <ServiceLayout>
+                <MachinesListPage />
+              </ServiceLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/service/machines/:id"
+          element={
+            <ProtectedRoute requiredRole="service">
+              <ServiceLayout>
+                <MachineDetailPage />
               </ServiceLayout>
             </ProtectedRoute>
           }
