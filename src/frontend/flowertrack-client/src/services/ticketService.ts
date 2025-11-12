@@ -3,7 +3,7 @@
  * Handles CRUD operations, status changes, assignments, comments, and attachments
  */
 
-import apiClient from '../lib/apiClient';
+import { apiClient } from '../lib/apiClient';
 import type {
   TicketDto,
   CreateTicketRequest,

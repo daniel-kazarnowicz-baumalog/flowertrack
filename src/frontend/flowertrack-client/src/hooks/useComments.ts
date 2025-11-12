@@ -2,7 +2,8 @@
  * React Query hooks for ticket comments and notes
  */
 
-import { useQuery, useMutation, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import type { UseQueryOptions } from '@tanstack/react-query';
 import ticketService from '../services/ticketService';
 import type {
   CommentDto,

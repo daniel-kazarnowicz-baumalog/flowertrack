@@ -1,0 +1,58 @@
+.clientTicketsPage {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.clientTicketsPage__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.clientTicketsPage__header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
+.clientTicketsPage__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+  background: white;
+  border: 1px solid #ef4444;
+  border-radius: 8px;
+  margin-top: 2rem;
+}
+
+.clientTicketsPage__error h2 {
+  color: #ef4444;
+  margin: 0;
+}
+
+.clientTicketsPage__error p {
+  color: #666;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .clientTicketsPage {
+    padding: 1rem;
+  }
+
+  .clientTicketsPage__header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .clientTicketsPage__header h1 {
+    font-size: 1.5rem;
+  }
+}

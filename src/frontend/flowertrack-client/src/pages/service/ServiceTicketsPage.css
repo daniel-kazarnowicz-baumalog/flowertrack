@@ -1,0 +1,75 @@
+.serviceTicketsPage {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.serviceTicketsPage__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.serviceTicketsPage__header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
+.serviceTicketsPage__stats {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.serviceTicketsPage__count {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.serviceTicketsPage__count strong {
+  color: #7c3aed;
+  font-size: 1.25rem;
+  margin-left: 0.5rem;
+}
+
+.serviceTicketsPage__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+  background: white;
+  border: 1px solid #ef4444;
+  border-radius: 8px;
+  margin-top: 2rem;
+}
+
+.serviceTicketsPage__error h2 {
+  color: #ef4444;
+  margin: 0;
+}
+
+.serviceTicketsPage__error p {
+  color: #666;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .serviceTicketsPage {
+    padding: 1rem;
+  }
+
+  .serviceTicketsPage__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .serviceTicketsPage__header h1 {
+    font-size: 1.5rem;
+  }
+}

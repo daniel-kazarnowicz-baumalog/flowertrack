@@ -21,8 +21,8 @@ export function Badge({ variant = 'default', size = 'md', children, className = 
   return <span className={classes}>{children}</span>;
 }
 
-// Helper functions for ticket-specific badges
-export function TicketStatusBadge({ status }: { status: string }) {
+// Helper functions for mapping status/priority to badge variants
+export function getStatusColor(status: string): BadgeVariant {
   const variantMap: Record<string, BadgeVariant> = {
     New: 'info',
     Accepted: 'primary',
@@ -31,17 +31,24 @@ export function TicketStatusBadge({ status }: { status: string }) {
     Closed: 'default',
     Reopened: 'danger',
   };
-
-  return <Badge variant={variantMap[status] || 'default'}>{status}</Badge>;
+  return variantMap[status] || 'default';
 }
 
-export function TicketPriorityBadge({ priority }: { priority: string }) {
+export function getPriorityColor(priority: string): BadgeVariant {
   const variantMap: Record<string, BadgeVariant> = {
     Low: 'default',
     Medium: 'info',
     High: 'warning',
     Critical: 'danger',
   };
+  return variantMap[priority] || 'default';
+}
 
-  return <Badge variant={variantMap[priority] || 'default'}>{priority}</Badge>;
+// Helper functions for ticket-specific badges
+export function TicketStatusBadge({ status }: { status: string }) {
+  return <Badge variant={getStatusColor(status)}>{status}</Badge>;
+}
+
+export function TicketPriorityBadge({ priority }: { priority: string }) {
+  return <Badge variant={getPriorityColor(priority)}>{priority}</Badge>;
 }
