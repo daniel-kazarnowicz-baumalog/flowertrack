@@ -1,0 +1,165 @@
+.ticketTable {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.ticketTable__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.ticketTable__empty {
+  padding: 3rem;
+  text-align: center;
+  color: #666;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.ticketTable__bulkActions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.ticketTable__bulkCount {
+  font-weight: 600;
+  color: #7c3aed;
+  margin-right: auto;
+}
+
+.ticketTable__container {
+  overflow-x: auto;
+}
+
+.ticketTable__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ticketTable__table thead {
+  background: #f8f9fa;
+}
+
+.ticketTable__table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #333;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.ticketTable__checkboxCell {
+  width: 40px;
+  text-align: center !important;
+}
+
+.ticketTable__row {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.ticketTable__row:hover {
+  background-color: #f8f9fa;
+}
+
+.ticketTable__table td {
+  padding: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: middle;
+}
+
+.ticketTable__number {
+  font-weight: 600;
+  color: #7c3aed;
+  white-space: nowrap;
+}
+
+.ticketTable__title {
+  max-width: 300px;
+}
+
+.ticketTable__titleText {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ticketTable__creator {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.ticketTable__organization {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ticketTable__machine {
+  font-size: 0.875rem;
+}
+
+.ticketTable__serialNumber {
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
+.ticketTable__assignee {
+  font-size: 0.875rem;
+}
+
+.ticketTable__unassigned {
+  color: #999;
+  font-style: italic;
+}
+
+.ticketTable__date {
+  font-size: 0.875rem;
+  color: #666;
+  white-space: nowrap;
+}
+
+@media (max-width: 1200px) {
+  .ticketTable__title {
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .ticketTable__table {
+    font-size: 0.875rem;
+  }
+
+  .ticketTable__table th,
+  .ticketTable__table td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .ticketTable__title {
+    max-width: 150px;
+  }
+
+  .ticketTable__bulkActions {
+    flex-wrap: wrap;
+  }
+}

@@ -1,0 +1,141 @@
+.ticketFilters {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.ticketFilters__header {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.ticketFilters__search {
+  flex: 1;
+  min-width: 300px;
+}
+
+.ticketFilters__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ticketFilters__toggleButton {
+  white-space: nowrap;
+}
+
+.ticketFilters__panel {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+  display: grid;
+  gap: 1rem;
+}
+
+.ticketFilters__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ticketFilters__label {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #333;
+}
+
+.ticketFilters__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ticketFilters__chip {
+  padding: 0.5rem 1rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 20px;
+  background: white;
+  color: #666;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ticketFilters__chip:hover {
+  border-color: #7c3aed;
+  color: #7c3aed;
+}
+
+.ticketFilters__chip--active {
+  background: #7c3aed;
+  color: white;
+  border-color: #7c3aed;
+}
+
+.ticketFilters__chip--low {
+  border-color: #10b981;
+}
+
+.ticketFilters__chip--medium {
+  border-color: #f59e0b;
+}
+
+.ticketFilters__chip--high {
+  border-color: #ef4444;
+}
+
+.ticketFilters__chip--critical {
+  border-color: #dc2626;
+}
+
+.ticketFilters__chip--active.ticketFilters__chip--low {
+  background: #10b981;
+  border-color: #10b981;
+}
+
+.ticketFilters__chip--active.ticketFilters__chip--medium {
+  background: #f59e0b;
+  border-color: #f59e0b;
+}
+
+.ticketFilters__chip--active.ticketFilters__chip--high {
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+.ticketFilters__chip--active.ticketFilters__chip--critical {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+.ticketFilters__select {
+  padding: 0.5rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background: white;
+  cursor: pointer;
+}
+
+.ticketFilters__select:focus {
+  outline: none;
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+@media (max-width: 768px) {
+  .ticketFilters__header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ticketFilters__search {
+    min-width: auto;
+  }
+
+  .ticketFilters__actions {
+    justify-content: space-between;
+  }
+}

@@ -6,8 +6,14 @@ import {
   ServiceDashboard,
   ServiceForgotPasswordPage,
   ServiceResetPasswordPage,
+  ServiceTicketsPage,
 } from './pages/service';
-import { ClientLoginPage, ClientDashboard, ClientActivatePage } from './pages/client';
+import {
+  ClientLoginPage,
+  ClientDashboard,
+  ClientActivatePage,
+  ClientTicketsPage,
+} from './pages/client';
 import { ClientLayout } from './components/layout';
 import NotFound from './pages/NotFound';
 
@@ -38,7 +44,7 @@ function App() {
           element={
             <ProtectedRoute requiredRole="service">
               <ServiceLayout>
-                <div>Tickets page - Phase 2</div>
+                <ServiceTicketsPage />
               </ServiceLayout>
             </ProtectedRoute>
           }
@@ -83,7 +89,7 @@ function App() {
           element={
             <ProtectedRoute requiredRole="client">
               <ClientLayout>
-                <div>Tickets page - Phase 2</div>
+                <ClientTicketsPage />
               </ClientLayout>
             </ProtectedRoute>
           }
