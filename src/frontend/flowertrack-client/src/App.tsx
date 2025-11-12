@@ -9,6 +9,7 @@ import {
   ServiceTicketsPage,
   ServiceTicketDetailPage,
   OrganizationsListPage,
+  OrganizationDetailPage,
 } from './pages/service';
 import {
   ClientLoginPage,
@@ -68,6 +69,16 @@ function App() {
             <ProtectedRoute requiredRole="service">
               <ServiceLayout>
                 <OrganizationsListPage />
+              </ServiceLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/service/organizations/:id"
+          element={
+            <ProtectedRoute requiredRole="service">
+              <ServiceLayout>
+                <OrganizationDetailPage />
               </ServiceLayout>
             </ProtectedRoute>
           }
