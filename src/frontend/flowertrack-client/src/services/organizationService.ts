@@ -51,7 +51,7 @@ export const organizationService = {
    */
   async regenerateApiKey(id: string): Promise<{ apiKey: string }> {
     const response = await apiClient.post<{ apiKey: string }>(
-      `/api/organizations/${id}/regenerate-api-key`,
+      `/api/organizations/${id}/regenerate-api-key`
     );
     return response.data;
   },
