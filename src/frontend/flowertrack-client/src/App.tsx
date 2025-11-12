@@ -7,12 +7,15 @@ import {
   ServiceForgotPasswordPage,
   ServiceResetPasswordPage,
   ServiceTicketsPage,
+  ServiceTicketDetailPage,
+  OrganizationsListPage,
 } from './pages/service';
 import {
   ClientLoginPage,
   ClientDashboard,
   ClientActivatePage,
   ClientTicketsPage,
+  ClientTicketDetailPage,
 } from './pages/client';
 import { ClientLayout } from './components/layout';
 import NotFound from './pages/NotFound';
@@ -50,11 +53,21 @@ function App() {
           }
         />
         <Route
+          path="/service/tickets/:id"
+          element={
+            <ProtectedRoute requiredRole="service">
+              <ServiceLayout>
+                <ServiceTicketDetailPage />
+              </ServiceLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/service/organizations"
           element={
             <ProtectedRoute requiredRole="service">
               <ServiceLayout>
-                <div>Organizations page - Phase 3</div>
+                <OrganizationsListPage />
               </ServiceLayout>
             </ProtectedRoute>
           }
@@ -90,6 +103,16 @@ function App() {
             <ProtectedRoute requiredRole="client">
               <ClientLayout>
                 <ClientTicketsPage />
+              </ClientLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/client/tickets/:id"
+          element={
+            <ProtectedRoute requiredRole="client">
+              <ClientLayout>
+                <ClientTicketDetailPage />
               </ClientLayout>
             </ProtectedRoute>
           }

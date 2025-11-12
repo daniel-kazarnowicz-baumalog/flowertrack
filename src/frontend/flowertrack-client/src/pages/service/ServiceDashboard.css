@@ -41,6 +41,18 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.serviceDashboard__kpiCard--critical {
+  border-left: 4px solid #ef4444;
+}
+
+.serviceDashboard__kpiCard--assigned {
+  border-left: 4px solid #3b82f6;
+}
+
+.serviceDashboard__kpiCard--unassigned {
+  border-left: 4px solid #f59e0b;
+}
+
 .serviceDashboard__kpiLabel {
   font-size: 0.875rem;
   color: #6b7280;
@@ -96,6 +108,133 @@
   font-weight: 600;
 }
 
+/* Loading State */
+.serviceDashboard__loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+/* Error State */
+.serviceDashboard__error {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+}
+
+.serviceDashboard__error h2 {
+  color: #991b1b;
+  margin-bottom: 0.5rem;
+}
+
+.serviceDashboard__error p {
+  color: #dc2626;
+}
+
+/* Row Layout */
+.serviceDashboard__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.serviceDashboard__card {
+  padding: 1.5rem;
+}
+
+.serviceDashboard__cardTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 1rem;
+}
+
+.serviceDashboard__statusGrid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.serviceDashboard__statusItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border-radius: 6px;
+}
+
+.serviceDashboard__statusLabel {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.serviceDashboard__statusValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+/* Activity List */
+.serviceDashboard__activityCard {
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.serviceDashboard__activityList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.serviceDashboard__activityItem {
+  display: flex;
+  align-items: start;
+  padding: 1rem;
+  border-radius: 6px;
+  background: #f9fafb;
+  transition: background 0.2s;
+}
+
+.serviceDashboard__activityItem:hover {
+  background: #f3f4f6;
+}
+
+.serviceDashboard__activityIcon {
+  font-size: 1.5rem;
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.serviceDashboard__activityContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.serviceDashboard__activityTitle {
+  font-weight: 500;
+  color: #1a1a1a;
+  margin-bottom: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.serviceDashboard__activityMeta {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.serviceDashboard__empty {
+  text-align: center;
+  padding: 2rem;
+  color: #9ca3af;
+}
+
 /* Skeleton Animation */
 .serviceDashboard__skeleton {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
@@ -142,5 +281,17 @@
 
   .serviceDashboard__kpiValue {
     font-size: 2rem;
+  }
+}
+
+/* Charts Row */
+.serviceDashboard__chartsRow {
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .serviceDashboard__chartsRow {
+    grid-template-columns: 1fr;
   }
 }
