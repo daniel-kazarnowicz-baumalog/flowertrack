@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMachines, useMachineMutations } from '../../hooks/useMachines';
 import { RegisterMachineModal } from '../../components/machines';
+import { useMachines } from '../../hooks/useMachines';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Loader } from '../../components/ui/Loader';
 import { Pagination } from '../../components/tickets/Pagination';
 import type { MachineStatus, CreateMachineRequest } from '../../types/api';
+import type { MachineStatus } from '../../types/api';
 import './MachinesListPage.css';
 
 /**
@@ -99,6 +101,7 @@ export const MachinesListPage = () => {
       <div className="machinesList__header">
         <h1>Machines</h1>
         <Button onClick={() => setIsRegisterModalOpen(true)}>➕ Register Machine</Button>
+        <Button onClick={() => navigate('/service/machines/register')}>➕ Register Machine</Button>
       </div>
 
       {/* Filters */}
@@ -154,6 +157,9 @@ export const MachinesListPage = () => {
           </p>
           {!search && statusFilter === 'All' && (
             <Button onClick={() => setIsRegisterModalOpen(true)}>Register First Machine</Button>
+            <Button onClick={() => navigate('/service/machines/register')}>
+              Register First Machine
+            </Button>
           )}
         </div>
       ) : (
@@ -181,6 +187,7 @@ export const MachinesListPage = () => {
               </thead>
               <tbody>
                 {data.items.map((machine: { id: string; serialNumber: string; model: string; status: MachineStatus; organizationId: string; organizationName: string; location?: string; activeTicketsCount: number }) => (
+                {data.items.map((machine) => (
                   <tr key={machine.id}>
                     <td>
                       <strong>{machine.serialNumber}</strong>

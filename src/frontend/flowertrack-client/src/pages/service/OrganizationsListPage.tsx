@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOrganizations } from '../../hooks/useOrganizations';
+import { OnboardOrganizationModal } from '../../components/organizations';
 import { Loader } from '../../components/ui/Loader';
 import { Button } from '../../components/ui/Button';
-import type { OrganizationDto } from '../../types/api';
+import type { OrganizationDto, OnboardOrganizationRequest } from '../../types/api';
 import './OrganizationsListPage.css';
 
 /**
@@ -12,12 +13,14 @@ import './OrganizationsListPage.css';
  */
 export const OrganizationsListPage = () => {
   const navigate = useNavigate();
-  const { organizations, isLoading, error } = useOrganizations();
+  const { organizations, isLoading, error, createOrganizationAsync, isCreating } =
+    useOrganizations();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterAlarms, setFilterAlarms] = useState(false);
   const [filterActiveTickets, setFilterActiveTickets] = useState(false);
   const [sortField, setSortField] = useState<keyof OrganizationDto>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Filter organizations based on search and filters
   const filteredOrganizations = organizations?.filter((org: OrganizationDto) => {
@@ -31,6 +34,17 @@ export const OrganizationsListPage = () => {
 
     return matchesSearch && matchesAlarms && matchesActiveTickets;
   });
+
+  const handleOnboardOrganization = async (data: OnboardOrganizationRequest) => {
+    try {
+      const organization = await createOrganizationAsync(data);
+      setIsModalOpen(false);
+      navigate(`/service/organizations/${organization.id}`);
+    } catch (error) {
+      // Error is already handled by the mutation with toast
+      console.error('Failed to onboard organization:', error);
+    }
+  };
 
   // Sort organizations
   const sortedOrganizations = filteredOrganizations?.sort(
@@ -99,7 +113,7 @@ export const OrganizationsListPage = () => {
             Manage client organizations and their settings
           </p>
         </div>
-        <Button onClick={() => {}} variant="primary">
+        <Button onClick={() => setIsModalOpen(true)} variant="primary">
           + Onboard Organization
         </Button>
       </div>
@@ -209,6 +223,14 @@ export const OrganizationsListPage = () => {
           <p>No organizations found matching your filters.</p>
         </div>
       )}
+
+      {/* Onboard Modal */}
+      <OnboardOrganizationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleOnboardOrganization}
+        isLoading={isCreating}
+      />
     </div>
   );
 };
