@@ -1,0 +1,45 @@
+/* OnboardOrganizationModal Styles */
+
+.onboardOrg__form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.onboardOrg__section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.onboardOrg__section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.onboardOrg__field {
+  display: flex;
+  flex-direction: column;
+}
+
+.onboardOrg__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.onboardOrg__footer {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+  .onboardOrg__grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,86 @@
+/* EditMachineModal Styles */
+
+.editMachine__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.editMachine__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.editMachine__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.editMachine__helpText {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.editMachine__textarea {
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #374151;
+  font-family: inherit;
+  resize: vertical;
+  transition: all 0.2s;
+}
+
+.editMachine__textarea:hover:not(:disabled) {
+  border-color: #9ca3af;
+}
+
+.editMachine__textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.editMachine__textarea:disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+}
+
+.editMachine__textarea--error {
+  border-color: #ef4444;
+}
+
+.editMachine__textarea--error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.editMachine__errorText {
+  font-size: 0.75rem;
+  color: #ef4444;
+  margin-top: 0.25rem;
+}
+
+.editMachine__charCount {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: right;
+}
+
+.editMachine__error {
+  padding: 0.75rem 1rem;
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 0.875rem;
+}
+
+.editMachine__footer {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
