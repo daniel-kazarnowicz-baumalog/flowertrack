@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMachines } from '../../hooks/useMachines';
+import { RegisterMachineModal } from '../../components/machines';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -21,6 +22,7 @@ export const MachinesListPage = () => {
   const [statusFilter, setStatusFilter] = useState<string>('All');
   const [sortBy, setSortBy] = useState('serialNumber');
   const [sortDesc, setSortDesc] = useState(false);
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
 
   // Debounced search
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -85,7 +87,7 @@ export const MachinesListPage = () => {
     <div className="machinesList">
       <div className="machinesList__header">
         <h1>Machines</h1>
-        <Button onClick={() => navigate('/service/machines/register')}>➕ Register Machine</Button>
+        <Button onClick={() => setIsRegisterModalOpen(true)}>➕ Register Machine</Button>
       </div>
 
       {/* Filters */}
@@ -140,9 +142,7 @@ export const MachinesListPage = () => {
               : 'Get started by registering your first machine.'}
           </p>
           {!search && statusFilter === 'All' && (
-            <Button onClick={() => navigate('/service/machines/register')}>
-              Register First Machine
-            </Button>
+            <Button onClick={() => setIsRegisterModalOpen(true)}>Register First Machine</Button>
           )}
         </div>
       ) : (
@@ -224,6 +224,15 @@ export const MachinesListPage = () => {
           </div>
         </>
       )}
+
+      <RegisterMachineModal
+        isOpen={isRegisterModalOpen}
+        onClose={() => setIsRegisterModalOpen(false)}
+        onSuccess={(machine) => {
+          setIsRegisterModalOpen(false);
+          navigate(`/service/machines/${machine.id}`);
+        }}
+      />
     </div>
   );
 };
