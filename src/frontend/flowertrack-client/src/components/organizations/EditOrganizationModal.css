@@ -1,0 +1,18 @@
+/* EditOrganizationModal Styles */
+
+.editOrg__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.editOrg__field {
+  display: flex;
+  flex-direction: column;
+}
+
+.editOrg__footer {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}

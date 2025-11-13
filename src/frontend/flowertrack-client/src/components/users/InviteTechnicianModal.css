@@ -1,0 +1,114 @@
+.inviteTechnicianForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.inviteTechnicianForm__error {
+  padding: 0.75rem 1rem;
+  background-color: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: 0.375rem;
+  color: #dc2626;
+  font-size: 0.875rem;
+}
+
+.inviteTechnicianForm__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inviteTechnicianForm__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.inviteTechnicianForm__required {
+  color: #dc2626;
+}
+
+.inviteTechnicianForm__footer {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Role Selector Styles */
+.roleSelector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.roleCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #ffffff;
+}
+
+.roleCard:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+}
+
+.roleCard--selected {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+}
+
+.roleCard__input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.roleCard__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.roleCard__icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.roleCard__name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.roleCard__description {
+  font-size: 0.75rem;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+.roleCard--selected .roleCard__name {
+  color: #3b82f6;
+}
+
+.roleCard--selected .roleCard__description {
+  color: #2563eb;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .roleSelector {
+    grid-template-columns: 1fr;
+  }
+}
