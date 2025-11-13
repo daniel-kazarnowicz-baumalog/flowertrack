@@ -10,6 +10,7 @@ import {
   ServiceTicketDetailPage,
   OrganizationsListPage,
   OrganizationDetailPage,
+  ServiceUsersListPage,
   MachinesListPage,
   MachineDetailPage,
 } from './pages/service';
@@ -86,6 +87,11 @@ function App() {
           }
         />
         <Route
+          path="/service/users"
+          element={
+            <ProtectedRoute requiredRole="service" requireAdmin={true}>
+              <ServiceLayout>
+                <ServiceUsersListPage />
           path="/service/machines"
           element={
             <ProtectedRoute requiredRole="service">

@@ -1,0 +1,287 @@
+.serviceUsersListPage {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.serviceUsersListPage__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.serviceUsersListPage__title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.serviceUsersListPage__filters {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.serviceUsersListPage__searchWrapper {
+  flex: 1;
+  min-width: 250px;
+}
+
+.serviceUsersListPage__filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.serviceUsersListPage__filterGroup label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.serviceUsersListPage__select,
+.serviceUsersListPage__pageSizeSelect {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background-color: #ffffff;
+  font-size: 0.875rem;
+  color: #111827;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.serviceUsersListPage__select:hover,
+.serviceUsersListPage__pageSizeSelect:hover {
+  border-color: #9ca3af;
+}
+
+.serviceUsersListPage__select:focus,
+.serviceUsersListPage__pageSizeSelect:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.serviceUsersListPage__loading,
+.serviceUsersListPage__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.serviceUsersListPage__error h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.serviceUsersListPage__error p {
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+.serviceUsersListPage__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.serviceUsersListPage__empty p {
+  font-size: 1.125rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+.serviceUsersListPage__tableWrapper {
+  overflow-x: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: #ffffff;
+}
+
+.serviceUsersListPage__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.serviceUsersListPage__table thead {
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.serviceUsersListPage__table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.serviceUsersListPage__table tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.15s ease;
+}
+
+.serviceUsersListPage__table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.serviceUsersListPage__table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.serviceUsersListPage__table td {
+  padding: 1rem;
+  font-size: 0.875rem;
+  color: #111827;
+}
+
+.serviceUsersListPage__nameCell {
+  font-weight: 500;
+}
+
+.serviceUsersListPage__actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.serviceUsersListPage__roleSelect {
+  padding: 0.375rem 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  background-color: #ffffff;
+  font-size: 0.75rem;
+  color: #111827;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.serviceUsersListPage__roleSelect:hover:not(:disabled) {
+  border-color: #9ca3af;
+}
+
+.serviceUsersListPage__roleSelect:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.serviceUsersListPage__roleSelect:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f3f4f6;
+}
+
+.serviceUsersListPage__pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.serviceUsersListPage__paginationInfo {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.serviceUsersListPage__paginationControls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.serviceUsersListPage__paginationControls label {
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.serviceUsersListPage__pageButtons {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.serviceUsersListPage__pageNumber {
+  font-size: 0.875rem;
+  color: #374151;
+  white-space: nowrap;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .serviceUsersListPage {
+    padding: 1.5rem;
+  }
+
+  .serviceUsersListPage__filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .serviceUsersListPage__searchWrapper {
+    width: 100%;
+  }
+
+  .serviceUsersListPage__pagination {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .serviceUsersListPage__paginationControls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .serviceUsersListPage__pageButtons {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .serviceUsersListPage {
+    padding: 1rem;
+  }
+
+  .serviceUsersListPage__header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .serviceUsersListPage__title {
+    font-size: 1.5rem;
+  }
+
+  .serviceUsersListPage__table {
+    font-size: 0.75rem;
+  }
+
+  .serviceUsersListPage__table th,
+  .serviceUsersListPage__table td {
+    padding: 0.5rem;
+  }
+
+  .serviceUsersListPage__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
