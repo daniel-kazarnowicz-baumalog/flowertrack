@@ -11,6 +11,8 @@ import {
   OrganizationsListPage,
   OrganizationDetailPage,
   ServiceUsersListPage,
+  MachinesListPage,
+  MachineDetailPage,
 } from './pages/service';
 import {
   ClientLoginPage,
@@ -90,6 +92,21 @@ function App() {
             <ProtectedRoute requiredRole="service" requireAdmin={true}>
               <ServiceLayout>
                 <ServiceUsersListPage />
+          path="/service/machines"
+          element={
+            <ProtectedRoute requiredRole="service">
+              <ServiceLayout>
+                <MachinesListPage />
+              </ServiceLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/service/machines/:id"
+          element={
+            <ProtectedRoute requiredRole="service">
+              <ServiceLayout>
+                <MachineDetailPage />
               </ServiceLayout>
             </ProtectedRoute>
           }
