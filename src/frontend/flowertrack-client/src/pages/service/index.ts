@@ -7,3 +7,4 @@ export { ServiceTicketDetailPage } from './ServiceTicketDetailPage';
 export { OrganizationsListPage } from './OrganizationsListPage';
 export { OrganizationDetailPage } from './OrganizationDetailPage';
 export { MachinesListPage } from './MachinesListPage';
+export { ServiceUsersListPage } from './ServiceUsersListPage';
