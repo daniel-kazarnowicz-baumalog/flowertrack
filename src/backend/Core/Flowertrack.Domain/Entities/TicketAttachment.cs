@@ -121,6 +121,7 @@ public sealed class TicketAttachment : AuditableEntity<Guid>
             attachment.TicketId,
             attachment.UploadedBy,
             attachment.FileName,
+            attachment.StoragePath,
             attachment.FileSizeBytes,
             DateTimeOffset.UtcNow));
 

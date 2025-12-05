@@ -12,6 +12,7 @@ public sealed class TicketAttachmentUploadedEvent : DomainEvent
         Guid ticketId,
         Guid uploadedBy,
         string fileName,
+        string storagePath,
         long fileSizeBytes,
         DateTimeOffset occurredAt) : base(ticketId)
     {
@@ -19,6 +20,7 @@ public sealed class TicketAttachmentUploadedEvent : DomainEvent
         TicketId = ticketId;
         UploadedBy = uploadedBy;
         FileName = fileName;
+        StoragePath = storagePath;
         FileSizeBytes = fileSizeBytes;
     }
 
@@ -26,5 +28,6 @@ public sealed class TicketAttachmentUploadedEvent : DomainEvent
     public Guid TicketId { get; }
     public Guid UploadedBy { get; }
     public string FileName { get; }
+    public string StoragePath { get; }
     public long FileSizeBytes { get; }
 }
