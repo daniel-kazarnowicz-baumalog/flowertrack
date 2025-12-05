@@ -278,6 +278,11 @@ try
     app.UseCors();
 
     app.UseAuthentication();
+    
+    // Machine token authentication for /api/ingest/* endpoints
+    // This runs after regular authentication but before authorization
+    app.UseMachineTokenAuthentication();
+    
     app.UseAuthorization();
 
     app.MapControllers();

@@ -22,6 +22,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     // DbSets
     public DbSet<Organization> Organizations => Set<Organization>();
     public DbSet<Machine> Machines => Set<Machine>();
+    public DbSet<MachineLog> MachineLogs => Set<MachineLog>();
     public DbSet<ServiceUser> ServiceUsers => Set<ServiceUser>();
     public DbSet<OrganizationUser> OrganizationUsers => Set<OrganizationUser>();
     public DbSet<Ticket> Tickets => Set<Ticket>();
@@ -31,6 +32,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<UserRole> UserRoles => Set<UserRole>();
+    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

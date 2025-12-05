@@ -1,174 +1,78 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { ProtectedRoute } from './components/auth';
-import { ServiceLayout } from './components/layout';
-import {
-  ServiceLoginPage,
-  ServiceDashboard,
-  ServiceForgotPasswordPage,
-  ServiceResetPasswordPage,
-  ServiceTicketsPage,
-  ServiceTicketDetailPage,
-  OrganizationsListPage,
-  OrganizationDetailPage,
-  ServiceUsersListPage,
-  MachinesListPage,
-  MachineDetailPage,
-} from './pages/service';
-import {
-  ClientLoginPage,
-  ClientDashboard,
-  ClientActivatePage,
-  ClientTicketsPage,
-  ClientTicketDetailPage,
-  OrganizationTeamPage,
-} from './pages/client';
-import { ClientLayout } from './components/layout';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Gateway from './pages/Gateway';
+import ServiceLogin from './pages/ServiceLogin';
+import ClientLogin from './pages/ClientLogin';
+import ProtectedRoute from './components/ProtectedRoute';
+import ServiceDashboard from './pages/service/Dashboard';
+import ClientDashboard from './pages/client/Dashboard';
 import NotFound from './pages/NotFound';
+
+// Service Pages
+import { ServiceTicketsPage } from './pages/service/ServiceTicketsPage';
+import { ServiceTicketDetailPage } from './pages/service/ServiceTicketDetailPage';
+import { OrganizationsListPage } from './pages/service/OrganizationsListPage';
+import { OrganizationDetailPage } from './pages/service/OrganizationDetailPage';
+import { MachinesListPage } from './pages/service/MachinesListPage';
+import { MachineDetailPage } from './pages/service/MachineDetailPage';
+import { ServiceUsersListPage } from './pages/service/ServiceUsersListPage';
+import { ServiceForgotPasswordPage } from './pages/service/ServiceForgotPasswordPage';
+import { ServiceResetPasswordPage } from './pages/service/ServiceResetPasswordPage';
+
+// Client Pages
+import { ClientTicketsPage } from './pages/client/ClientTicketsPage';
+import { ClientTicketDetailPage } from './pages/client/ClientTicketDetailPage';
+import { OrganizationTeamPage } from './pages/client/OrganizationTeamPage';
+import { ClientActivatePage } from './pages/client/ClientActivatePage';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Root redirects to service login */}
-        <Route path="/" element={<Navigate to="/service/login" replace />} />
-
-        {/* Service Portal Routes */}
-        <Route path="/service" element={<Navigate to="/service/login" replace />} />
-        <Route path="/service/login" element={<ServiceLoginPage />} />
+        {/* Public Routes */}
+        <Route path="/" element={<Gateway />} />
+        <Route path="/service" element={<ServiceLogin />} />
+        <Route path="/client" element={<ClientLogin />} />
+        <Route path="/client/activate" element={<ClientActivatePage />} />
         <Route path="/service/forgot-password" element={<ServiceForgotPasswordPage />} />
-        <Route path="/service/reset-password/:token" element={<ServiceResetPasswordPage />} />
+        <Route path="/service/reset-password" element={<ServiceResetPasswordPage />} />
+
+        {/* Service - Protected Routes */}
         <Route
-          path="/service/dashboard"
+          path="/service/*"
           element={
             <ProtectedRoute requiredRole="service">
-              <ServiceLayout>
-                <ServiceDashboard />
-              </ServiceLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/service/tickets"
-          element={
-            <ProtectedRoute requiredRole="service">
-              <ServiceLayout>
-                <ServiceTicketsPage />
-              </ServiceLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/service/tickets/:id"
-          element={
-            <ProtectedRoute requiredRole="service">
-              <ServiceLayout>
-                <ServiceTicketDetailPage />
-              </ServiceLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/service/organizations"
-          element={
-            <ProtectedRoute requiredRole="service">
-              <ServiceLayout>
-                <OrganizationsListPage />
-              </ServiceLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/service/organizations/:id"
-          element={
-            <ProtectedRoute requiredRole="service">
-              <ServiceLayout>
-                <OrganizationDetailPage />
-              </ServiceLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/service/users"
-          element={
-            <ProtectedRoute requiredRole="service" requireAdmin={true}>
-              <ServiceLayout>
-                <ServiceUsersListPage />
-          path="/service/machines"
-          element={
-            <ProtectedRoute requiredRole="service">
-              <ServiceLayout>
-                <MachinesListPage />
-              </ServiceLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/service/machines/:id"
-          element={
-            <ProtectedRoute requiredRole="service">
-              <ServiceLayout>
-                <MachineDetailPage />
-              </ServiceLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/service/admin"
-          element={
-            <ProtectedRoute requiredRole="service" requireAdmin={true}>
-              <ServiceLayout>
-                <div>Admin page - Phase 3</div>
-              </ServiceLayout>
+              <Routes>
+                <Route path="dashboard" element={<ServiceDashboard />} />
+                <Route path="tickets" element={<ServiceTicketsPage />} />
+                <Route path="tickets/:id" element={<ServiceTicketDetailPage />} />
+                <Route path="organizations" element={<OrganizationsListPage />} />
+                <Route path="organizations/:id" element={<OrganizationDetailPage />} />
+                <Route path="machines" element={<MachinesListPage />} />
+                <Route path="machines/:id" element={<MachineDetailPage />} />
+                <Route path="users" element={<ServiceUsersListPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
             </ProtectedRoute>
           }
         />
 
-        {/* Client Portal Routes */}
-        <Route path="/client" element={<Navigate to="/client/login" replace />} />
-        <Route path="/client/login" element={<ClientLoginPage />} />
-        <Route path="/client/activate/:token" element={<ClientActivatePage />} />
+        {/* Client - Protected Routes */}
         <Route
-          path="/client/dashboard"
+          path="/client/*"
           element={
             <ProtectedRoute requiredRole="client">
-              <ClientLayout>
-                <ClientDashboard />
-              </ClientLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/client/tickets"
-          element={
-            <ProtectedRoute requiredRole="client">
-              <ClientLayout>
-                <ClientTicketsPage />
-              </ClientLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/client/tickets/:id"
-          element={
-            <ProtectedRoute requiredRole="client">
-              <ClientLayout>
-                <ClientTicketDetailPage />
-              </ClientLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/client/team"
-          element={
-            <ProtectedRoute requiredRole="client">
-              <ClientLayout>
-                <OrganizationTeamPage />
-              </ClientLayout>
+              <Routes>
+                <Route path="dashboard" element={<ClientDashboard />} />
+                <Route path="tickets" element={<ClientTicketsPage />} />
+                <Route path="tickets/:id" element={<ClientTicketDetailPage />} />
+                <Route path="team" element={<OrganizationTeamPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
             </ProtectedRoute>
           }
         />
 
-        {/* 404 Not Found */}
+        {/* Fallback */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

@@ -1,15 +1,35 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/login.css';
+import api from '../lib/api';
+import { useAuth } from '../contexts/AuthContext';
 
 const ClientLogin = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const { login } = useAuth();
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Client Login Attempt:', { email, password });
-        // TODO: Implement actual login logic
+        setError('');
+        setIsLoading(true);
+
+        try {
+            const response = await api.post('/auth/client/login', { email, password });
+            // Assuming response data structure
+            const { token, user } = response.data;
+            login(token, user || { email, role: 'client' });
+            navigate('/client/dashboard');
+        } catch (err: any) {
+            console.error('Login error:', err);
+            setError(err.response?.data?.message || 'Błąd logowania. Sprawdź dane.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -23,6 +43,7 @@ const ClientLogin = () => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="login-form">
+                    {error && <div className="error-message" style={{ color: 'red', marginBottom: '1rem', textAlign: 'center' }}>{error}</div>}
                     <div className="form-group">
                         <label htmlFor="email">Email</label>
                         <input
@@ -47,8 +68,8 @@ const ClientLogin = () => {
                         />
                     </div>
 
-                    <button type="submit" className="login-btn">
-                        Zaloguj się
+                    <button type="submit" className="login-btn" disabled={isLoading}>
+                        {isLoading ? 'Logowanie...' : 'Zaloguj się'}
                     </button>
                 </form>
 

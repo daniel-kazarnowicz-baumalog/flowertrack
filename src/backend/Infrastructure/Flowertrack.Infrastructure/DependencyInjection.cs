@@ -49,6 +49,7 @@ public static class DependencyInjection
         // Repositories
         services.AddScoped<IOrganizationRepository, OrganizationRepository>();
         services.AddScoped<IMachineRepository, MachineRepository>();
+        services.AddScoped<IMachineLogRepository, MachineLogRepository>();
         services.AddScoped<IServiceUserRepository, ServiceUserRepository>();
         services.AddScoped<IOrganizationUserRepository, OrganizationUserRepository>();
         services.AddScoped<ITicketRepository, TicketRepository>();
@@ -58,6 +59,7 @@ public static class DependencyInjection
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+        services.AddScoped<IAuditLogRepository, AuditLogRepository>();
 
         // Infrastructure Services
         services.AddScoped<IEmailService, EmailService>();
@@ -66,6 +68,7 @@ public static class DependencyInjection
         services.AddScoped<IUserContext, UserContext>();
         services.AddScoped<IAuthService, SupabaseAuthService>();
         services.AddScoped<IFileStorageService, SupabaseStorageService>();
+        services.AddScoped<IAuditService, AuditService>();
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
         // JWT Token Generator
