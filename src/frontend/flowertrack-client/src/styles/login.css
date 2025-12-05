@@ -1,0 +1,157 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f7fafc;
+    padding: 1rem;
+}
+
+.login-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.back-link {
+    position: absolute;
+    left: 0;
+    top: -1.5rem;
+    color: #718096;
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #2d3748;
+}
+
+.icon-circle {
+    width: 64px;
+    height: 64px;
+    background: #edf2f7;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 1.5rem;
+}
+
+.login-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0 0 0.5rem;
+}
+
+.login-header p {
+    color: #718096;
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #4a5568;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e2e8f0;
+    box-sizing: border-box;
+    /* Fix for width running over */
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+.login-btn {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: none;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    color: white;
+}
+
+/* Service Theme */
+.service-theme .icon-circle {
+    background: #ebf8ff;
+    color: #3182ce;
+}
+
+.service-theme .login-btn {
+    background-color: #3182ce;
+}
+
+.service-theme .login-btn:hover {
+    background-color: #2b6cb0;
+}
+
+.service-theme .form-group input:focus {
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+/* Client Theme */
+.client-theme .icon-circle {
+    background: #f0fff4;
+    color: #38a169;
+}
+
+.client-theme .login-btn {
+    background-color: #38a169;
+}
+
+.client-theme .login-btn:hover {
+    background-color: #2f855a;
+}
+
+.client-theme .form-group input:focus {
+    border-color: #38a169;
+    box-shadow: 0 0 0 3px rgba(56, 161, 105, 0.1);
+}
+
+.login-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.login-footer a {
+    color: #718096;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.login-footer a:hover {
+    color: #4a5568;
+}

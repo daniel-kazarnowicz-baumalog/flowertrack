@@ -1,10 +1,12 @@
 namespace Flowertrack.Domain.Common;
 
+using MediatR;
+
 /// <summary>
 /// Marker interface for domain events.
 /// Domain events represent significant occurrences in the domain that domain experts care about.
 /// </summary>
-public interface IDomainEvent
+public interface IDomainEvent : INotification
 {
     /// <summary>
     /// Unique identifier for this event instance
