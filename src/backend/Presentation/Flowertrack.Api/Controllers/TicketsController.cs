@@ -1,7 +1,5 @@
-using Flowertrack.Application.Comments.Commands.AddComment;
-using Flowertrack.Application.Comments.Commands.UpdateComment;
-using Flowertrack.Application.Comments.Commands.DeleteComment;
-using Flowertrack.Application.Comments.Queries.GetComments;
+using Flowertrack.Application.Tickets.Commands.AddComment;
+using Flowertrack.Application.Tickets.Commands.AddNote;
 using Flowertrack.Application.Tickets.Commands.AssignTicket;
 using Flowertrack.Application.Tickets.Commands.CreateTicket;
 using Flowertrack.Application.Tickets.Commands.DeleteTicket;
@@ -12,11 +10,9 @@ using Flowertrack.Application.Tickets.Queries.GetTicketHistory;
 using Flowertrack.Application.Tickets.Queries.GetTickets;
 using Flowertrack.Application.Tickets.Queries.GetTicketsGroupedByStatus;
 using Flowertrack.Contracts.Common;
-using Flowertrack.Contracts.Comments; // For AddCommentRequest
 using Flowertrack.Contracts.Tickets.Requests;
 using Flowertrack.Contracts.Tickets.Responses;
 using Flowertrack.Contracts.Tickets;
-using Flowertrack.Api.Contracts.Requests;
 using Flowertrack.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -739,6 +735,8 @@ public class TicketsController : ControllerBase
         [FromBody] AddCommentRequest request)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userNameClaim = User.FindFirst(ClaimTypes.Name)?.Value;
+        var userTypeClaim = User.FindFirst("user_type")?.Value;
 
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
         {
@@ -747,12 +745,13 @@ public class TicketsController : ControllerBase
 
         _logger.LogInformation("Adding comment to ticket {TicketId} by user {UserId}", id, userId);
 
-        var command = new AddCommentCommand
-        {
-            TicketId = id,
-            Content = request.Content,
-            IsInternal = request.IsInternal
-        };
+        var command = new AddCommentCommand(
+            id,
+            request.Content,
+            userId,
+            userNameClaim ?? "Unknown User",
+            userTypeClaim ?? "Unknown",
+            request.IsInternal);
 
         var result = await _mediator.Send(command);
 
@@ -763,7 +762,7 @@ public class TicketsController : ControllerBase
         }
 
         return CreatedAtAction(
-            nameof(GetHistory), // Temporarily point to History until GetComments is exposed
+            nameof(GetHistory),
             new { id },
             result.Value);
     }
@@ -795,12 +794,12 @@ public class TicketsController : ControllerBase
 
         _logger.LogInformation("Adding internal note to ticket {TicketId} by user {UserId}", id, userId);
 
-        var command = new AddCommentCommand
-        {
-            TicketId = id,
-            Content = request.Content,
-            IsInternal = true
-        };
+        var command = new AddNoteCommand(
+            id,
+            request.Content,
+            userId,
+            userNameClaim ?? "Unknown User",
+            userTypeClaim ?? "ServiceUser");
 
         var result = await _mediator.Send(command);
 
@@ -821,188 +820,14 @@ public class TicketsController : ControllerBase
             new { id },
             result.Value);
     }
-
-    /// <summary>
-    /// Get comments for a ticket
-    /// </summary>
-    /// <param name="id">Ticket ID</param>
-    /// <param name="pageNumber">Page number</param>
-    /// <param name="pageSize">Page size</param>
-    /// <returns>Paginated list of comments</returns>
-    [HttpGet("{id:guid}/comments")]
-    [ProducesResponseType(typeof(GetCommentsResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetComments(
-        Guid id,
-        [FromQuery] int pageNumber = 1,
-        [FromQuery] int pageSize = 20)
-    {
-        var query = new GetCommentsForTicketQuery
-        {
-            TicketId = id,
-            PageNumber = pageNumber,
-            PageSize = pageSize
-        };
-
-        var result = await _mediator.Send(query);
-
-        if (result.IsFailure)
-        {
-            return NotFound(new ErrorResponse(result.Error ?? "Ticket not found"));
-        }
-
-        var comments = result.Value;
-        
-        // Map to Contract Response
-        var response = new GetCommentsResponse
-        {
-            Items = comments.Items.Select(c => new CommentResponse(
-                c.Id,
-                c.TicketId,
-                c.UserId,
-                c.AuthorName,
-                c.Content,
-                c.IsInternal,
-                c.CreatedAt,
-                c.UpdatedAt,
-                c.CanEdit,
-                c.CanDelete
-            )).ToList(),
-            PageNumber = comments.PageNumber,
-            PageSize = comments.PageSize,
-            TotalCount = comments.TotalCount,
-            TotalPages = comments.TotalPages,
-            HasNextPage = comments.HasNextPage,
-            HasPreviousPage = comments.HasPreviousPage
-        };
-
-        return Ok(response);
-    }
-
-    /// <summary>
-    /// Update a comment
-    /// </summary>
-    /// <param name="id">Ticket ID (ignored in route for command, but useful for consistency)</param>
-    /// <param name="commentId">Comment ID</param>
-    /// <param name="request">Update details</param>
-    [HttpPut("{id:guid}/comments/{commentId:guid}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateComment(
-        Guid id,
-        Guid commentId,
-        [FromBody] UpdateCommentRequest request)
-    {
-        var command = new UpdateCommentCommand
-        {
-            CommentId = commentId,
-            Content = request.Content
-        };
-
-        var result = await _mediator.Send(command);
-
-        if (result.IsFailure)
-        {
-            if (result.Error?.Contains("not found") == true) return NotFound(new ErrorResponse(result.Error));
-            return BadRequest(new ErrorResponse(result.Error ?? "Failed to update comment"));
-        }
-
-        return NoContent();
-    }
-
-    /// <summary>
-    /// Delete a comment
-    /// </summary>
-    [HttpDelete("{id:guid}/comments/{commentId:guid}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeleteComment(Guid id, Guid commentId)
-    {
-        var command = new DeleteCommentCommand(commentId);
-        var result = await _mediator.Send(command);
-
-        if (result.IsFailure)
-        {
-            if (result.Error?.Contains("not found") == true) return NotFound(new ErrorResponse(result.Error));
-            return BadRequest(new ErrorResponse(result.Error ?? "Failed to delete comment"));
-        }
-
-        return NoContent();
-    }
-
-    /// <summary>
-    /// Upload an attachment to a ticket
-    /// </summary>
-    [HttpPost("{id:guid}/attachments")]
-    [Consumes("multipart/form-data")]
-    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UploadAttachment(
-        Guid id,
-        [FromForm] UploadAttachmentRequest request)
-    {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
-        {
-            return Unauthorized(new ErrorResponse("User authentication required"));
-        }
-
-        var command = new Flowertrack.Application.Attachments.Commands.UploadAttachment.UploadTicketAttachmentCommand
-        {
-            TicketId = id,
-            UploadedBy = userId,
-            FileName = request.File.FileName,
-            ContentType = request.File.ContentType,
-            FileSize = request.File.Length,
-            FileStream = request.File.OpenReadStream()
-        };
-
-        var result = await _mediator.Send(command);
-
-        if (result.IsFailure)
-        {
-            if (result.Error?.Contains("not found") == true) return NotFound(new ErrorResponse(result.Error));
-            return BadRequest(new ErrorResponse(result.Error ?? "Failed to upload attachment"));
-        }
-
-        return CreatedAtAction(
-            nameof(GetHistory), // Attachments are listed in history
-            new { id },
-            result.Value);
-    }
-
-    /// <summary>
-    /// Delete an attachment
-    /// </summary>
-    [HttpDelete("{id:guid}/attachments/{attachmentId:guid}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeleteAttachment(Guid id, Guid attachmentId)
-    {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
-        {
-            return Unauthorized(new ErrorResponse("User authentication required"));
-        }
-
-        var command = new Flowertrack.Application.Attachments.Commands.DeleteAttachment.DeleteTicketAttachmentCommand
-        {
-            AttachmentId = attachmentId,
-            UserId = userId
-        };
-
-        var result = await _mediator.Send(command);
-
-        if (result.IsFailure)
-        {
-             if (result.Error?.Contains("not found") == true) return NotFound(new ErrorResponse(result.Error));
-             return BadRequest(new ErrorResponse(result.Error ?? "Failed to delete attachment"));
-        }
-
-        return NoContent();
-    }
 }
+
+/// <summary>
+/// Request DTO for adding a comment
+/// </summary>
+public sealed record AddCommentRequest(string Content, bool IsInternal = false);
+
+/// <summary>
+/// Request DTO for adding an internal note
+/// </summary>
+public sealed record AddNoteRequest(string Content);

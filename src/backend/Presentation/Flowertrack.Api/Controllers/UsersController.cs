@@ -76,7 +76,7 @@ public class UsersController : ControllerBase
     /// Get all service users
     /// </summary>
     [HttpGet("service")]
-    [ProducesResponseType(typeof(List<ServiceUserListItemResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<ServiceUserDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetServiceUsers(
@@ -92,24 +92,7 @@ public class UsersController : ControllerBase
         if (result.IsFailure)
             return BadRequest(new ErrorResponse(result.Error!));
 
-        // Map to response DTO
-        var response = result.Value.Select(u => new ServiceUserListItemResponse
-        {
-            Id = u.Id,
-            Email = u.Email,
-            FirstName = u.FirstName,
-            LastName = u.LastName,
-            FullName = u.FullName,
-            PhoneNumber = u.PhoneNumber,
-            Specialization = u.Specialization,
-            Status = u.Status,
-            IsAvailable = u.IsAvailable,
-            ActiveTicketsCount = u.ActiveTicketsCount,
-            LastActivity = u.LastActivity,
-            CreatedAt = u.CreatedAt
-        }).ToList();
-
-        return Ok(response);
+        return Ok(result.Value);
     }
 
     /// <summary>
@@ -260,7 +243,7 @@ public class UsersController : ControllerBase
     /// Get organization users
     /// </summary>
     [HttpGet("organization/{organizationId:guid}")]
-    [ProducesResponseType(typeof(List<OrganizationUserListItemResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<OrganizationUserDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetOrganizationUsers(
@@ -276,24 +259,7 @@ public class UsersController : ControllerBase
         if (result.IsFailure)
             return BadRequest(new ErrorResponse(result.Error!));
 
-        // Map to response DTO
-        var response = result.Value.Select(u => new OrganizationUserListItemResponse
-        {
-            Id = u.Id,
-            Email = u.Email,
-            FirstName = u.FirstName,
-            LastName = u.LastName,
-            FullName = u.FullName,
-            PhoneNumber = u.PhoneNumber,
-            Role = u.Role,
-            Status = u.Status,
-            IsActivated = u.IsActivated,
-            CreatedTicketsCount = u.CreatedTicketsCount,
-            LastActivity = u.LastActivity,
-            CreatedAt = u.CreatedAt
-        }).ToList();
-
-        return Ok(response);
+        return Ok(result.Value);
     }
 
     /// <summary>

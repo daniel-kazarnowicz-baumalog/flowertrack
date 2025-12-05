@@ -1,0 +1,22 @@
+/* Client Layout Styles */
+
+.client-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f9fafb;
+}
+
+.client-layout__content {
+  flex: 1;
+  padding: 1.5rem;
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .client-layout__content {
+    padding: 1rem;
+  }
+}

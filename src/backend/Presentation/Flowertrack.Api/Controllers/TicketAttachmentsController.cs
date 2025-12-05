@@ -1,6 +1,6 @@
 using Flowertrack.Application.Common.Interfaces;
-using Flowertrack.Application.Attachments.Commands.UploadAttachment;
-using Flowertrack.Application.Attachments.Commands.DeleteAttachment;
+using Flowertrack.Application.Tickets.Commands.UploadTicketAttachment;
+using Flowertrack.Application.Tickets.Commands.DeleteTicketAttachment;
 using Flowertrack.Application.Tickets.Queries.GetTicketAttachments;
 using Flowertrack.Contracts.Common;
 using Flowertrack.Contracts.Tickets.Responses;

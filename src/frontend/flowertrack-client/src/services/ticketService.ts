@@ -1,0 +1,264 @@
+/**
+ * Ticket Service - API operations for ticket management
+ * Handles CRUD operations, status changes, assignments, comments, and attachments
+ */
+
+import { apiClient } from '../lib/apiClient';
+import type {
+  TicketDto,
+  CreateTicketRequest,
+  UpdateTicketRequest,
+  ChangeTicketStatusRequest,
+  AssignTicketRequest,
+  TicketFilters,
+  PaginatedResponse,
+  TicketHistoryEvent,
+  CommentDto,
+  CreateCommentRequest,
+  UpdateCommentRequest,
+  CreateNoteRequest,
+  AttachmentDto,
+} from '../types/api';
+
+/**
+ * Fetch paginated tickets with optional filters
+ */
+export const getTickets = async (
+  filters: TicketFilters = {}
+): Promise<PaginatedResponse<TicketDto>> => {
+  const params = new URLSearchParams();
+
+  // Add filter parameters
+  if (filters.status && filters.status.length > 0) {
+    filters.status.forEach((status) => params.append('status', status));
+  }
+  if (filters.priority && filters.priority.length > 0) {
+    filters.priority.forEach((priority) => params.append('priority', priority));
+  }
+  if (filters.organizationId) {
+    params.append('organizationId', filters.organizationId);
+  }
+  if (filters.machineId) {
+    params.append('machineId', filters.machineId);
+  }
+  if (filters.assignedToId) {
+    params.append('assignedToId', filters.assignedToId);
+  }
+  if (filters.search) {
+    params.append('search', filters.search);
+  }
+  if (filters.page) {
+    params.append('page', filters.page.toString());
+  }
+  if (filters.pageSize) {
+    params.append('pageSize', filters.pageSize.toString());
+  }
+
+  const response = await apiClient.get<PaginatedResponse<TicketDto>>(
+    `/tickets?${params.toString()}`
+  );
+  return response.data;
+};
+
+/**
+ * Fetch single ticket by ID
+ */
+export const getTicketById = async (id: string): Promise<TicketDto> => {
+  const response = await apiClient.get<TicketDto>(`/tickets/${id}`);
+  return response.data;
+};
+
+/**
+ * Create new ticket (client portal)
+ */
+export const createTicket = async (data: CreateTicketRequest): Promise<TicketDto> => {
+  const response = await apiClient.post<TicketDto>('/tickets', data);
+  return response.data;
+};
+
+/**
+ * Update ticket details (title, description, priority)
+ */
+export const updateTicket = async (id: string, data: UpdateTicketRequest): Promise<TicketDto> => {
+  const response = await apiClient.patch<TicketDto>(`/tickets/${id}`, data);
+  return response.data;
+};
+
+/**
+ * Change ticket status with optional justification
+ */
+export const changeTicketStatus = async (
+  id: string,
+  data: ChangeTicketStatusRequest
+): Promise<void> => {
+  await apiClient.post(`/tickets/${id}/status`, data);
+};
+
+/**
+ * Assign ticket to service user (or unassign if serviceUserId is null)
+ */
+export const assignTicket = async (id: string, data: AssignTicketRequest): Promise<void> => {
+  await apiClient.post(`/tickets/${id}/assign`, data);
+};
+
+/**
+ * Fetch ticket history/timeline events
+ */
+export const getTicketHistory = async (ticketId: string): Promise<TicketHistoryEvent[]> => {
+  const response = await apiClient.get<TicketHistoryEvent[]>(`/tickets/${ticketId}/history`);
+  return response.data;
+};
+
+// ============================================================================
+// Comment Operations
+// ============================================================================
+
+/**
+ * Fetch all comments for a ticket (includes public and internal notes based on user role)
+ */
+export const getTicketComments = async (ticketId: string): Promise<CommentDto[]> => {
+  const response = await apiClient.get<CommentDto[]>(`/tickets/${ticketId}/comments`);
+  return response.data;
+};
+
+/**
+ * Add public comment to ticket (visible to client)
+ */
+export const addComment = async (
+  ticketId: string,
+  data: CreateCommentRequest
+): Promise<CommentDto> => {
+  const response = await apiClient.post<CommentDto>(`/tickets/${ticketId}/comments`, data);
+  return response.data;
+};
+
+/**
+ * Add internal note to ticket (only visible to service team)
+ */
+export const addNote = async (ticketId: string, data: CreateNoteRequest): Promise<CommentDto> => {
+  const response = await apiClient.post<CommentDto>(`/tickets/${ticketId}/notes`, data);
+  return response.data;
+};
+
+/**
+ * Update existing comment (only within time limit)
+ */
+export const updateComment = async (
+  ticketId: string,
+  commentId: string,
+  data: UpdateCommentRequest
+): Promise<CommentDto> => {
+  const response = await apiClient.patch<CommentDto>(
+    `/tickets/${ticketId}/comments/${commentId}`,
+    data
+  );
+  return response.data;
+};
+
+/**
+ * Delete comment (only within time limit)
+ */
+export const deleteComment = async (ticketId: string, commentId: string): Promise<void> => {
+  await apiClient.delete(`/tickets/${ticketId}/comments/${commentId}`);
+};
+
+// ============================================================================
+// Attachment Operations
+// ============================================================================
+
+/**
+ * Fetch all attachments for a ticket
+ */
+export const getTicketAttachments = async (ticketId: string): Promise<AttachmentDto[]> => {
+  const response = await apiClient.get<AttachmentDto[]>(`/tickets/${ticketId}/attachments`);
+  return response.data;
+};
+
+/**
+ * Upload attachment to ticket
+ */
+export const uploadAttachment = async (ticketId: string, file: File): Promise<AttachmentDto> => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await apiClient.post<AttachmentDto>(
+    `/tickets/${ticketId}/attachments`,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
+  return response.data;
+};
+
+/**
+ * Download attachment file
+ */
+export const downloadAttachment = async (ticketId: string, attachmentId: string): Promise<Blob> => {
+  const response = await apiClient.get(`/tickets/${ticketId}/attachments/${attachmentId}`, {
+    responseType: 'blob',
+  });
+  return response.data;
+};
+
+/**
+ * Delete attachment
+ */
+export const deleteAttachment = async (ticketId: string, attachmentId: string): Promise<void> => {
+  await apiClient.delete(`/tickets/${ticketId}/attachments/${attachmentId}`);
+};
+
+// ============================================================================
+// Bulk Operations (for service portal)
+// ============================================================================
+
+/**
+ * Bulk assign tickets to service user
+ */
+export const bulkAssignTickets = async (
+  ticketIds: string[],
+  serviceUserId: string | null
+): Promise<void> => {
+  await apiClient.post('/tickets/bulk/assign', {
+    ticketIds,
+    serviceUserId,
+  });
+};
+
+/**
+ * Bulk change ticket status
+ */
+export const bulkChangeStatus = async (
+  ticketIds: string[],
+  newStatus: string,
+  justification?: string
+): Promise<void> => {
+  await apiClient.post('/tickets/bulk/status', {
+    ticketIds,
+    newStatus,
+    justification,
+  });
+};
+
+export default {
+  getTickets,
+  getTicketById,
+  createTicket,
+  updateTicket,
+  changeTicketStatus,
+  assignTicket,
+  getTicketHistory,
+  getTicketComments,
+  addComment,
+  addNote,
+  updateComment,
+  deleteComment,
+  getTicketAttachments,
+  uploadAttachment,
+  downloadAttachment,
+  deleteAttachment,
+  bulkAssignTickets,
+  bulkChangeStatus,
+};

@@ -1,0 +1,207 @@
+.organizationsListPage {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.organizationsListPage__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.organizationsListPage__title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
+}
+
+.organizationsListPage__subtitle {
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+.organizationsListPage__filters {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.organizationsListPage__searchInput {
+  flex: 1;
+  min-width: 250px;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.organizationsListPage__searchInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.organizationsListPage__filterGroup {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.organizationsListPage__filterLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.organizationsListPage__filterLabel input[type='checkbox'] {
+  cursor: pointer;
+}
+
+.organizationsListPage__results {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.organizationsListPage__tableWrapper {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.organizationsListPage__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.organizationsListPage__table thead {
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.organizationsListPage__table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.organizationsListPage__sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s;
+}
+
+.organizationsListPage__sortable:hover {
+  background-color: #f3f4f6;
+}
+
+.organizationsListPage__table td {
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+  color: #1a1a1a;
+}
+
+.organizationsListPage__row:hover {
+  background-color: #f9fafb;
+}
+
+.organizationsListPage__orgName {
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.organizationsListPage__centered {
+  text-align: center;
+}
+
+.organizationsListPage__badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.organizationsListPage__badge--alarm {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.organizationsListPage__loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.organizationsListPage__error {
+  background-color: #fee2e2;
+  border: 1px solid #ef4444;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.organizationsListPage__error h2 {
+  color: #dc2626;
+  margin-bottom: 0.5rem;
+}
+
+.organizationsListPage__error p {
+  color: #991b1b;
+}
+
+.organizationsListPage__empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #9ca3af;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+  .organizationsListPage {
+    padding: 1rem;
+  }
+
+  .organizationsListPage__header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .organizationsListPage__title {
+    font-size: 1.5rem;
+  }
+
+  .organizationsListPage__filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .organizationsListPage__tableWrapper {
+    overflow-x: auto;
+  }
+
+  .organizationsListPage__table {
+    min-width: 800px;
+  }
+}

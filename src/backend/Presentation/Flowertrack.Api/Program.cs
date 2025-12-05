@@ -110,6 +110,9 @@ try
             Description = "Service Ticket Management System API"
         });
 
+        // Handle naming conflicts by using full type names
+        options.CustomSchemaIds(type => type.FullName?.Replace("+", "."));
+
         // Add JWT Authentication to Swagger
         options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
         {
