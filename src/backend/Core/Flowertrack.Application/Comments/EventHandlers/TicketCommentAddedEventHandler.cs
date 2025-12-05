@@ -25,7 +25,7 @@ public class TicketCommentAddedEventHandler : INotificationHandler<TicketComment
 
     public async Task Handle(TicketCommentAddedEvent notification, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Domain Event: Syncing new comment {CommentId} to Ticket History", notification.Id);
+        _logger.LogInformation("Domain Event: Syncing new comment {CommentId} to Ticket History", notification.CommentId);
         /*
         var history = TicketHistory.CreateComment(
             notification.TicketId,

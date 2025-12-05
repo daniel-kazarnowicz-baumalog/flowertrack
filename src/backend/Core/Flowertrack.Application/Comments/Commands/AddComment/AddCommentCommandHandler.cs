@@ -38,19 +38,12 @@ public class AddCommentCommandHandler : IRequestHandler<AddCommentCommand, Resul
         // According to our plan and patterns, we should rely on Domain Business Logic.
         // The TicketComment.Create factory method should be used.
 
-        var commentResult = TicketComment.Create(
+        var comment = TicketComment.Create(
             request.TicketId,
             userId,
             request.Content,
             request.IsInternal
         );
-
-        if (commentResult.IsFailure)
-        {
-            return Result.Failure<Guid>(commentResult.Error);
-        }
-
-        var comment = commentResult.Value;
 
         // Add to context
         _context.TicketComments.Add(comment);

@@ -77,7 +77,7 @@ public class AuthController : ControllerBase
             ExpiresAt = authResult.ExpiresAt ?? DateTimeOffset.UtcNow.AddHours(1),
             User = new Flowertrack.Contracts.Users.ServiceUserDto
             {
-                Id = Guid.Parse(authResult.User!.Id),
+                Id = Guid.Parse(authResult.User!.Id!),
                 Email = authResult.User.Email ?? string.Empty,
                 FullName = authResult.Metadata?.FullName ?? string.Empty,
                 Role = authResult.Metadata?.Role ?? string.Empty,

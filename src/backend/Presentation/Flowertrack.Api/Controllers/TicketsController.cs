@@ -2,7 +2,6 @@ using Flowertrack.Application.Comments.Commands.AddComment;
 using Flowertrack.Application.Comments.Commands.UpdateComment;
 using Flowertrack.Application.Comments.Commands.DeleteComment;
 using Flowertrack.Application.Comments.Queries.GetComments;
-using Flowertrack.Application.Tickets.Commands.AddNote;
 using Flowertrack.Application.Tickets.Commands.AssignTicket;
 using Flowertrack.Application.Tickets.Commands.CreateTicket;
 using Flowertrack.Application.Tickets.Commands.DeleteTicket;
@@ -808,22 +807,6 @@ public class TicketsController : ControllerBase
         if (result.IsFailure)
         {
             _logger.LogWarning("Failed to add note: {Error}", result.Error);
-            return BadRequest(new ErrorResponse(result.Error ?? "Failed to add note"));
-        }
-
-        return CreatedAtAction(
-            nameof(GetHistory),
-            new { id },
-            result.Value);
-    }
-            userNameClaim ?? "Unknown User",
-            userTypeClaim ?? "ServiceUser");
-
-        var result = await _mediator.Send(command);
-
-        if (result.IsFailure)
-        {
-            _logger.LogWarning("Failed to add note: {Error}", result.Error);
             
             if (result.Error?.Contains("Only service users") == true)
             {
@@ -885,15 +868,12 @@ public class TicketsController : ControllerBase
                 c.CanEdit,
                 c.CanDelete
             )).ToList(),
-            Pagination = new PaginationMetadata
-            {
-                PageNumber = comments.PageNumber,
-                PageSize = comments.PageSize,
-                TotalCount = comments.TotalCount,
-                TotalPages = comments.TotalPages,
-                HasNextPage = comments.HasNextPage,
-                HasPreviousPage = comments.HasPreviousPage
-            }
+            PageNumber = comments.PageNumber,
+            PageSize = comments.PageSize,
+            TotalCount = comments.TotalCount,
+            TotalPages = comments.TotalPages,
+            HasNextPage = comments.HasNextPage,
+            HasPreviousPage = comments.HasPreviousPage
         };
 
         return Ok(response);

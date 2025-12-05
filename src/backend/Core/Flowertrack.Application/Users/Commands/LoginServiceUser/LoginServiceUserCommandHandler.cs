@@ -49,7 +49,7 @@ public sealed class LoginServiceUserCommandHandler
 
             // Get ServiceUser entity from database by SupabaseUserId
             var serviceUser = await _serviceUserRepository.GetBySupabaseUserIdAsync(
-                Guid.Parse(authResult.User.Id), 
+                Guid.Parse(authResult.User.Id!), 
                 cancellationToken);
 
             if (serviceUser == null)

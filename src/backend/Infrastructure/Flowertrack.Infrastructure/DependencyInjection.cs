@@ -63,6 +63,7 @@ public static class DependencyInjection
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ITokenGenerator, TokenGeneratorService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<IUserContext, UserContext>();
         services.AddScoped<IAuthService, SupabaseAuthService>();
         services.AddScoped<IFileStorageService, SupabaseStorageService>();
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
