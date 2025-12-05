@@ -20,6 +20,7 @@ import {
   ClientActivatePage,
   ClientTicketsPage,
   ClientTicketDetailPage,
+  OrganizationTeamPage,
 } from './pages/client';
 import { ClientLayout } from './components/layout';
 import NotFound from './pages/NotFound';
@@ -161,7 +162,7 @@ function App() {
           element={
             <ProtectedRoute requiredRole="client">
               <ClientLayout>
-                <div>Team management - Phase 3</div>
+                <OrganizationTeamPage />
               </ClientLayout>
             </ProtectedRoute>
           }

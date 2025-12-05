@@ -393,3 +393,29 @@ export interface OrganizationUserDetailsDto {
   ticketsCreatedCount: number;
   createdAt: string;
 }
+
+// Team Management Types
+export type UserRole = 'Admin' | 'User';
+export type UserStatus = 'Active' | 'Invited' | 'Pending';
+
+export interface OrganizationUser {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: UserRole;
+  status: UserStatus;
+  joinedAt: string;
+  organizationId: string;
+}
+
+export interface InviteTeamMemberRequest {
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: UserRole;
+}
+
+export interface UpdateMemberRoleRequest {
+  role: UserRole;
+}

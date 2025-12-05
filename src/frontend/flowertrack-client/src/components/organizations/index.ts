@@ -1,16 +1,9 @@
-// Stub components - TODO: Implement organization modals
+// Stub components - to be implemented in a separate issue
 import type {
-  OnboardOrganizationRequest,
   UpdateOrganizationRequest,
+  OnboardOrganizationRequest,
   OrganizationDto,
 } from '../../types/api';
-
-interface OnboardOrganizationModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (data: OnboardOrganizationRequest) => Promise<void>;
-  isLoading: boolean;
-}
 
 interface EditOrganizationModalProps {
   isOpen: boolean;
@@ -20,5 +13,17 @@ interface EditOrganizationModalProps {
   isLoading: boolean;
 }
 
-export const OnboardOrganizationModal = (_props: OnboardOrganizationModalProps) => null;
-export const EditOrganizationModal = (_props: EditOrganizationModalProps) => null;
+export function EditOrganizationModal(_props: EditOrganizationModalProps) {
+  return null;
+}
+
+interface OnboardOrganizationModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (data: OnboardOrganizationRequest) => Promise<void>;
+  isLoading: boolean;
+}
+
+export function OnboardOrganizationModal(_props: OnboardOrganizationModalProps) {
+  return null;
+}
