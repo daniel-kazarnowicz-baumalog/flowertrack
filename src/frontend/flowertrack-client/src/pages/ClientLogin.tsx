@@ -10,8 +10,17 @@ const ClientLogin = () => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const { login } = useAuth();
+    const { login, mockLogin } = useAuth();
     const navigate = useNavigate();
+
+    /**
+     * @obsolete DEV ONLY - Handle mock login without backend
+     * TODO: Remove before production deployment
+     */
+    const handleMockLogin = () => {
+        mockLogin('client');
+        navigate('/client/dashboard');
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -70,6 +79,20 @@ const ClientLogin = () => {
 
                     <button type="submit" className="login-btn" disabled={isLoading}>
                         {isLoading ? 'Logowanie...' : 'Zaloguj się'}
+                    </button>
+
+                    {/* @obsolete DEV ONLY - Remove this button before production deployment */}
+                    <button
+                        type="button"
+                        className="login-btn"
+                        onClick={handleMockLogin}
+                        style={{
+                            marginTop: '0.5rem',
+                            background: 'linear-gradient(135deg, #ff6b6b, #ee5a24)',
+                            border: '2px dashed #fff'
+                        }}
+                    >
+                        🧪 Zaloguj bez autentykacji (DEV)
                     </button>
                 </form>
 

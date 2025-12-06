@@ -37,6 +37,17 @@ public class UpdateCommentCommandHandler : IRequestHandler<UpdateCommentCommand,
             return Result.Failure($"Comment with ID {request.CommentId} not found.");
         }
 
+        // US-045: Comments can only be edited within 15 minutes of creation
+        const int editWindowMinutes = 15;
+        var minutesSinceCreation = (DateTimeOffset.UtcNow - comment.CreatedAt).TotalMinutes;
+        if (minutesSinceCreation > editWindowMinutes)
+        {
+            _logger.LogWarning(
+                "Attempt to edit comment {CommentId} after edit window. Created: {CreatedAt}, Minutes since creation: {Minutes}",
+                request.CommentId, comment.CreatedAt, minutesSinceCreation);
+            return Result.Failure($"Comments can only be edited within {editWindowMinutes} minutes of creation.");
+        }
+
         try
         {
             comment.Update(request.Content, userId);

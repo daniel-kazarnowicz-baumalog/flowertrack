@@ -6,6 +6,13 @@
 
 import { apiClient } from '../lib/apiClient';
 import type { TicketDto } from '../types/api';
+// @obsolete DEV ONLY - Mock data import, remove before production
+import {
+  isMockSession,
+  getMockServiceDashboardStats,
+  getMockClientDashboardStats,
+  getMockTicketTrends,
+} from './mockData';
 
 export interface ServiceDashboardStats {
   activeTicketsCount: number;
@@ -54,6 +61,11 @@ export interface TicketTrend {
  * Get service dashboard statistics
  */
 export async function getServiceDashboardStats(userId?: string): Promise<ServiceDashboardStats> {
+  // @obsolete DEV ONLY - Return mock data for testing without backend
+  if (isMockSession()) {
+    return getMockServiceDashboardStats();
+  }
+
   // Fetch all tickets to aggregate stats
   const response = await apiClient.get<{
     items: TicketDto[];
@@ -120,6 +132,11 @@ export async function getServiceDashboardStats(userId?: string): Promise<Service
 export async function getClientDashboardStats(
   organizationId: string
 ): Promise<ClientDashboardStats> {
+  // @obsolete DEV ONLY - Return mock data for testing without backend
+  if (isMockSession()) {
+    return getMockClientDashboardStats();
+  }
+
   // Fetch tickets for organization
   const ticketsResponse = await apiClient.get<{
     items: TicketDto[];
@@ -205,6 +222,11 @@ export async function getClientDashboardStats(
  * Get ticket trends over time (last 30 days)
  */
 export async function getTicketTrends(organizationId?: string): Promise<TicketTrend[]> {
+  // @obsolete DEV ONLY - Return mock data for testing without backend
+  if (isMockSession()) {
+    return getMockTicketTrends();
+  }
+
   const response = await apiClient.get<{
     items: TicketDto[];
     totalCount: number;

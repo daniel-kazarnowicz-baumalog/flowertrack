@@ -1,10 +1,15 @@
 using Flowertrack.Application.Tickets.Commands.AddComment;
 using Flowertrack.Application.Tickets.Commands.AddNote;
+using Flowertrack.Application.Tickets.Commands.AbandonTicket;
 using Flowertrack.Application.Tickets.Commands.AssignTicket;
+using Flowertrack.Application.Tickets.Commands.BulkArchiveTickets;
+using Flowertrack.Application.Tickets.Commands.BulkAssignTickets;
+using Flowertrack.Application.Tickets.Commands.BulkChangeStatus;
 using Flowertrack.Application.Tickets.Commands.CreateTicket;
 using Flowertrack.Application.Tickets.Commands.DeleteTicket;
 using Flowertrack.Application.Tickets.Commands.UpdateTicket;
 using Flowertrack.Application.Tickets.Commands.UpdateTicketStatus;
+using Flowertrack.Application.Tickets.Queries.ExportTicketHistory;
 using Flowertrack.Application.Tickets.Queries.GetTicket;
 using Flowertrack.Application.Tickets.Queries.GetTicketHistory;
 using Flowertrack.Application.Tickets.Queries.GetTickets;
@@ -445,6 +450,69 @@ public class TicketsController : ControllerBase
     }
 
     /// <summary>
+    /// Abandon a ticket in New status
+    /// US-043: Porzucanie zgłoszeń
+    /// </summary>
+    /// <param name="id">Ticket ID</param>
+    /// <param name="reason">Optional reason for abandonment</param>
+    /// <returns>No content on success</returns>
+    /// <remarks>
+    /// Only tickets in New status can be abandoned.
+    /// This is intended for organization users who want to cancel their own ticket before service team accepts it.
+    /// 
+    /// **Authorization:** Authenticated users only.
+    /// </remarks>
+    [HttpPost("{id:guid}/abandon")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> AbandonTicket(Guid id, [FromQuery] string? reason = null)
+    {
+        // Get current user ID from claims
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            _logger.LogWarning("User ID not found in claims or invalid format");
+            return Unauthorized(new ErrorResponse("User authentication failed"));
+        }
+
+        var command = new AbandonTicketCommand
+        {
+            TicketId = id,
+            Reason = reason,
+            AbandonedBy = userId
+        };
+
+        var result = await _mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            _logger.LogWarning(
+                "Failed to abandon ticket {TicketId}: {Error}",
+                id,
+                result.Error);
+
+            if (result.Error!.Contains("not found", StringComparison.OrdinalIgnoreCase))
+            {
+                return NotFound(new ErrorResponse(result.Error));
+            }
+
+            if (result.Error.Contains("Only tickets in New status", StringComparison.OrdinalIgnoreCase))
+            {
+                return Conflict(new ErrorResponse(result.Error));
+            }
+
+            return BadRequest(new ErrorResponse(result.Error));
+        }
+
+        _logger.LogInformation("Successfully abandoned ticket {TicketId}", id);
+
+        return NoContent();
+    }
+
+    /// <summary>
     /// Update ticket status with state machine validation
     /// US-015: Zmiana statusu zgłoszenia serwisowego
     /// </summary>
@@ -721,6 +789,62 @@ public class TicketsController : ControllerBase
     }
 
     /// <summary>
+    /// Export ticket history in various formats
+    /// US-022: Eksport historii ticketu
+    /// </summary>
+    /// <param name="id">Ticket ID</param>
+    /// <param name="format">Export format: json, csv, or pdf (default: json)</param>
+    /// <returns>File download</returns>
+    [HttpGet("{id:guid}/export")]
+    [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ExportTicketHistory(
+        Guid id,
+        [FromQuery] string format = "json")
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized(new ErrorResponse("User authentication required"));
+        }
+
+        _logger.LogInformation("Exporting ticket {TicketId} history as {Format} by user {UserId}", id, format, userId);
+
+        var exportFormat = format.ToLowerInvariant() switch
+        {
+            "csv" => ExportFormat.Csv,
+            "pdf" => ExportFormat.Pdf,
+            _ => ExportFormat.Json
+        };
+
+        var query = new ExportTicketHistoryQuery
+        {
+            TicketId = id,
+            Format = exportFormat,
+            RequestedBy = userId
+        };
+
+        var result = await _mediator.Send(query);
+
+        if (result.IsFailure)
+        {
+            _logger.LogWarning("Failed to export ticket history: {Error}", result.Error);
+
+            if (result.Error?.Contains("not found", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return NotFound(new ErrorResponse(result.Error));
+            }
+
+            return BadRequest(new ErrorResponse(result.Error ?? "Export failed"));
+        }
+
+        var exportResult = result.Value!;
+        return File(exportResult.Content, exportResult.ContentType, exportResult.FileName);
+    }
+
+    /// <summary>
     /// Add a comment to a ticket
     /// </summary>
     /// <param name="id">Ticket ID</param>
@@ -820,6 +944,194 @@ public class TicketsController : ControllerBase
             new { id },
             result.Value);
     }
+
+    #region Bulk Operations
+
+    /// <summary>
+    /// Bulk assign multiple tickets to a service technician
+    /// US-014: Masowe akcje na zgłoszeniach
+    /// </summary>
+    /// <param name="request">Bulk assignment details</param>
+    /// <returns>Bulk operation result</returns>
+    /// <remarks>
+    /// Maximum 100 tickets can be processed at once.
+    /// 
+    /// **Authorization:** Only service users can bulk assign tickets.
+    /// </remarks>
+    [HttpPost("bulk/assign")]
+    [Authorize(Policy = "RequireServiceUser")]
+    [ProducesResponseType(typeof(BulkOperationResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> BulkAssignTickets([FromBody] BulkAssignTicketsRequest request)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized(new ErrorResponse("User authentication required"));
+        }
+
+        _logger.LogInformation(
+            "Bulk assigning {Count} tickets to user {AssignToUserId} by {UserId}",
+            request.TicketIds.Count,
+            request.AssignToUserId,
+            userId);
+
+        var command = new BulkAssignTicketsCommand
+        {
+            TicketIds = request.TicketIds,
+            AssignToUserId = request.AssignToUserId,
+            AssignedBy = userId
+        };
+
+        var result = await _mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            _logger.LogWarning("Bulk assign failed: {Error}", result.Error);
+            return BadRequest(new ErrorResponse(result.Error ?? "Bulk assign failed"));
+        }
+
+        var response = new BulkOperationResponse
+        {
+            TotalCount = result.Value!.TotalCount,
+            SuccessCount = result.Value.SuccessCount,
+            FailureCount = result.Value.FailureCount,
+            Failures = result.Value.Failures.Select(f => new BulkOperationFailureDto
+            {
+                ItemId = f.ItemId,
+                Error = f.Error
+            }).ToList()
+        };
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Bulk change status of multiple tickets
+    /// US-014: Masowe akcje na zgłoszeniach
+    /// </summary>
+    /// <param name="request">Bulk status change details</param>
+    /// <returns>Bulk operation result</returns>
+    /// <remarks>
+    /// Maximum 100 tickets can be processed at once.
+    /// Reason is required (minimum 10 characters) when changing to Resolved or Closed status.
+    /// 
+    /// **Authorization:** Only service users can bulk change ticket status.
+    /// </remarks>
+    [HttpPost("bulk/status")]
+    [Authorize(Policy = "RequireServiceUser")]
+    [ProducesResponseType(typeof(BulkOperationResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> BulkChangeStatus([FromBody] BulkChangeStatusRequest request)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized(new ErrorResponse("User authentication required"));
+        }
+
+        _logger.LogInformation(
+            "Bulk changing status of {Count} tickets to {Status} by {UserId}",
+            request.TicketIds.Count,
+            (TicketStatus)request.Status,
+            userId);
+
+        var command = new BulkChangeStatusCommand
+        {
+            TicketIds = request.TicketIds,
+            NewStatus = (TicketStatus)request.Status,
+            Reason = request.Reason,
+            ChangedBy = userId
+        };
+
+        var result = await _mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            _logger.LogWarning("Bulk status change failed: {Error}", result.Error);
+            return BadRequest(new ErrorResponse(result.Error ?? "Bulk status change failed"));
+        }
+
+        var response = new BulkOperationResponse
+        {
+            TotalCount = result.Value!.TotalCount,
+            SuccessCount = result.Value.SuccessCount,
+            FailureCount = result.Value.FailureCount,
+            Failures = result.Value.Failures.Select(f => new BulkOperationFailureDto
+            {
+                ItemId = f.ItemId,
+                Error = f.Error
+            }).ToList()
+        };
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Bulk archive (soft delete) multiple tickets
+    /// US-014: Masowe akcje na zgłoszeniach
+    /// </summary>
+    /// <param name="request">Bulk archive details</param>
+    /// <returns>Bulk operation result</returns>
+    /// <remarks>
+    /// Maximum 100 tickets can be processed at once.
+    /// 
+    /// **Authorization:** Only service users can bulk archive tickets.
+    /// </remarks>
+    [HttpPost("bulk/archive")]
+    [Authorize(Policy = "RequireServiceUser")]
+    [ProducesResponseType(typeof(BulkOperationResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> BulkArchiveTickets([FromBody] BulkArchiveTicketsRequest request)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized(new ErrorResponse("User authentication required"));
+        }
+
+        _logger.LogInformation(
+            "Bulk archiving {Count} tickets by {UserId}",
+            request.TicketIds.Count,
+            userId);
+
+        var command = new BulkArchiveTicketsCommand
+        {
+            TicketIds = request.TicketIds,
+            Reason = request.Reason,
+            ArchivedBy = userId
+        };
+
+        var result = await _mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            _logger.LogWarning("Bulk archive failed: {Error}", result.Error);
+            return BadRequest(new ErrorResponse(result.Error ?? "Bulk archive failed"));
+        }
+
+        var response = new BulkOperationResponse
+        {
+            TotalCount = result.Value!.TotalCount,
+            SuccessCount = result.Value.SuccessCount,
+            FailureCount = result.Value.FailureCount,
+            Failures = result.Value.Failures.Select(f => new BulkOperationFailureDto
+            {
+                ItemId = f.ItemId,
+                Error = f.Error
+            }).ToList()
+        };
+
+        return Ok(response);
+    }
+
+    #endregion
 }
 
 /// <summary>

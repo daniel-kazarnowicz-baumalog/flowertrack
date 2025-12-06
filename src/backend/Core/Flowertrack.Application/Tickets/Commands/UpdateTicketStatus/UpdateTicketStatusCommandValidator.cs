@@ -33,11 +33,16 @@ public sealed class UpdateTicketStatusCommandValidator : AbstractValidator<Updat
             .IsInEnum()
             .WithMessage("Invalid ticket status");
 
-        // Reason is required for Resolved and Closed statuses
+        // Reason is required for Resolved and Closed statuses with minimum 10 characters
         RuleFor(x => x.Reason)
             .NotEmpty()
             .When(x => x.NewStatus == TicketStatus.Resolved || x.NewStatus == TicketStatus.Closed)
             .WithMessage("Reason is required when resolving or closing a ticket");
+
+        RuleFor(x => x.Reason)
+            .MinimumLength(10)
+            .When(x => x.NewStatus == TicketStatus.Resolved || x.NewStatus == TicketStatus.Closed)
+            .WithMessage("Reason must be at least 10 characters when resolving or closing a ticket");
 
         RuleFor(x => x.Reason)
             .MaximumLength(1000)

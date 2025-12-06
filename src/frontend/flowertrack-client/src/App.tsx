@@ -3,7 +3,7 @@ import Gateway from './pages/Gateway';
 import ServiceLogin from './pages/ServiceLogin';
 import ClientLogin from './pages/ClientLogin';
 import ProtectedRoute from './components/ProtectedRoute';
-import ServiceDashboard from './pages/service/Dashboard';
+import { ServiceDashboard } from './pages/service/ServiceDashboard';
 import ClientDashboard from './pages/client/Dashboard';
 import NotFound from './pages/NotFound';
 
