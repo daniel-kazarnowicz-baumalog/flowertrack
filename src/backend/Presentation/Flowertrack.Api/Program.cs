@@ -1,4 +1,5 @@
 using System.Text;
+using System.Threading.RateLimiting;
 using Flowertrack.Application;
 using Flowertrack.Infrastructure;
 using Flowertrack.Application.Common.Interfaces;
@@ -7,6 +8,7 @@ using Flowertrack.Infrastructure.Data;
 using Flowertrack.Infrastructure.Persistence;
 using Flowertrack.Infrastructure.Supabase;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
@@ -53,6 +55,52 @@ try
     // Add Application and Infrastructure layers
     builder.Services.AddApplication();
     builder.Services.AddInfrastructure(builder.Configuration);
+
+    // Configure Rate Limiting for /api/ingest endpoints (100 requests per minute per machine)
+    builder.Services.AddRateLimiter(options =>
+    {
+        options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+        
+        // Rate limit policy for machine ingest endpoints
+        options.AddPolicy("IngestRateLimit", context =>
+        {
+            // Use machine token or IP address as partition key
+            var machineId = context.Request.Headers["X-Machine-Id"].FirstOrDefault();
+            var partitionKey = !string.IsNullOrEmpty(machineId)
+                ? machineId
+                : context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+            
+            return RateLimitPartition.GetFixedWindowLimiter(partitionKey, _ =>
+                new FixedWindowRateLimiterOptions
+                {
+                    Window = TimeSpan.FromMinutes(1),
+                    PermitLimit = 100,
+                    QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                    QueueLimit = 10
+                });
+        });
+        
+        options.OnRejected = async (context, token) =>
+        {
+            context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+            
+            if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+            {
+                await context.HttpContext.Response.WriteAsJsonAsync(new
+                {
+                    error = "Too many requests",
+                    retryAfterSeconds = retryAfter.TotalSeconds
+                }, token);
+            }
+            else
+            {
+                await context.HttpContext.Response.WriteAsJsonAsync(new
+                {
+                    error = "Too many requests. Please try again later."
+                }, token);
+            }
+        };
+    });
 
     // Configure Supabase Options
     builder.Services.Configure<SupabaseOptions>(
@@ -276,6 +324,9 @@ try
     app.UseHttpsRedirection();
 
     app.UseCors();
+
+    // Rate limiting - must be before authentication
+    app.UseRateLimiter();
 
     app.UseAuthentication();
     

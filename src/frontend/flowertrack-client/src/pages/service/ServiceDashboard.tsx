@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useServiceDashboardStats, useTicketTrends } from '../../hooks/useDashboard';
 import { useAuth } from '../../contexts/AuthContext';
 import { Loader } from '../../components/ui/Loader';
@@ -14,6 +15,7 @@ import './ServiceDashboard.css';
  * Shows KPIs, charts, and recent activity
  */
 export const ServiceDashboard = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { data: stats, isLoading, error } = useServiceDashboardStats(user?.id);
   const { data: trends, isLoading: trendsLoading } = useTicketTrends();
@@ -32,8 +34,8 @@ export const ServiceDashboard = () => {
     return (
       <div className="serviceDashboard">
         <div className="serviceDashboard__error">
-          <h2>Błąd ładowania dashboardu</h2>
-          <p>Nie udało się pobrać statystyk. Spróbuj odświeżyć stronę.</p>
+          <h2>{t('errors.dashboardLoadError')}</h2>
+          <p>{t('errors.tryRefresh')}</p>
         </div>
       </div>
     );
@@ -43,45 +45,45 @@ export const ServiceDashboard = () => {
     <div className="serviceDashboard">
       {/* Header */}
       <div className="serviceDashboard__header">
-        <h1 className="serviceDashboard__title">Dashboard</h1>
-        <p className="serviceDashboard__subtitle">Overview of tickets and system status</p>
+        <h1 className="serviceDashboard__title">{t('dashboard.title')}</h1>
+        <p className="serviceDashboard__subtitle">{t('dashboard.subtitle')}</p>
       </div>
 
       {/* KPI Cards Grid */}
       <div className="serviceDashboard__grid">
         {/* Total Active Tickets */}
         <div className="serviceDashboard__kpiCard">
-          <div className="serviceDashboard__kpiLabel">Active Tickets</div>
+          <div className="serviceDashboard__kpiLabel">{t('dashboard.activeTickets')}</div>
           <div className="serviceDashboard__kpiValue">{stats?.activeTicketsCount || 0}</div>
-          <div className="serviceDashboard__kpiTrend">Tickets not closed or resolved</div>
+          <div className="serviceDashboard__kpiTrend">{t('dashboard.ticketsNotClosed')}</div>
         </div>
 
         {/* Critical Priority */}
         <div className="serviceDashboard__kpiCard serviceDashboard__kpiCard--critical">
-          <div className="serviceDashboard__kpiLabel">Critical Priority</div>
+          <div className="serviceDashboard__kpiLabel">{t('dashboard.criticalPriority')}</div>
           <div className="serviceDashboard__kpiValue">{stats?.criticalTicketsCount || 0}</div>
-          <div className="serviceDashboard__kpiTrend">Requires immediate attention</div>
+          <div className="serviceDashboard__kpiTrend">{t('dashboard.requiresImmediate')}</div>
         </div>
 
         {/* My Assigned */}
         <div className="serviceDashboard__kpiCard serviceDashboard__kpiCard--assigned">
-          <div className="serviceDashboard__kpiLabel">My Assigned</div>
+          <div className="serviceDashboard__kpiLabel">{t('dashboard.myAssigned')}</div>
           <div className="serviceDashboard__kpiValue">{stats?.myAssignedTicketsCount || 0}</div>
-          <div className="serviceDashboard__kpiTrend">Tickets assigned to you</div>
+          <div className="serviceDashboard__kpiTrend">{t('dashboard.ticketsAssignedToYou')}</div>
         </div>
 
         {/* Unassigned */}
         <div className="serviceDashboard__kpiCard serviceDashboard__kpiCard--unassigned">
-          <div className="serviceDashboard__kpiLabel">Unassigned</div>
+          <div className="serviceDashboard__kpiLabel">{t('dashboard.unassigned')}</div>
           <div className="serviceDashboard__kpiValue">{stats?.unassignedTicketsCount || 0}</div>
-          <div className="serviceDashboard__kpiTrend">Awaiting assignment</div>
+          <div className="serviceDashboard__kpiTrend">{t('dashboard.awaitingAssignment')}</div>
         </div>
       </div>
 
       {/* Status Distribution */}
       <div className="serviceDashboard__row">
         <Card className="serviceDashboard__card">
-          <h2 className="serviceDashboard__cardTitle">Tickets by Status</h2>
+          <h2 className="serviceDashboard__cardTitle">{t('dashboard.ticketsByStatus')}</h2>
           <div className="serviceDashboard__statusGrid">
             {stats?.ticketsByStatus &&
               Object.entries(stats.ticketsByStatus).map(([status, count]) => (
@@ -94,7 +96,7 @@ export const ServiceDashboard = () => {
         </Card>
 
         <Card className="serviceDashboard__card">
-          <h2 className="serviceDashboard__cardTitle">Tickets by Priority</h2>
+          <h2 className="serviceDashboard__cardTitle">{t('dashboard.ticketsByPriority')}</h2>
           <div className="serviceDashboard__statusGrid">
             {stats?.ticketsByPriority &&
               Object.entries(stats.ticketsByPriority).map(([priority, count]) => (
@@ -118,7 +120,7 @@ export const ServiceDashboard = () => {
 
       {/* Recent Activity */}
       <Card className="serviceDashboard__activityCard">
-        <h2 className="serviceDashboard__cardTitle">Recent Activity</h2>
+        <h2 className="serviceDashboard__cardTitle">{t('dashboard.recentActivity')}</h2>
         <div className="serviceDashboard__activityList">
           {stats?.recentActivity && stats.recentActivity.length > 0 ? (
             stats.recentActivity.map((activity) => (
@@ -129,15 +131,15 @@ export const ServiceDashboard = () => {
                 <div className="serviceDashboard__activityContent">
                   <div className="serviceDashboard__activityTitle">{activity.ticketTitle}</div>
                   <div className="serviceDashboard__activityMeta">
-                    {activity.user} • {getActivityLabel(activity.type)} •{' '}
-                    {formatDistanceToNow(new Date(activity.timestamp))}
+                    {activity.user} • {t(`activity.${activity.type}`)} •{' '}
+                    {formatDistanceToNow(new Date(activity.timestamp), t)}
                   </div>
                 </div>
               </div>
             ))
           ) : (
             <div className="serviceDashboard__empty">
-              <p>No recent activity</p>
+              <p>{t('dashboard.noRecentActivity')}</p>
             </div>
           )}
         </div>
@@ -145,11 +147,11 @@ export const ServiceDashboard = () => {
 
       {/* Charts Placeholder */}
       <div className="serviceDashboard__placeholder">
-        <h2 className="serviceDashboard__placeholderTitle">Analytics & Charts</h2>
+        <h2 className="serviceDashboard__placeholderTitle">{t('dashboard.analyticsCharts')}</h2>
         <p className="serviceDashboard__placeholderText">
-          Ticket trends, priority distribution, and organization insights will appear here.
+          {t('dashboard.chartsComingSoon')}
         </p>
-        <span className="serviceDashboard__comingSoon">Coming Soon</span>
+        <span className="serviceDashboard__comingSoon">{t('common.comingSoon')}</span>
       </div>
     </div>
   );
@@ -171,30 +173,15 @@ function getActivityIcon(type: string): string {
   }
 }
 
-function getActivityLabel(type: string): string {
-  switch (type) {
-    case 'created':
-      return 'Created';
-    case 'updated':
-      return 'Updated';
-    case 'assigned':
-      return 'Assigned';
-    case 'resolved':
-      return 'Resolved';
-    default:
-      return 'Activity';
-  }
-}
-
-function formatDistanceToNow(date: Date): string {
+function formatDistanceToNow(date: Date, t: ReturnType<typeof useTranslation>['t']): string {
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffMins = Math.floor(diffMs / 60000);
 
-  if (diffMins < 1) return 'just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffMins < 1) return t('activity.justNow');
+  if (diffMins < 60) return t('activity.minutesAgo', { count: diffMins });
   const diffHours = Math.floor(diffMins / 60);
-  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffHours < 24) return t('activity.hoursAgo', { count: diffHours });
   const diffDays = Math.floor(diffHours / 24);
-  return `${diffDays}d ago`;
+  return t('activity.daysAgo', { count: diffDays });
 }

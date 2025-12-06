@@ -285,6 +285,20 @@ public sealed class Ticket : AuditableEntity<Guid>, IAggregateRoot
                 $"Can only reopen resolved or closed tickets. Current status: {Status}");
         }
 
+        // Check 14-day limit for resolved tickets (US-047)
+        if (Status == TicketStatus.Resolved && !IsValidStatusTransition(Status, TicketStatus.Reopened))
+        {
+            throw new InvalidOperationException(
+                "Cannot reopen ticket. More than 14 days have passed since resolution.");
+        }
+
+        // Closed tickets cannot be reopened (final state)
+        if (Status == TicketStatus.Closed)
+        {
+            throw new InvalidOperationException(
+                "Cannot reopen a closed ticket. Closed is a final state.");
+        }
+
         if (string.IsNullOrWhiteSpace(reason))
         {
             throw new ArgumentException("Reason for reopening is required", nameof(reason));

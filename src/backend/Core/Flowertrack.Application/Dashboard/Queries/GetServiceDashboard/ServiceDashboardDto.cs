@@ -60,6 +60,16 @@ public sealed record ServiceDashboardDto
     /// Upcoming scheduled maintenances
     /// </summary>
     public List<UpcomingMaintenanceDto> UpcomingMaintenances { get; init; } = [];
+
+    /// <summary>
+    /// Ticket trends for the last 30 days (for line chart)
+    /// </summary>
+    public List<TicketTrendDataPointDto> TicketTrends { get; init; } = [];
+
+    /// <summary>
+    /// Distribution of active tickets by priority (for pie/bar chart)
+    /// </summary>
+    public List<PriorityDistributionDto> PriorityDistribution { get; init; } = [];
 }
 
 /// <summary>
@@ -168,4 +178,51 @@ public sealed record UpcomingMaintenanceDto
     /// Type of maintenance
     /// </summary>
     public string MaintenanceType { get; init; } = string.Empty;
+}
+
+/// <summary>
+/// DTO for ticket trend data point (for line chart)
+/// </summary>
+public sealed record TicketTrendDataPointDto
+{
+    /// <summary>
+    /// Date of the data point
+    /// </summary>
+    public DateOnly Date { get; init; }
+
+    /// <summary>
+    /// Number of tickets created on this date
+    /// </summary>
+    public int Created { get; init; }
+
+    /// <summary>
+    /// Number of tickets resolved on this date
+    /// </summary>
+    public int Resolved { get; init; }
+
+    /// <summary>
+    /// Number of tickets closed on this date
+    /// </summary>
+    public int Closed { get; init; }
+}
+
+/// <summary>
+/// DTO for priority distribution item (for pie/bar chart)
+/// </summary>
+public sealed record PriorityDistributionDto
+{
+    /// <summary>
+    /// Priority level (CRITICAL, HIGH, MEDIUM, LOW)
+    /// </summary>
+    public string Priority { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Number of active tickets with this priority
+    /// </summary>
+    public int Count { get; init; }
+
+    /// <summary>
+    /// Percentage of total active tickets
+    /// </summary>
+    public decimal Percentage { get; init; }
 }

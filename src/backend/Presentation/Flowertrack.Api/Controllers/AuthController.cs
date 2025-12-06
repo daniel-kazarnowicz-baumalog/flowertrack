@@ -11,6 +11,8 @@ using Flowertrack.Application.Users.Commands.LoginServiceUser;
 using Flowertrack.Application.Users.Commands.ResetPassword;
 using Flowertrack.Application.Users.Commands.SignupServiceUser;
 using Flowertrack.Contracts.Users;
+using Flowertrack.Contracts.Users.Requests;
+using Flowertrack.Contracts.Users.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -405,6 +407,55 @@ public class AuthController : ControllerBase
         };
 
         return Ok(response);
+    }
+
+    /// <summary>
+    /// Resend invitation email to a pending organization user
+    /// US-051: Ponowne wysłanie zaproszenia
+    /// </summary>
+    /// <param name="request">User and organization identifiers</param>
+    /// <returns>Confirmation with new expiry date</returns>
+    [HttpPost("client/resend-invite")]
+    [Authorize(Policy = "RequireOrganizationAdmin")]
+    [ProducesResponseType(typeof(ResendInviteResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ResendOrganizationUserInvite([FromBody] ResendInviteRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var command = new Application.Users.Commands.ResendOrganizationUserInvite.ResendOrganizationUserInviteCommand
+        {
+            UserId = request.UserId,
+            OrganizationId = request.OrganizationId
+        };
+
+        var result = await _mediator.Send(command);
+
+        if (!result.IsSuccess || result.Value == null)
+        {
+            _logger.LogWarning("Resend invitation failed: {Error}", result.Error);
+            
+            if (result.Error?.Contains("not found") == true)
+            {
+                return NotFound(new { message = result.Error });
+            }
+            
+            return BadRequest(new { message = result.Error ?? "Failed to resend invitation" });
+        }
+
+        var resendResult = result.Value;
+
+        return Ok(new ResendInviteResponse
+        {
+            UserId = resendResult.UserId,
+            Email = resendResult.Email,
+            InvitationTokenExpiresAt = resendResult.InvitationTokenExpiresAt,
+            Message = resendResult.Message
+        });
     }
 
     /// <summary>

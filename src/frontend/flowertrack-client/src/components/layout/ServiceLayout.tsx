@@ -1,6 +1,8 @@
 import { type ReactNode, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
+import { LanguageSwitcher } from '../ui/LanguageSwitcher';
 import './ServiceLayout.css';
 
 interface ServiceLayoutProps {
@@ -12,6 +14,7 @@ interface ServiceLayoutProps {
  * Main layout for service portal with sidebar navigation
  */
 export const ServiceLayout = ({ children }: ServiceLayoutProps) => {
+  const { t } = useTranslation();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -42,7 +45,7 @@ export const ServiceLayout = ({ children }: ServiceLayoutProps) => {
           <Link to="/service/dashboard" className="serviceLayout__logo" onClick={closeSidebar}>
             FLOWerTRACK
           </Link>
-          <div className="serviceLayout__logoSubtitle">Service Portal</div>
+          <div className="serviceLayout__logoSubtitle">{t('auth.servicePortal')}</div>
         </div>
 
         {/* Navigation */}
@@ -69,7 +72,7 @@ export const ServiceLayout = ({ children }: ServiceLayoutProps) => {
                     d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
                   />
                 </svg>
-                Dashboard
+                {t('navbar.dashboard')}
               </NavLink>
             </li>
 
@@ -94,7 +97,7 @@ export const ServiceLayout = ({ children }: ServiceLayoutProps) => {
                     d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
                   />
                 </svg>
-                Tickets
+                {t('navbar.tickets')}
               </NavLink>
             </li>
 
@@ -119,7 +122,7 @@ export const ServiceLayout = ({ children }: ServiceLayoutProps) => {
                     d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
                   />
                 </svg>
-                Organizations
+                {t('navbar.organizations')}
               </NavLink>
             </li>
 
@@ -144,7 +147,7 @@ export const ServiceLayout = ({ children }: ServiceLayoutProps) => {
                     d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                   />
                 </svg>
-                Machines
+                {t('navbar.machines')}
               </NavLink>
             </li>
 
@@ -171,7 +174,7 @@ export const ServiceLayout = ({ children }: ServiceLayoutProps) => {
                         d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
                       />
                     </svg>
-                    Team
+                    {t('navbar.team')}
                   </NavLink>
                 </li>
 
@@ -202,7 +205,7 @@ export const ServiceLayout = ({ children }: ServiceLayoutProps) => {
                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
                       />
                     </svg>
-                    Admin
+                    {t('navbar.settings')}
                   </NavLink>
                 </li>
               </>
@@ -210,14 +213,19 @@ export const ServiceLayout = ({ children }: ServiceLayoutProps) => {
           </ul>
         </nav>
 
+        {/* Language Switcher in Sidebar */}
+        <div className="serviceLayout__langSwitcher">
+          <LanguageSwitcher />
+        </div>
+
         {/* User Section */}
         <div className="serviceLayout__user">
           <div className="serviceLayout__userName">
             {user?.firstName} {user?.lastName}
           </div>
-          <div className="serviceLayout__userRole">{isAdmin ? 'Administrator' : 'Technician'}</div>
+          <div className="serviceLayout__userRole">{isAdmin ? t('users.administrator', 'Administrator') : t('users.technician', 'Technik')}</div>
           <button className="serviceLayout__logoutBtn" onClick={handleLogout}>
-            Logout
+            {t('auth.logout')}
           </button>
         </div>
       </aside>

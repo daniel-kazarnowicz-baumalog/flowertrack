@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import '../styles/login.css';
 import api from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 
 const ClientLogin = () => {
+    const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -29,13 +31,12 @@ const ClientLogin = () => {
 
         try {
             const response = await api.post('/auth/client/login', { email, password });
-            // Assuming response data structure
             const { token, user } = response.data;
             login(token, user || { email, role: 'client' });
             navigate('/client/dashboard');
         } catch (err: any) {
             console.error('Login error:', err);
-            setError(err.response?.data?.message || 'Błąd logowania. Sprawdź dane.');
+            setError(err.response?.data?.message || t('auth.loginError'));
         } finally {
             setIsLoading(false);
         }
@@ -45,28 +46,28 @@ const ClientLogin = () => {
         <div className="login-container client-theme">
             <div className="login-card">
                 <div className="login-header">
-                    <Link to="/" className="back-link">← Wróć</Link>
+                    <Link to="/" className="back-link">← {t('common.back')}</Link>
                     <div className="icon-circle">🏢</div>
-                    <h2>Portal Klienta</h2>
-                    <p>Zaloguj się do panelu organizacji</p>
+                    <h2>{t('auth.clientPortal')}</h2>
+                    <p>{t('auth.loginToClientPanel')}</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="login-form">
                     {error && <div className="error-message" style={{ color: 'red', marginBottom: '1rem', textAlign: 'center' }}>{error}</div>}
                     <div className="form-group">
-                        <label htmlFor="email">Email</label>
+                        <label htmlFor="email">{t('auth.email')}</label>
                         <input
                             type="email"
                             id="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="twoj@email.pl"
+                            placeholder={t('auth.emailPlaceholder')}
                             required
                         />
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="password">Hasło</label>
+                        <label htmlFor="password">{t('auth.password')}</label>
                         <input
                             type="password"
                             id="password"
@@ -78,7 +79,7 @@ const ClientLogin = () => {
                     </div>
 
                     <button type="submit" className="login-btn" disabled={isLoading}>
-                        {isLoading ? 'Logowanie...' : 'Zaloguj się'}
+                        {isLoading ? t('auth.loggingIn') : t('auth.loginButton')}
                     </button>
 
                     {/* @obsolete DEV ONLY - Remove this button before production deployment */}
@@ -92,12 +93,12 @@ const ClientLogin = () => {
                             border: '2px dashed #fff'
                         }}
                     >
-                        🧪 Zaloguj bez autentykacji (DEV)
+                        {t('auth.mockLoginDev')}
                     </button>
                 </form>
 
                 <div className="login-footer">
-                    <a href="#">Pierwsze logowanie? Aktywuj konto</a>
+                    <a href="#">{t('auth.noAccount')}</a>
                 </div>
             </div>
         </div>

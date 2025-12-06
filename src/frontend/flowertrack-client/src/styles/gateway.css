@@ -5,6 +5,31 @@
   min-height: 100vh;
   background-color: #f8fafc;
   padding: 2rem;
+  position: relative;
+}
+
+.gateway-language-switcher {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+}
+
+.gateway-language-switcher .languageSwitcher {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.gateway-language-switcher .languageSwitcher__btn {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.gateway-language-switcher .languageSwitcher__btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: rgba(0, 0, 0, 0.9);
+}
+
+.gateway-language-switcher .languageSwitcher__btn--active {
+  background: rgba(0, 0, 0, 0.15);
+  color: rgba(0, 0, 0, 0.9);
 }
 
 .gateway-content {

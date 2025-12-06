@@ -5,6 +5,7 @@ using Flowertrack.Contracts.Machines.Requests;
 using Flowertrack.Contracts.Machines.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Flowertrack.Api.Controllers;
 
@@ -12,9 +13,11 @@ namespace Flowertrack.Api.Controllers;
 /// Controller for machine log ingestion endpoints.
 /// These endpoints use machine API token authentication (X-API-Token header)
 /// instead of standard JWT authentication.
+/// Rate limited to 100 requests per minute per machine.
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[EnableRateLimiting("IngestRateLimit")]
 public class IngestController : ControllerBase
 {
     private readonly IMediator _mediator;

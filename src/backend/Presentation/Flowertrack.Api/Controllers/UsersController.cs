@@ -6,6 +6,7 @@ using Flowertrack.Application.Users.Commands.ResetServiceUserPassword;
 using Flowertrack.Application.Users.Commands.RemoveOrganizationUser;
 using Flowertrack.Application.Users.Queries.GetServiceUsers;
 using Flowertrack.Application.Users.Queries.GetServiceUser;
+using Flowertrack.Application.Users.Queries.GetServiceUserStats;
 using Flowertrack.Application.Users.Queries.GetOrganizationUsers;
 using Flowertrack.Contracts.Common;
 using Flowertrack.Contracts.Users.Requests;
@@ -131,6 +132,46 @@ public class UsersController : ControllerBase
             dto.TotalTicketsCount,
             dto.CreatedAt,
             dto.UpdatedAt
+        ));
+    }
+
+    /// <summary>
+    /// Get service user statistics
+    /// US-031: Statystyki serwisanta (tickets assigned, resolved, avg resolution time)
+    /// </summary>
+    [HttpGet("service/{id:guid}/stats")]
+    [ProducesResponseType(typeof(ServiceUserStatsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> GetServiceUserStats(Guid id)
+    {
+        var query = new GetServiceUserStatsQuery(id);
+        var result = await _mediator.Send(query);
+
+        if (result.IsFailure)
+        {
+            if (result.Error?.Contains("not found") == true)
+                return NotFound(new ErrorResponse(result.Error));
+            
+            return BadRequest(new ErrorResponse(result.Error!));
+        }
+
+        var dto = result.Value;
+        return Ok(new ServiceUserStatsResponse(
+            dto.UserId,
+            dto.TotalTicketsAssigned,
+            dto.TicketsInProgress,
+            dto.TicketsResolvedLast30Days,
+            dto.TicketsClosedLast30Days,
+            dto.AverageResolutionTimeHours,
+            dto.LastActivityAt,
+            new TicketsByPriorityResponse(
+                dto.TicketsByPriority.Critical,
+                dto.TicketsByPriority.High,
+                dto.TicketsByPriority.Medium,
+                dto.TicketsByPriority.Low
+            )
         ));
     }
 
