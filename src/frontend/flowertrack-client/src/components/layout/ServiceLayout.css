@@ -1,30 +1,28 @@
 :root {
-  --sidebar-width: 260px;
-  --sidebar-width-collapsed: 70px;
-  --header-height: 64px;
-  --primary-color: #3b82f6;
-  --sidebar-bg: #1e293b;
-  --sidebar-text: #e2e8f0;
+  /* Using variables from variables.css now */
 }
 
 .serviceLayout {
   display: flex;
   min-height: 100vh;
-  background-color: #f3f4f6;
-  transition: all 0.3s ease;
+  background-color: var(--color-bg-secondary);
+  transition: background-color 0.3s ease;
 }
 
 /* Sidebar */
 .serviceLayout__sidebar {
   width: var(--sidebar-width);
-  background-color: var(--sidebar-bg);
-  color: var(--sidebar-text);
+  background-color: var(--color-bg-primary);
+  /* Was --sidebar-bg */
+  color: var(--color-text-primary);
+  /* Was --sidebar-text */
+  border-right: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
   position: fixed;
   height: 100vh;
-  transition: width 0.3s ease;
-  z-index: 50;
+  transition: all 0.3s ease;
+  z-index: var(--z-fixed);
 }
 
 .serviceLayout--collapsed .serviceLayout__sidebar {
@@ -35,16 +33,18 @@
   height: var(--header-height);
   display: flex;
   align-items: center;
-  padding: 0 1.5rem;
-  font-weight: 700;
-  font-size: 1.25rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0 var(--space-6);
+  font-weight: var(--font-bold);
+  font-size: var(--text-xl);
+  border-bottom: 1px solid var(--color-border);
   overflow: hidden;
   white-space: nowrap;
+  color: var(--color-primary);
+  text-decoration: none;
 }
 
 .serviceLayout__logoIcon {
-  margin-right: 0.75rem;
+  margin-right: var(--space-3);
   font-size: 1.5rem;
 }
 
@@ -55,21 +55,22 @@
 /* Navigation */
 .serviceLayout__nav {
   flex: 1;
-  padding: 1.5rem 1rem;
+  padding: var(--space-6) var(--space-4);
   overflow-y: auto;
 }
 
 .serviceLayout__navSection {
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-8);
 }
 
 .serviceLayout__navTitle {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #64748b;
-  margin-bottom: 0.75rem;
-  padding-left: 0.75rem;
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--space-3);
+  padding-left: var(--space-3);
+  font-weight: var(--font-semibold);
 }
 
 .serviceLayout--collapsed .serviceLayout__navTitle {
@@ -79,29 +80,30 @@
 .serviceLayout__navLink {
   display: flex;
   align-items: center;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  color: #94a3b8;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
   text-decoration: none;
-  transition: all 0.2s;
-  margin-bottom: 0.25rem;
+  transition: var(--transition-all);
+  margin-bottom: var(--space-1);
   white-space: nowrap;
   overflow: hidden;
 }
 
 .serviceLayout__navLink:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-  color: #fff;
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
 }
 
 .serviceLayout__navLink.active {
-  background-color: var(--primary-color);
-  color: #fff;
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  box-shadow: var(--shadow-sm);
 }
 
 .serviceLayout__navLink .icon {
-  margin-right: 1rem;
-  font-size: 1.25rem;
+  margin-right: var(--space-4);
+  font-size: var(--text-lg);
   min-width: 1.5rem;
   text-align: center;
 }
@@ -112,11 +114,12 @@
 
 /* User Section */
 .serviceLayout__user {
-  padding: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--space-4);
+  border-top: 1px solid var(--color-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background-color: var(--color-bg-tertiary);
 }
 
 .serviceLayout__userInfo {
@@ -128,13 +131,14 @@
 .serviceLayout__userAvatar {
   width: 32px;
   height: 32px;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-700);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  margin-right: 0.75rem;
+  margin-right: var(--space-3);
   flex-shrink: 0;
 }
 
@@ -144,14 +148,15 @@
 }
 
 .serviceLayout__userName {
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
   white-space: nowrap;
+  color: var(--color-text-primary);
 }
 
 .serviceLayout__userRole {
-  font-size: 0.75rem;
-  color: #94a3b8;
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
 }
 
 .serviceLayout--collapsed .serviceLayout__userDetails,
@@ -162,14 +167,14 @@
 .serviceLayout__logoutBtn {
   background: none;
   border: none;
-  color: #94a3b8;
+  color: var(--color-text-tertiary);
   cursor: pointer;
-  padding: 0.25rem;
+  padding: var(--space-1);
   transition: color 0.2s;
 }
 
 .serviceLayout__logoutBtn:hover {
-  color: #fff;
+  color: var(--color-error);
 }
 
 /* Main Content */
@@ -187,15 +192,21 @@
 
 .serviceLayout__header {
   height: var(--header-height);
-  background-color: #fff;
-  border-bottom: 1px solid #e2e8f0;
+  background-color: var(--color-bg-primary);
+  border-bottom: 1px solid var(--color-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1.5rem;
+  padding: 0 var(--space-6);
   position: sticky;
   top: 0;
-  z-index: 40;
+  z-index: var(--z-sticky);
+}
+
+.serviceLayout__headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
 }
 
 .serviceLayout__toggleBtn {
@@ -203,13 +214,69 @@
   border: none;
   font-size: 1.25rem;
   cursor: pointer;
-  color: #64748b;
-  padding: 0.25rem;
+  color: var(--color-text-secondary);
+  padding: var(--space-1);
+  border-radius: var(--radius-md);
+}
+
+.serviceLayout__toggleBtn:hover {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
 }
 
 .serviceLayout__pageContainer {
-  padding: 2rem;
+  padding: var(--space-6);
   max-width: 1600px;
   margin: 0 auto;
   width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .serviceLayout__sidebar {
+    transform: translateX(-100%);
+    width: var(--sidebar-width);
+    /* Always full width when open on mobile */
+  }
+
+  .serviceLayout--collapsed .serviceLayout__sidebar {
+    width: var(--sidebar-width);
+    transform: translateX(0);
+    /* "Collapsed" state on mobile actually means OPEN */
+  }
+
+  /* When "collapsed" (mobile open), show text */
+  .serviceLayout--collapsed .serviceLayout__logoText,
+  .serviceLayout--collapsed .serviceLayout__navTitle,
+  .serviceLayout--collapsed .serviceLayout__navLink .text,
+  .serviceLayout--collapsed .serviceLayout__userDetails,
+  .serviceLayout--collapsed .serviceLayout__logoutBtn {
+    display: flex;
+    /* Restore display */
+  }
+
+  .serviceLayout--collapsed .serviceLayout__navTitle {
+    display: block;
+  }
+
+  .serviceLayout__content {
+    margin-left: 0;
+  }
+
+  .serviceLayout--collapsed .serviceLayout__content {
+    margin-left: 0;
+  }
+
+  /* Overlay when menu is open */
+  .serviceLayout--collapsed .serviceLayout__content::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: var(--z-modal-backdrop);
+  }
+
+  .serviceLayout__pageContainer {
+    padding: var(--space-4);
+  }
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { ThemeSwitcher } from '../ui/ThemeSwitcher';
 import './ServiceLayout.css';
 
 export const ServiceLayout = () => {
@@ -16,10 +17,10 @@ export const ServiceLayout = () => {
   return (
     <div className={`serviceLayout ${isSidebarCollapsed ? 'serviceLayout--collapsed' : ''}`}>
       <aside className="serviceLayout__sidebar">
-        <div className="serviceLayout__logo">
+        <Link to="/service/dashboard" className="serviceLayout__logo">
           <span className="serviceLayout__logoIcon">🌸</span>
           <span className="serviceLayout__logoText">FLOWerTRACK</span>
-        </div>
+        </Link>
 
         <nav className="serviceLayout__nav">
           <div className="serviceLayout__navSection">
@@ -75,6 +76,7 @@ export const ServiceLayout = () => {
           </button>
           <div className="serviceLayout__headerActions">
             <span className="serviceLayout__date">{new Date().toLocaleDateString()}</span>
+            <ThemeSwitcher variant="buttons" />
           </div>
         </header>
         <div className="serviceLayout__pageContainer">

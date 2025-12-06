@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { ThemeSwitcher } from '../ui/ThemeSwitcher';
 import './ClientLayout.css';
 
 export const ClientLayout = () => {
@@ -16,10 +17,10 @@ export const ClientLayout = () => {
   return (
     <div className={`clientLayout ${isSidebarCollapsed ? 'clientLayout--collapsed' : ''}`}>
       <aside className="clientLayout__sidebar">
-        <div className="clientLayout__logo">
+        <Link to="/client/dashboard" className="clientLayout__logo">
           <span className="clientLayout__logoIcon">🌸</span>
           <span className="clientLayout__logoText">FLOWerTRACK Client</span>
-        </div>
+        </Link>
 
         <nav className="clientLayout__nav">
           <NavLink to="/client/dashboard" className={({ isActive }) => `clientLayout__navLink ${isActive ? 'active' : ''}`}>
@@ -58,7 +59,10 @@ export const ClientLayout = () => {
           >
             ☰
           </button>
-          <span className="clientLayout__welcome">Witaj, {user?.name}</span>
+          <div className="clientLayout__headerActions" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <span className="clientLayout__welcome">Witaj, {user?.name}</span>
+            <ThemeSwitcher variant="buttons" />
+          </div>
         </header>
         <div className="clientLayout__pageContainer">
           <Outlet />

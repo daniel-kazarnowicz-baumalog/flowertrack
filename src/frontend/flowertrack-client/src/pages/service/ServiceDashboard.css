@@ -1,8 +1,8 @@
 .serviceDashboard {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  padding: 1rem;
+  gap: var(--space-8);
+  padding: var(--space-6);
   width: 100%;
   max-width: 1600px;
   margin: 0 auto;
@@ -16,40 +16,41 @@
   justify-content: center;
   min-height: 400px;
   text-align: center;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  margin: 1rem;
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  margin: var(--space-4);
+  border: 1px solid var(--color-border);
 }
 
 .serviceDashboard__header {
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-2);
 }
 
 .serviceDashboard__title {
-  font-size: 1.875rem;
-  font-weight: 700;
-  color: #1a202c;
-  line-height: 1.2;
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  line-height: var(--leading-tight);
 }
 
 .serviceDashboard__subtitle {
-  font-size: 1rem;
-  color: #718096;
-  margin-top: 0.5rem;
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-2);
 }
 
 /* Grids and Rows */
 .serviceDashboard__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.5rem;
+  gap: var(--space-6);
 }
 
 .serviceDashboard__row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 1.5rem;
+  gap: var(--space-6);
 }
 
 .serviceDashboard__fullRow {
@@ -71,12 +72,12 @@
 }
 
 .serviceDashboard__cardTitle {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #4a5568;
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid #edf2f7;
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 /* Responsive adjustments */
@@ -92,7 +93,7 @@
   }
 
   .serviceDashboard {
-    padding: 0.5rem;
-    gap: 1.5rem;
+    padding: var(--space-4);
+    gap: var(--space-6);
   }
 }

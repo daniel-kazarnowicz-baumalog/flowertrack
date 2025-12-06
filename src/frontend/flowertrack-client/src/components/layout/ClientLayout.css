@@ -1,32 +1,27 @@
 :root {
   --client-sidebar-width: 250px;
   --client-sidebar-width-collapsed: 70px;
-  --client-primary: #ec4899;
-  /* Pinkish for client portal to differentiate */
-  --client-sidebar-bg: #fff;
-  --client-sidebar-text: #334155;
 }
 
 .clientLayout {
   display: flex;
   min-height: 100vh;
-  background-color: #fce7f3;
-  /* Light pink bg */
+  background-color: var(--color-bg-secondary);
   transition: all 0.3s ease;
 }
 
 /* Sidebar */
 .clientLayout__sidebar {
   width: var(--client-sidebar-width);
-  background-color: var(--client-sidebar-bg);
-  color: var(--client-sidebar-text);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
   display: flex;
   flex-direction: column;
   position: fixed;
   height: 100vh;
   transition: width 0.3s ease;
-  z-index: 50;
-  border-right: 1px solid #fecdd3;
+  z-index: var(--z-fixed);
+  border-right: 1px solid var(--color-border);
 }
 
 .clientLayout--collapsed .clientLayout__sidebar {
@@ -34,83 +29,143 @@
 }
 
 .clientLayout__logo {
-  height: 64px;
+  height: var(--header-height);
   display: flex;
   align-items: center;
-  padding: 0 1.5rem;
-  font-weight: 700;
-  color: var(--client-primary);
-  border-bottom: 1px solid #fecdd3;
+  padding: 0 var(--space-6);
+  font-weight: var(--font-bold);
+  color: var(--color-client);
+  border-bottom: 1px solid var(--color-border);
   overflow: hidden;
   white-space: nowrap;
+  text-decoration: none;
+}
+
+.clientLayout__logoIcon {
+  margin-right: var(--space-2);
+  font-size: 1.5rem;
 }
 
 .clientLayout__nav {
   flex: 1;
-  padding: 1.5rem 1rem;
+  padding: var(--space-6) var(--space-4);
 }
 
 .clientLayout__navLink {
   display: flex;
   align-items: center;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  color: #64748b;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
   text-decoration: none;
   transition: all 0.2s;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-2);
   white-space: nowrap;
   overflow: hidden;
 }
 
 .clientLayout__navLink:hover {
-  background-color: #fdf2f8;
-  color: var(--client-primary);
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-client);
 }
 
 .clientLayout__navLink.active {
-  background-color: var(--client-primary);
+  background-color: var(--color-client);
   color: #fff;
-  box-shadow: 0 4px 6px -1px rgba(236, 72, 153, 0.3);
+  box-shadow: var(--shadow-sm);
 }
 
 .clientLayout__navLink .icon {
-  margin-right: 1rem;
-  font-size: 1.25rem;
+  margin-right: var(--space-4);
+  font-size: var(--text-lg);
   min-width: 1.5rem;
   text-align: center;
 }
 
 /* User Section */
 .clientLayout__user {
-  padding: 1rem;
-  border-top: 1px solid #fecdd3;
+  padding: var(--space-4);
+  border-top: 1px solid var(--color-border);
   text-align: center;
+  background-color: var(--color-bg-tertiary);
+}
+
+/* User Info Layout similar to ServiceLayout for consistency */
+.clientLayout__userInfo {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--space-3);
+  text-align: left;
+  overflow: hidden;
+}
+
+.clientLayout__userAvatar {
+  width: 32px;
+  height: 32px;
+  background-color: var(--color-client);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  margin-right: var(--space-3);
+  flex-shrink: 0;
+}
+
+.clientLayout__userDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.clientLayout__userName {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  white-space: nowrap;
+  color: var(--color-text-primary);
+}
+
+.clientLayout__userRole {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
 }
 
 .clientLayout__logoutBtn {
   background: none;
-  border: 1px solid #fda4af;
-  color: var(--client-primary);
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+  border: 1px solid var(--color-client);
+  color: var(--color-client);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
   cursor: pointer;
   width: 100%;
   transition: all 0.2s;
 }
 
 .clientLayout__logoutBtn:hover {
-  background-color: #fff1f2;
+  background-color: var(--color-client);
+  color: white;
+}
+
+.clientLayout--collapsed .clientLayout__userInfo,
+.clientLayout--collapsed .clientLayout__logoutBtn {
+  /* Different handling for collapsed state */
+}
+
+/* Hide advanced user info when collapsed, show simple logout icon */
+.clientLayout--collapsed .clientLayout__userDetails {
+  display: none;
 }
 
 .clientLayout--collapsed .clientLayout__logoutBtn {
   font-size: 0;
-  padding: 0.5rem;
+  padding: var(--space-2);
+  border: none;
+  width: auto;
 }
 
 .clientLayout--collapsed .clientLayout__logoutBtn::after {
   content: '↪';
-  font-size: 1rem;
+  font-size: 1.2rem;
 }
 
 /* Main Content */
@@ -127,16 +182,16 @@
 }
 
 .clientLayout__header {
-  height: 64px;
-  background-color: #fff;
-  border-bottom: 1px solid #fecdd3;
+  height: var(--header-height);
+  background-color: var(--color-bg-primary);
+  border-bottom: 1px solid var(--color-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1.5rem;
+  padding: 0 var(--space-6);
   position: sticky;
   top: 0;
-  z-index: 40;
+  z-index: var(--z-sticky);
 }
 
 .clientLayout__toggleBtn {
@@ -144,12 +199,67 @@
   border: none;
   font-size: 1.25rem;
   cursor: pointer;
-  color: var(--client-primary);
+  color: var(--color-client);
 }
 
 .clientLayout__pageContainer {
-  padding: 2rem;
+  padding: var(--space-6);
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
+}
+
+.clientLayout__welcome {
+  color: var(--color-text-primary);
+  font-weight: var(--font-medium);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .clientLayout__sidebar {
+    transform: translateX(-100%);
+    width: var(--client-sidebar-width);
+  }
+
+  .clientLayout--collapsed .clientLayout__sidebar {
+    transform: translateX(0);
+    width: var(--client-sidebar-width);
+  }
+
+  /* When open on mobile (via collapse toggle), show full content */
+  .clientLayout--collapsed .clientLayout__userDetails {
+    display: flex;
+  }
+
+  .clientLayout--collapsed .clientLayout__logoutBtn {
+    font-size: inherit;
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--color-client);
+    width: 100%;
+  }
+
+  .clientLayout--collapsed .clientLayout__logoutBtn::after {
+    content: none;
+  }
+
+  .clientLayout__content {
+    margin-left: 0;
+  }
+
+  .clientLayout--collapsed .clientLayout__content {
+    margin-left: 0;
+  }
+
+  /* Overlay */
+  .clientLayout--collapsed .clientLayout__content::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: var(--z-modal-backdrop);
+  }
+
+  .clientLayout__pageContainer {
+    padding: var(--space-4);
+  }
 }
