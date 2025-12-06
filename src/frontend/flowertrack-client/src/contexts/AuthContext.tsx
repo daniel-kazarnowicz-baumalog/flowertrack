@@ -74,6 +74,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       role: role,
       name: role === 'client' ? 'Test Klient' : 'Test Serwisant',
       organizationId: role === 'client' ? 'mock-org-1' : undefined,
+      isAdmin: role === 'service', // Grant admin rights to mock service user
     };
     login(mockToken, mockUser);
   };

@@ -1,0 +1,137 @@
+.kpi-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    min-height: 140px;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.kpi-card--clickable {
+    cursor: pointer;
+}
+
+/* Variants */
+.kpi-card--primary {
+    border-left: 4px solid #4f46e5;
+}
+
+.kpi-card--success {
+    border-left: 4px solid #10b981;
+}
+
+.kpi-card--warning {
+    border-left: 4px solid #f59e0b;
+}
+
+.kpi-card--danger {
+    border-left: 4px solid #ef4444;
+}
+
+.kpi-card--info {
+    border-left: 4px solid #3b82f6;
+}
+
+/* Content */
+.kpi-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+    z-index: 1;
+}
+
+.kpi-card__title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.kpi-card__icon {
+    color: #94a3b8;
+    font-size: 1.25rem;
+}
+
+.kpi-card__content {
+    z-index: 1;
+}
+
+.kpi-card__value {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.2;
+    margin-bottom: 0.25rem;
+}
+
+.kpi-card__trend {
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.kpi-card__trend--up {
+    color: #10b981;
+}
+
+.kpi-card__trend--down {
+    color: #ef4444;
+}
+
+.kpi-card__trend--neutral {
+    color: #64748b;
+}
+
+/* Background Icon Effect */
+.kpi-card__bg-icon {
+    position: absolute;
+    right: -10px;
+    bottom: -10px;
+    font-size: 5rem;
+    color: rgba(241, 245, 249, 0.8);
+    /* Very subtle */
+    transform: rotate(-15deg);
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+/* Loading State */
+.kpi-card__loading {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kpi-card__loading-bar {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #e2e8f0;
+    border-top-color: #4f46e5;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

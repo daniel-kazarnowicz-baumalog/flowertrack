@@ -8,6 +8,7 @@ import {
   useUpdateServiceUserStatus,
 } from '../../hooks/useServiceUsers';
 import { InviteTechnicianModal } from '../../components/users';
+import { ServiceResetPasswordModal } from '../../components/users/ServiceResetPasswordModal';
 import { Loader, Button, Badge, ConfirmModal, Input } from '../../components/ui';
 import type { ServiceUser } from '../../services/serviceUserService';
 import './ServiceUsersListPage.css';
@@ -23,6 +24,14 @@ export const ServiceUsersListPage = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [resetModal, setResetModal] = useState<{
+    isOpen: boolean;
+    user: ServiceUser | null;
+  }>({
+    isOpen: false,
+    user: null,
+  });
+
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
     type: 'role' | 'status' | null;
@@ -114,6 +123,13 @@ export const ServiceUsersListPage = () => {
       type: 'status',
       user: serviceUser,
       newValue: newStatus,
+    });
+  };
+
+  const handleResetPassword = (serviceUser: ServiceUser) => {
+    setResetModal({
+      isOpen: true,
+      user: serviceUser,
     });
   };
 
@@ -308,6 +324,15 @@ export const ServiceUsersListPage = () => {
                           <option value="Admin">Admin</option>
                         </select>
 
+                        <button
+                          className="serviceUsersListPage__iconButton"
+                          onClick={() => handleResetPassword(serviceUser)}
+                          title="Reset Password"
+                          disabled={serviceUser.status !== 'Active'}
+                        >
+                          Key
+                        </button>
+
                         <Button
                           variant={serviceUser.status === 'Active' ? 'danger' : 'primary'}
                           size="sm"
@@ -380,6 +405,15 @@ export const ServiceUsersListPage = () => {
         onClose={() => setIsInviteModalOpen(false)}
         onSuccess={() => refetch()}
       />
+
+      {resetModal.user && (
+        <ServiceResetPasswordModal
+          isOpen={resetModal.isOpen}
+          onClose={() => setResetModal({ isOpen: false, user: null })}
+          userId={resetModal.user.id}
+          userName={resetModal.user.fullName}
+        />
+      )}
 
       <ConfirmModal
         isOpen={confirmModal.isOpen}

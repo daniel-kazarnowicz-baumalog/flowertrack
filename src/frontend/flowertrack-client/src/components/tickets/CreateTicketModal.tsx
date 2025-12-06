@@ -6,6 +6,8 @@ import React, { useState } from 'react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
+import { Checkbox } from '../ui/Checkbox';
+import { FileUploader } from '../ui/FileUploader';
 import type { CreateTicketRequest, TicketPriority } from '../../types/api';
 import styles from './CreateTicketModal.module.css';
 
@@ -19,7 +21,7 @@ interface CreateTicketModalProps {
   isOpen: boolean;
   onClose: () => void;
   machines: Machine[];
-  onSubmit: (data: CreateTicketRequest) => void;
+  onSubmit: (data: CreateTicketRequest, files: File[]) => void;
   isLoading?: boolean;
   isFetchingMachines?: boolean;
 }
@@ -39,6 +41,8 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
     priority: 'Medium',
   });
 
+  const [files, setFiles] = useState<File[]>([]);
+  const [consent, setConsent] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validate = (): boolean => {
@@ -49,9 +53,18 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
     }
     if (!formData.title.trim()) {
       newErrors.title = 'Wpisz tytuł zgłoszenia';
+    } else if (formData.title.length < 10) {
+      newErrors.title = 'Tytuł musi mieć min. 10 znaków';
     }
+
     if (!formData.description.trim()) {
       newErrors.description = 'Wpisz opis problemu';
+    } else if (formData.description.length < 20) {
+      newErrors.description = 'Opis musi mieć min. 20 znaków';
+    }
+
+    if (!consent) {
+      newErrors.consent = 'Musisz wyrazić zgodę na przetwarzanie danych';
     }
 
     setErrors(newErrors);
@@ -65,7 +78,9 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
       return;
     }
 
-    onSubmit(formData);
+    // Pass files along with the form data - note that parent component needs to handle this
+    // We are extending the submit signature implicitly here, needs update in parent
+    onSubmit(formData, files);
   };
 
   const handleClose = () => {
@@ -75,8 +90,14 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
       description: '',
       priority: 'Medium',
     });
+    setFiles([]);
+    setConsent(false);
     setErrors({});
     onClose();
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -137,7 +158,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
         {/* Title */}
         <div className={styles.field}>
           <label htmlFor="title" className={styles.label}>
-            Tytuł <span className={styles.required}>*</span>
+            Tytuł (min. 10 znaków) <span className={styles.required}>*</span>
           </label>
           <Input
             id="title"
@@ -153,14 +174,54 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
         {/* Description */}
         <div className={styles.field}>
           <label htmlFor="description" className={styles.label}>
-            Opis problemu <span className={styles.required}>*</span>
+            Opis problemu (min. 20 znaków) <span className={styles.required}>*</span>
           </label>
-          <Input
+          <textarea
             id="description"
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             placeholder="Szczegółowy opis problemu, objawów, okoliczności wystąpienia..."
-            error={errors.description}
+            className={`${styles.select} ${errors.description ? styles.error : ''}`} // Reuse select styles for basic textarea
+            style={{ minHeight: '120px', fontFamily: 'inherit' }}
+            disabled={isLoading}
+          />
+          {errors.description && <span className={styles.errorMessage}>{errors.description}</span>}
+        </div>
+
+        {/* Attachments */}
+        <div className={styles.field}>
+          <label className={styles.label}>Załączniki (max 3 pliki, 10MB)</label>
+          <FileUploader
+            onFilesSelected={(newFiles) => setFiles([...files, ...newFiles].slice(0, 3))}
+            maxFiles={3 - files.length}
+            disabled={isLoading || files.length >= 3}
+          />
+          {files.length > 0 && (
+            <div className={styles.fileList}>
+              {files.map((file, idx) => (
+                <div key={idx} className={styles.fileItem}>
+                  <span className={styles.fileName}>{file.name} ({(file.size / 1024).toFixed(0)} KB)</span>
+                  <button
+                    type="button"
+                    className={styles.removeFile}
+                    onClick={() => handleRemoveFile(idx)}
+                    disabled={isLoading}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Consent */}
+        <div className={styles.field}>
+          <Checkbox
+            label="Zgadzam się na przetwarzanie danych osobowych w celu realizacji zgłoszenia"
+            checked={consent}
+            onChange={(e) => setConsent(e.target.checked)}
+            error={errors.consent}
             disabled={isLoading}
           />
         </div>

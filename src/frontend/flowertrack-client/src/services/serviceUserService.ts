@@ -84,4 +84,13 @@ export const serviceUserService = {
     );
     return data;
   },
+  /**
+   * Reset a service user's password (admin only)
+   */
+  async resetUserPassword(userId: string): Promise<{ temporaryPassword: string }> {
+    const { data } = await apiClient.post<{ temporaryPassword: string }>(
+      `/api/service-users/${userId}/reset-password`
+    );
+    return data;
+  },
 };

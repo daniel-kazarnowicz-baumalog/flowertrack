@@ -5,17 +5,57 @@
 }
 
 .clientTicketsPage__header {
+  margin-bottom: 2rem;
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px -2px rgba(236, 72, 153, 0.1);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  border-left: 6px solid #ec4899;
 }
 
 .clientTicketsPage__header h1 {
   font-size: 2rem;
-  font-weight: 700;
-  color: #333;
+  font-weight: 800;
+  color: #1f2937;
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.clientTicketsPage__newTicketBtn {
+  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+  transition: all 0.2s ease;
+}
+
+.clientTicketsPage__newTicketBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(236, 72, 153, 0.4);
+}
+
+.clientTicketsPage__newTicketBtn:active {
+  transform: translateY(0);
+}
+
+.clientTicketsPage__content {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .clientTicketsPage__error {
@@ -27,13 +67,15 @@
   gap: 1rem;
   background: white;
   border: 1px solid #ef4444;
-  border-radius: 8px;
+  border-radius: 16px;
   margin-top: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .clientTicketsPage__error h2 {
   color: #ef4444;
   margin: 0;
+  font-size: 1.5rem;
 }
 
 .clientTicketsPage__error p {
@@ -50,9 +92,14 @@
     flex-direction: column;
     align-items: stretch;
     gap: 1rem;
+    padding: 1.5rem;
   }
 
   .clientTicketsPage__header h1 {
     font-size: 1.5rem;
+  }
+
+  .clientTicketsPage__content {
+    padding: 1rem;
   }
 }

@@ -6,6 +6,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { ServiceDashboard } from './pages/service/ServiceDashboard';
 import ClientDashboard from './pages/client/Dashboard';
 import NotFound from './pages/NotFound';
+import { ServiceLayout } from './components/layout/ServiceLayout';
+import { ClientLayout } from './components/layout/ClientLayout';
 
 // Service Pages
 import { ServiceTicketsPage } from './pages/service/ServiceTicketsPage';
@@ -37,40 +39,41 @@ function App() {
         <Route path="/service/reset-password" element={<ServiceResetPasswordPage />} />
 
         {/* Service - Protected Routes */}
+        {/* Service - Protected Routes */}
         <Route
           path="/service/*"
           element={
             <ProtectedRoute requiredRole="service">
-              <Routes>
-                <Route path="dashboard" element={<ServiceDashboard />} />
-                <Route path="tickets" element={<ServiceTicketsPage />} />
-                <Route path="tickets/:id" element={<ServiceTicketDetailPage />} />
-                <Route path="organizations" element={<OrganizationsListPage />} />
-                <Route path="organizations/:id" element={<OrganizationDetailPage />} />
-                <Route path="machines" element={<MachinesListPage />} />
-                <Route path="machines/:id" element={<MachineDetailPage />} />
-                <Route path="users" element={<ServiceUsersListPage />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <ServiceLayout />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route path="dashboard" element={<ServiceDashboard />} />
+          <Route path="tickets" element={<ServiceTicketsPage />} />
+          <Route path="tickets/:id" element={<ServiceTicketDetailPage />} />
+          <Route path="organizations" element={<OrganizationsListPage />} />
+          <Route path="organizations/:id" element={<OrganizationDetailPage />} />
+          <Route path="machines" element={<MachinesListPage />} />
+          <Route path="machines/:id" element={<MachineDetailPage />} />
+          <Route path="users" element={<ServiceUsersListPage />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
 
-        {/* Client - Protected Routes */}
+        {/* Client - Protected Routes CLONE TEST */}
         <Route
           path="/client/*"
           element={
             <ProtectedRoute requiredRole="client">
-              <Routes>
-                <Route path="dashboard" element={<ClientDashboard />} />
-                <Route path="tickets" element={<ClientTicketsPage />} />
-                <Route path="tickets/:id" element={<ClientTicketDetailPage />} />
-                <Route path="team" element={<OrganizationTeamPage />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <ClientLayout />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route path="dashboard" element={<ClientDashboard />} />
+          <Route path="tickets" element={<ClientTicketsPage />} />
+          <Route path="tickets/:id" element={<ClientTicketDetailPage />} />
+          <Route path="team" element={<OrganizationTeamPage />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
 
         {/* Fallback */}
         <Route path="*" element={<NotFound />} />

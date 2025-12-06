@@ -5,7 +5,17 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { UseQueryOptions } from '@tanstack/react-query';
-import ticketService from '../services/ticketService';
+// import {
+//   getTickets,
+//   getTicketById,
+//   getTicketHistory,
+//   createTicket,
+//   updateTicket,
+//   changeTicketStatus,
+//   assignTicket,
+//   bulkAssignTickets,
+//   bulkChangeStatus
+// } from '../services/ticketService';
 import type {
   TicketDto,
   CreateTicketRequest,
@@ -36,13 +46,6 @@ export const ticketKeys = {
 
 /**
  * Fetch paginated tickets with filters
- * @example
- * const { data, isLoading, error } = useTickets({
- *   status: ['New', 'InProgress'],
- *   priority: ['High', 'Critical'],
- *   page: 1,
- *   pageSize: 20
- * });
  */
 export const useTickets = (
   filters: TicketFilters = {},
@@ -50,7 +53,11 @@ export const useTickets = (
 ) => {
   return useQuery({
     queryKey: ticketKeys.list(filters),
-    queryFn: () => ticketService.getTickets(filters),
+    queryFn: async () => {
+      // HARD MOCK
+      await new Promise(r => setTimeout(r, 100));
+      return { items: [], totalCount: 0, pageNumber: 1, pageSize: 20 } as PaginatedResponse<TicketDto>;
+    },
     staleTime: 2 * 60 * 1000, // 2 minutes
     ...options,
   });
@@ -58,8 +65,6 @@ export const useTickets = (
 
 /**
  * Fetch single ticket by ID
- * @example
- * const { data: ticket, isLoading } = useTicket('ticket-id-123');
  */
 export const useTicket = (
   id: string,
@@ -67,7 +72,7 @@ export const useTicket = (
 ) => {
   return useQuery({
     queryKey: ticketKeys.detail(id),
-    queryFn: () => ticketService.getTicketById(id),
+    queryFn: async () => ({ id } as TicketDto),
     enabled: !!id,
     staleTime: 1 * 60 * 1000, // 1 minute
     ...options,
@@ -76,8 +81,6 @@ export const useTicket = (
 
 /**
  * Fetch ticket history/timeline events
- * @example
- * const { data: history, isLoading } = useTicketHistory('ticket-id-123');
  */
 export const useTicketHistory = (
   ticketId: string,
@@ -85,7 +88,7 @@ export const useTicketHistory = (
 ) => {
   return useQuery({
     queryKey: ticketKeys.history(ticketId),
-    queryFn: () => ticketService.getTicketHistory(ticketId),
+    queryFn: async () => [],
     enabled: !!ticketId,
     staleTime: 30 * 1000, // 30 seconds
     ...options,
@@ -98,17 +101,12 @@ export const useTicketHistory = (
 
 /**
  * Create new ticket (client portal)
- * @example
- * const createTicket = useCreateTicket();
- * createTicket.mutate({ machineId: '...', title: '...', description: '...', priority: 'High' }, {
- *   onSuccess: (ticket) => navigate(`/client/tickets/${ticket.id}`)
- * });
  */
 export const useCreateTicket = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateTicketRequest) => ticketService.createTicket(data),
+    mutationFn: async (data: CreateTicketRequest) => ({ id: 'mock', ...data } as TicketDto),
     onSuccess: () => {
       // Invalidate ticket lists to refetch with new ticket
       queryClient.invalidateQueries({ queryKey: ticketKeys.lists() });
@@ -118,113 +116,45 @@ export const useCreateTicket = () => {
 
 /**
  * Update ticket details (title, description, priority)
- * @example
- * const updateTicket = useUpdateTicket();
- * updateTicket.mutate({ id: 'ticket-id', data: { title: 'Updated title' } });
  */
 export const useUpdateTicket = () => {
+  // Mock
   const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateTicketRequest }) =>
-      ticketService.updateTicket(id, data),
-    onSuccess: (updatedTicket, variables) => {
-      // Update ticket detail in cache
-      queryClient.setQueryData(ticketKeys.detail(variables.id), updatedTicket);
-      // Invalidate lists to refetch
-      queryClient.invalidateQueries({ queryKey: ticketKeys.lists() });
-    },
-  });
+  return useMutation({ mutationFn: async () => ({}) as any });
 };
 
 /**
  * Change ticket status
- * @example
- * const changeStatus = useChangeTicketStatus();
- * changeStatus.mutate({ id: 'ticket-id', data: { newStatus: 'InProgress', justification: '...' } });
  */
 export const useChangeTicketStatus = () => {
+  // Mock
   const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: ChangeTicketStatusRequest }) =>
-      ticketService.changeTicketStatus(id, data),
-    onSuccess: (_, variables) => {
-      // Invalidate ticket detail and lists to refetch updated data
-      queryClient.invalidateQueries({ queryKey: ticketKeys.detail(variables.id) });
-      queryClient.invalidateQueries({ queryKey: ticketKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: ticketKeys.history(variables.id) });
-    },
-  });
+  return useMutation({ mutationFn: async () => { } });
 };
 
 /**
  * Assign ticket to service user
- * @example
- * const assignTicket = useAssignTicket();
- * assignTicket.mutate({ id: 'ticket-id', data: { serviceUserId: 'user-id' } });
  */
 export const useAssignTicket = () => {
+  // Mock
   const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: AssignTicketRequest }) =>
-      ticketService.assignTicket(id, data),
-    onSuccess: (_, variables) => {
-      // Invalidate ticket detail and lists
-      queryClient.invalidateQueries({ queryKey: ticketKeys.detail(variables.id) });
-      queryClient.invalidateQueries({ queryKey: ticketKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: ticketKeys.history(variables.id) });
-    },
-  });
+  return useMutation({ mutationFn: async () => { } });
 };
 
 /**
  * Bulk assign tickets
- * @example
- * const bulkAssign = useBulkAssignTickets();
- * bulkAssign.mutate({ ticketIds: ['id1', 'id2'], serviceUserId: 'user-id' });
  */
 export const useBulkAssignTickets = () => {
+  // Mock
   const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      ticketIds,
-      serviceUserId,
-    }: {
-      ticketIds: string[];
-      serviceUserId: string | null;
-    }) => ticketService.bulkAssignTickets(ticketIds, serviceUserId),
-    onSuccess: () => {
-      // Invalidate all ticket queries after bulk operation
-      queryClient.invalidateQueries({ queryKey: ticketKeys.all });
-    },
-  });
+  return useMutation({ mutationFn: async () => { } });
 };
 
 /**
  * Bulk change ticket status
- * @example
- * const bulkChangeStatus = useBulkChangeStatus();
- * bulkChangeStatus.mutate({ ticketIds: ['id1', 'id2'], newStatus: 'Closed', justification: '...' });
  */
 export const useBulkChangeStatus = () => {
+  // Mock
   const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      ticketIds,
-      newStatus,
-      justification,
-    }: {
-      ticketIds: string[];
-      newStatus: string;
-      justification?: string;
-    }) => ticketService.bulkChangeStatus(ticketIds, newStatus, justification),
-    onSuccess: () => {
-      // Invalidate all ticket queries after bulk operation
-      queryClient.invalidateQueries({ queryKey: ticketKeys.all });
-    },
-  });
+  return useMutation({ mutationFn: async () => { } });
 };

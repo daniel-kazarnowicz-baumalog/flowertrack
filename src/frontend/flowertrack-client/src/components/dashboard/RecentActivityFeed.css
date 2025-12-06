@@ -1,0 +1,117 @@
+.activity-feed {
+    display: flex;
+    flex-direction: column;
+}
+
+.activity-feed-empty {
+    padding: 2rem;
+    text-align: center;
+    color: #64748b;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px dashed #cbd5e1;
+}
+
+.activity-item {
+    display: flex;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+    position: relative;
+}
+
+.activity-item:last-child {
+    padding-bottom: 0;
+}
+
+.activity-timeline {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 2.5rem;
+    flex-shrink: 0;
+}
+
+.activity-icon-wrapper {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Tailwind-like utility classes mapped to CSS vars/colors */
+.bg-blue-100.text-blue-600 {
+    background-color: #dbeafe;
+    color: #2563eb;
+}
+
+.bg-purple-100.text-purple-600 {
+    background-color: #f3e8ff;
+    color: #9333ea;
+}
+
+.bg-green-100.text-green-600 {
+    background-color: #dcfce7;
+    color: #16a34a;
+}
+
+.bg-gray-100.text-gray-600 {
+    background-color: #f3f4f6;
+    color: #4b5563;
+}
+
+.bg-gray-100.text-gray-400 {
+    background-color: #f3f4f6;
+    color: #9ca3af;
+}
+
+.activity-icon {
+    font-size: 1rem;
+}
+
+.activity-line {
+    width: 2px;
+    background-color: #e2e8f0;
+    flex-grow: 1;
+    margin-top: -0.25rem;
+    margin-bottom: -0.25rem;
+}
+
+.activity-content-wrapper {
+    flex-grow: 1;
+    padding-top: 0.25rem;
+}
+
+.activity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.25rem;
+}
+
+.activity-title {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 0.95rem;
+}
+
+.activity-time {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    white-space: nowrap;
+    margin-left: 1rem;
+}
+
+.activity-details {
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+.activity-user {
+    font-weight: 500;
+    color: #475569;
+}
