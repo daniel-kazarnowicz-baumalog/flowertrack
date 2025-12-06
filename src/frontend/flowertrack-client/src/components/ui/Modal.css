@@ -6,25 +6,23 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--color-bg-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
-  z-index: 1000;
-  animation: fadeIn 0.2s ease-in-out;
+  padding: var(--space-4);
+  z-index: var(--z-modal-backdrop);
+  animation: fadeIn var(--duration-200) var(--ease-out);
 }
 
 .modal {
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow:
-    0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  background-color: var(--color-bg-elevated);
+  border-radius: var(--modal-border-radius);
+  box-shadow: var(--modal-shadow);
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  animation: slideIn 0.2s ease-in-out;
+  animation: slideIn var(--duration-200) var(--ease-out);
 }
 
 .modal--sm {
@@ -51,42 +49,45 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.25rem;
-  border-bottom: 1px solid #e5e7eb;
+  padding: var(--space-5);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .modal-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #111827;
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
   margin: 0;
 }
 
 .modal-close {
   background: none;
   border: none;
-  font-size: 1.5rem;
-  color: #6b7280;
+  font-size: var(--text-2xl);
+  color: var(--color-text-secondary);
   cursor: pointer;
-  padding: 0.25rem;
+  padding: var(--space-1);
   line-height: 1;
-  transition: color 0.15s ease-in-out;
+  transition: var(--transition-colors);
+  border-radius: var(--radius-md);
 }
 
 .modal-close:hover {
-  color: #111827;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-hover);
 }
 
 .modal-body {
-  padding: 1.25rem;
+  padding: var(--modal-padding);
   overflow-y: auto;
   flex: 1;
+  color: var(--color-text-primary);
 }
 
 .modal-footer {
-  padding: 1rem 1.25rem;
-  border-top: 1px solid #e5e7eb;
-  background-color: #f9fafb;
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-bg-secondary);
 }
 
 @keyframes fadeIn {

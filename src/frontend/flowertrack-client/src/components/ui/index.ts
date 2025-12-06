@@ -19,3 +19,6 @@ export type { LoaderProps } from './Loader';
 
 export { default as Toast } from './Toast';
 export type { ToastProps, ToastVariant } from './Toast';
+
+export { ThemeSwitcher } from './ThemeSwitcher';
+export type { ThemeSwitcherProps, ThemeSwitcherVariant } from './ThemeSwitcher';

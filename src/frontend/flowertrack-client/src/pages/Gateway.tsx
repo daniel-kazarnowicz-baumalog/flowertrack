@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '../components/ui/LanguageSwitcher';
+import { ThemeSwitcher } from '../components/ui/ThemeSwitcher';
 import '../styles/gateway.css';
 
 const Gateway = () => {
@@ -8,8 +9,9 @@ const Gateway = () => {
 
     return (
         <div className="gateway-container">
-            <div className="gateway-language-switcher">
+            <div className="gateway-controls">
                 <LanguageSwitcher />
+                <ThemeSwitcher variant="toggle" />
             </div>
             <div className="gateway-content">
                 <div className="gateway-header">

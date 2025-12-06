@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth, type User } from '../../contexts/AuthContext';
 import { Button } from '../ui';
 import './Navbar.css';
 
@@ -17,7 +17,7 @@ export function Navbar({ portal }: NavbarProps) {
 
   const handleLogout = () => {
     logout();
-    navigate(portal === 'service' ? '/service/login' : '/client/login');
+    navigate(portal === 'service' ? '/service' : '/client');
   };
 
   // Don't show navbar if not authenticated
@@ -26,13 +26,17 @@ export function Navbar({ portal }: NavbarProps) {
   }
 
   const isService = portal === 'service';
-  const userName = isService
-    ? (user as { fullName: string }).fullName
-    : `${(user as { firstName: string; lastName: string }).firstName} ${(user as { firstName: string; lastName: string }).lastName}`;
-
-  const isAdmin = isService
-    ? (user as { isAdmin?: boolean }).isAdmin || false
-    : (user as { isAdmin: boolean }).isAdmin;
+  
+  // Get user display name
+  const getUserName = (u: User): string => {
+    if (u.fullName) return u.fullName;
+    if (u.firstName && u.lastName) return `${u.firstName} ${u.lastName}`;
+    if (u.name) return u.name;
+    return u.email;
+  };
+  
+  const userName = getUserName(user);
+  const isAdmin = user.isAdmin || false;
 
   return (
     <nav className={`navbar navbar--${portal}`}>

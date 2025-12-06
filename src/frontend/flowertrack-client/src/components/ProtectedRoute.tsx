@@ -1,34 +1,36 @@
+import { type ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { Loader } from './ui';
 
 interface ProtectedRouteProps {
-    children: JSX.Element;
-    requiredRole?: string;
+    children: ReactNode;
+    requiredRole?: 'service' | 'client';
 }
 
 const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
-    const { isAuthenticated, user, loading } = useAuth();
+    const { isAuthenticated, user, isLoading } = useAuth();
 
-    if (loading) {
-        return <div>Loading...</div>; // Or a proper spinner
+    if (isLoading) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <Loader size="lg" />
+            </div>
+        );
     }
 
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !user) {
         return <Navigate to="/" replace />;
     }
 
-    if (requiredRole && user?.role !== requiredRole) {
-        // Allow admin to access service routes if token says 'service' or 'admin' 
-        // but let's stick to the plan. 
-        // If user role doesn't match required role, maybe redirect to their own dashboard?
-        // Or 403.
-        // For simplicity, if service tries to access client, redirect to service dashboard.
-        if (user?.role === 'service') return <Navigate to="/service/dashboard" replace />;
-        if (user?.role === 'client') return <Navigate to="/client/dashboard" replace />;
+    if (requiredRole && user.role !== requiredRole) {
+        // Redirect to appropriate dashboard
+        if (user.role === 'service') return <Navigate to="/service/dashboard" replace />;
+        if (user.role === 'client') return <Navigate to="/client/dashboard" replace />;
         return <Navigate to="/" replace />;
     }
 
-    return children;
+    return <>{children}</>;
 };
 
 export default ProtectedRoute;

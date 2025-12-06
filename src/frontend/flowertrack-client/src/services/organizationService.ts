@@ -7,6 +7,8 @@ import type {
   TicketDto,
   OrganizationUserDto,
 } from '../types/api';
+// @obsolete DEV ONLY - Mock data import
+import { isMockSession, getMockOrganizations } from './mockData';
 
 /**
  * Organization Service
@@ -18,7 +20,13 @@ export const organizationService = {
    * Get all organizations
    */
   async getAll(): Promise<OrganizationDto[]> {
-    const response = await apiClient.get<OrganizationDto[]>('/api/organizations');
+    // @obsolete DEV ONLY - Mock data
+    if (isMockSession()) {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      const mockData = getMockOrganizations();
+      return mockData.items as unknown as OrganizationDto[];
+    }
+    const response = await apiClient.get<OrganizationDto[]>('/organizations');
     return response.data;
   },
 
@@ -26,7 +34,14 @@ export const organizationService = {
    * Get organization by ID
    */
   async getById(id: string): Promise<OrganizationDto> {
-    const response = await apiClient.get<OrganizationDto>(`/api/organizations/${id}`);
+    // @obsolete DEV ONLY - Mock data
+    if (isMockSession()) {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      const mockData = getMockOrganizations();
+      const org = mockData.items.find(o => o.id === id) || mockData.items[0];
+      return org as unknown as OrganizationDto;
+    }
+    const response = await apiClient.get<OrganizationDto>(`/organizations/${id}`);
     return response.data;
   },
 
@@ -34,7 +49,17 @@ export const organizationService = {
    * Onboard new organization (creates org + admin user, sends invitation)
    */
   async onboard(data: OnboardOrganizationRequest): Promise<OrganizationDto> {
-    const response = await apiClient.post<OrganizationDto>('/api/organizations/onboard', data);
+    // @obsolete DEV ONLY - Mock data
+    if (isMockSession()) {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return {
+        id: 'mock-org-' + Date.now(),
+        name: data.organizationName,
+        contactEmail: data.adminEmail,
+        ...data,
+      } as unknown as OrganizationDto;
+    }
+    const response = await apiClient.post<OrganizationDto>('/organizations/onboard', data);
     return response.data;
   },
 
@@ -42,7 +67,12 @@ export const organizationService = {
    * Update organization details
    */
   async update(id: string, data: UpdateOrganizationRequest): Promise<OrganizationDto> {
-    const response = await apiClient.patch<OrganizationDto>(`/api/organizations/${id}`, data);
+    // @obsolete DEV ONLY - Mock data
+    if (isMockSession()) {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      return { id, ...data } as unknown as OrganizationDto;
+    }
+    const response = await apiClient.patch<OrganizationDto>(`/organizations/${id}`, data);
     return response.data;
   },
 
@@ -50,8 +80,13 @@ export const organizationService = {
    * Regenerate organization API key
    */
   async regenerateApiKey(id: string): Promise<{ apiKey: string }> {
+    // @obsolete DEV ONLY - Mock data
+    if (isMockSession()) {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      return { apiKey: 'mock-api-key-' + id + '-' + Date.now() };
+    }
     const response = await apiClient.post<{ apiKey: string }>(
-      `/api/organizations/${id}/regenerate-api-key`
+      `/organizations/${id}/regenerate-api-key`
     );
     return response.data;
   },
@@ -60,7 +95,14 @@ export const organizationService = {
    * Get all machines for an organization
    */
   async getMachines(id: string): Promise<MachineDto[]> {
-    const response = await apiClient.get<MachineDto[]>(`/api/organizations/${id}/machines`);
+    // @obsolete DEV ONLY - Mock data
+    if (isMockSession()) {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      const { getMockMachines } = await import('./mockData');
+      const mockData = getMockMachines();
+      return mockData.items.filter(m => m.organizationId === id) as unknown as MachineDto[];
+    }
+    const response = await apiClient.get<MachineDto[]>(`/organizations/${id}/machines`);
     return response.data;
   },
 
@@ -68,7 +110,14 @@ export const organizationService = {
    * Get all tickets for an organization
    */
   async getTickets(id: string): Promise<TicketDto[]> {
-    const response = await apiClient.get<TicketDto[]>(`/api/organizations/${id}/tickets`);
+    // @obsolete DEV ONLY - Mock data
+    if (isMockSession()) {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      const { getMockTickets } = await import('./mockData');
+      const mockData = getMockTickets();
+      return mockData.items.filter(t => t.organizationId === id) as TicketDto[];
+    }
+    const response = await apiClient.get<TicketDto[]>(`/organizations/${id}/tickets`);
     return response.data;
   },
 
@@ -76,7 +125,24 @@ export const organizationService = {
    * Get all users for an organization
    */
   async getUsers(id: string): Promise<OrganizationUserDto[]> {
-    const response = await apiClient.get<OrganizationUserDto[]>(`/api/organizations/${id}/users`);
+    // @obsolete DEV ONLY - Mock data
+    if (isMockSession()) {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      return [
+        {
+          id: 'user-1',
+          email: 'admin@org.pl',
+          firstName: 'Jan',
+          lastName: 'Kowalski',
+          fullName: 'Jan Kowalski',
+          organizationId: id,
+          organizationName: 'Org Name',
+          isAdmin: true,
+          status: 'Active',
+        },
+      ] as OrganizationUserDto[];
+    }
+    const response = await apiClient.get<OrganizationUserDto[]>(`/organizations/${id}/users`);
     return response.data;
   },
 };

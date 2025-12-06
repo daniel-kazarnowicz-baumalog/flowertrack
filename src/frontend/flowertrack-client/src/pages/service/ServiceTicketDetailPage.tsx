@@ -64,9 +64,9 @@ export const ServiceTicketDetailPage: React.FC = () => {
 
     try {
       await changeStatusMutation.mutateAsync({
-        id: id!,
+        id: id,
         data: {
-          newStatus,
+          newStatus: newStatus as string,
           justification,
         },
       });
@@ -82,7 +82,7 @@ export const ServiceTicketDetailPage: React.FC = () => {
 
     try {
       await assignMutation.mutateAsync({
-        id: id!,
+        id: id,
         data: {
           serviceUserId: userId,
         },
@@ -116,7 +116,7 @@ export const ServiceTicketDetailPage: React.FC = () => {
 
     try {
       await updateMutation.mutateAsync({
-        id: id!,
+        id: id,
         data: {
           title: editTitle,
           description: editDescription,

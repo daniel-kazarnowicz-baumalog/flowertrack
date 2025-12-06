@@ -1,12 +1,20 @@
-:root {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  line-height: 1.6;
-  font-weight: 400;
+/* Import Design System Variables */
+@import './styles/variables.css';
+
+/* Base Styles */
+html {
+  font-family: var(--font-sans);
+  line-height: var(--leading-normal);
+  font-weight: var(--font-normal);
+  font-size: 16px;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Smooth color transitions for theme changes */
+  color-scheme: light dark;
 }
 
 * {
@@ -19,8 +27,52 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  transition: background-color var(--transition-slow), color var(--transition-slow);
 }
 
 #root {
   min-height: 100vh;
+}
+
+/* Selection styling */
+::selection {
+  background-color: var(--color-primary-200);
+  color: var(--color-primary-900);
+}
+
+[data-theme='dark'] ::selection {
+  background-color: var(--color-primary-700);
+  color: var(--color-primary-100);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-dark);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
+
+/* Focus visible for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Remove default focus outline for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
 }

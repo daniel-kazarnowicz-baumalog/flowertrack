@@ -1,19 +1,28 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { authService } from '../services/authService';
 
-interface User {
+export interface User {
   id: string;
   email: string;
-  role: string;
-  [key: string]: any;
+  role: 'service' | 'client';
+  name?: string;
+  fullName?: string;
+  firstName?: string;
+  lastName?: string;
+  organizationId?: string;
+  organizationName?: string;
+  isAdmin?: boolean;
 }
 
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
+  isLoading: boolean;
   login: (token: string, userData: User) => void;
   logout: () => void;
-  loading: boolean;
+  loginService: (email: string, password: string) => Promise<void>;
+  loginClient: (email: string, password: string) => Promise<void>;
   /**
    * @obsolete DEV ONLY - Mock login without backend authentication
    * TODO: Remove before production deployment
@@ -26,7 +35,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Check for persisted token on mount
@@ -40,9 +49,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } catch (e) {
         console.error('Failed to parse user data', e);
         localStorage.removeItem('user');
+        localStorage.removeItem('token');
       }
     }
-    setLoading(false);
+    setIsLoading(false);
   }, []);
 
   const login = (newToken: string, newUser: User) => {
@@ -57,14 +67,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('user');
     setToken(null);
     setUser(null);
-    // Optional: Redirect to gateway
-    window.location.href = '/';
+  };
+
+  const loginService = async (email: string, password: string): Promise<void> => {
+    try {
+      const response = await authService.loginService(email, password);
+      login(response.token, {
+        ...response.user,
+        role: 'service',
+      });
+    } catch (error) {
+      // Re-throw to let the component handle it
+      throw error;
+    }
+  };
+
+  const loginClient = async (email: string, password: string): Promise<void> => {
+    try {
+      const response = await authService.loginClient(email, password);
+      login(response.token, {
+        ...response.user,
+        role: 'client',
+      });
+    } catch (error) {
+      throw error;
+    }
   };
 
   /**
    * @obsolete DEV ONLY - Mock login without backend authentication
    * TODO: Remove this function before production deployment
-   * This allows testing the frontend without a running backend
    */
   const mockLogin = (role: 'client' | 'service') => {
     const mockToken = 'mock-dev-token-' + Date.now();
@@ -73,8 +105,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       email: role === 'client' ? 'testclient@demo.pl' : 'testserwis@demo.pl',
       role: role,
       name: role === 'client' ? 'Test Klient' : 'Test Serwisant',
+      fullName: role === 'client' ? 'Test Klient' : 'Test Serwisant',
+      firstName: 'Test',
+      lastName: role === 'client' ? 'Klient' : 'Serwisant',
       organizationId: role === 'client' ? 'mock-org-1' : undefined,
-      isAdmin: role === 'service', // Grant admin rights to mock service user
+      organizationName: role === 'client' ? 'Demo Firma Sp. z o.o.' : undefined,
+      isAdmin: true, // Grant admin rights to mock users for testing
     };
     login(mockToken, mockUser);
   };
@@ -84,11 +120,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       value={{
         user,
         token,
-        isAuthenticated: !!token,
+        isAuthenticated: !!token && !!user,
+        isLoading,
         login,
         logout,
-        loading,
-        mockLogin, // @obsolete - DEV ONLY - Remove before production
+        loginService,
+        loginClient,
+        mockLogin,
       }}
     >
       {children}

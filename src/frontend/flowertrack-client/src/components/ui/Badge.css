@@ -4,57 +4,87 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 500;
-  border-radius: 9999px;
+  font-weight: var(--badge-font-weight);
+  border-radius: var(--badge-border-radius);
   white-space: nowrap;
+  transition: var(--transition-colors);
 }
 
 /* Sizes */
 .badge--sm {
-  padding: 0.125rem 0.5rem;
-  font-size: 0.75rem;
-  line-height: 1rem;
+  padding: var(--space-0-5) var(--space-2);
+  font-size: var(--text-xs);
+  line-height: var(--leading-tight);
+  min-height: var(--badge-height-sm);
 }
 
 .badge--md {
-  padding: 0.25rem 0.75rem;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-sm);
+  line-height: var(--leading-tight);
+  min-height: var(--badge-height-md);
 }
 
 .badge--lg {
-  padding: 0.375rem 1rem;
-  font-size: 1rem;
-  line-height: 1.5rem;
+  padding: var(--space-1-5) var(--space-4);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  min-height: var(--badge-height-lg);
 }
 
 /* Variants */
 .badge--default {
-  background-color: #e5e7eb;
-  color: #374151;
+  background-color: var(--color-gray-200);
+  color: var(--color-gray-700);
+}
+
+[data-theme='dark'] .badge--default {
+  background-color: var(--color-gray-700);
+  color: var(--color-gray-200);
 }
 
 .badge--primary {
-  background-color: #dbeafe;
-  color: #1e40af;
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-800);
+}
+
+[data-theme='dark'] .badge--primary {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: var(--color-primary-300);
 }
 
 .badge--success {
-  background-color: #d1fae5;
-  color: #065f46;
+  background-color: var(--color-success-light);
+  color: var(--color-success-dark);
+}
+
+[data-theme='dark'] .badge--success {
+  color: var(--color-success);
 }
 
 .badge--warning {
-  background-color: #fef3c7;
-  color: #92400e;
+  background-color: var(--color-warning-light);
+  color: var(--color-warning-dark);
+}
+
+[data-theme='dark'] .badge--warning {
+  color: var(--color-warning);
 }
 
 .badge--danger {
-  background-color: #fee2e2;
-  color: #991b1b;
+  background-color: var(--color-error-light);
+  color: var(--color-error-dark);
+}
+
+[data-theme='dark'] .badge--danger {
+  color: var(--color-error);
 }
 
 .badge--info {
-  background-color: #e0f2fe;
-  color: #075985;
+  background-color: var(--color-info-light);
+  color: var(--color-info-dark);
+}
+
+[data-theme='dark'] .badge--info {
+  color: var(--color-info);
 }

@@ -1,5 +1,7 @@
 import { apiClient } from '../lib/apiClient';
 import type { PaginatedResponse } from '../types/api';
+// @obsolete DEV ONLY - Mock data import
+import { isMockSession } from './mockData';
 
 /**
  * Service User Service
@@ -41,12 +43,91 @@ export interface ServiceUsersFilters {
   status?: 'Active' | 'Inactive' | 'All';
 }
 
+// @obsolete DEV ONLY - Mock service users
+function getMockServiceUsers(): ServiceUser[] {
+  return [
+    {
+      id: 'user-admin-1',
+      email: 'admin@flowertrack.pl',
+      firstName: 'Anna',
+      lastName: 'Kowalska',
+      fullName: 'Anna Kowalska',
+      role: 'Admin',
+      status: 'Active',
+      lastActiveAt: new Date().toISOString(),
+      joinedAt: '2023-01-15T10:00:00Z',
+    },
+    {
+      id: 'user-tech-1',
+      email: 'jan.serwisant@flowertrack.pl',
+      firstName: 'Jan',
+      lastName: 'Serwisant',
+      fullName: 'Jan Serwisant',
+      role: 'Technician',
+      status: 'Active',
+      lastActiveAt: new Date(Date.now() - 2 * 3600000).toISOString(),
+      joinedAt: '2023-03-20T08:30:00Z',
+    },
+    {
+      id: 'user-tech-2',
+      email: 'anna.technik@flowertrack.pl',
+      firstName: 'Anna',
+      lastName: 'Technik',
+      fullName: 'Anna Technik',
+      role: 'Technician',
+      status: 'Active',
+      lastActiveAt: new Date(Date.now() - 24 * 3600000).toISOString(),
+      joinedAt: '2023-06-01T14:00:00Z',
+    },
+    {
+      id: 'user-tech-3',
+      email: 'piotr.wisniewski@flowertrack.pl',
+      firstName: 'Piotr',
+      lastName: 'Wiśniewski',
+      fullName: 'Piotr Wiśniewski',
+      role: 'Technician',
+      status: 'Inactive',
+      lastActiveAt: '2024-09-15T10:00:00Z',
+      joinedAt: '2022-11-01T09:00:00Z',
+    },
+  ];
+}
+
 export const serviceUserService = {
   /**
    * Get all service users with optional filters
    */
   async getServiceUsers(params?: ServiceUsersFilters): Promise<PaginatedResponse<ServiceUser>> {
-    const { data } = await apiClient.get<PaginatedResponse<ServiceUser>>('/api/service-users', {
+    // @obsolete DEV ONLY - Mock data
+    if (isMockSession()) {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      let users = getMockServiceUsers();
+      
+      // Apply filters
+      if (params?.searchTerm) {
+        const search = params.searchTerm.toLowerCase();
+        users = users.filter(u => 
+          u.fullName.toLowerCase().includes(search) ||
+          u.email.toLowerCase().includes(search)
+        );
+      }
+      if (params?.role && params.role !== 'All') {
+        users = users.filter(u => u.role === params.role);
+      }
+      if (params?.status && params.status !== 'All') {
+        users = users.filter(u => u.status === params.status);
+      }
+      
+      return {
+        items: users,
+        totalCount: users.length,
+        page: params?.page || 1,
+        pageSize: params?.pageSize || 10,
+        totalPages: Math.ceil(users.length / (params?.pageSize || 10)),
+      };
+    }
+
+    const { data } = await apiClient.get<PaginatedResponse<ServiceUser>>('/service-users', {
       params,
     });
     return data;
@@ -56,7 +137,23 @@ export const serviceUserService = {
    * Invite a new service user
    */
   async inviteServiceUser(request: InviteServiceUserRequest): Promise<ServiceUser> {
-    const { data } = await apiClient.post<ServiceUser>('/api/service-users/invite', request);
+    // @obsolete DEV ONLY - Mock data
+    if (isMockSession()) {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return {
+        id: 'mock-user-' + Date.now(),
+        email: request.email,
+        firstName: request.firstName,
+        lastName: request.lastName,
+        fullName: `${request.firstName} ${request.lastName}`,
+        role: request.role,
+        status: 'Active',
+        lastActiveAt: null,
+        joinedAt: new Date().toISOString(),
+      };
+    }
+
+    const { data } = await apiClient.post<ServiceUser>('/service-users/invite', request);
     return data;
   },
 
@@ -67,7 +164,15 @@ export const serviceUserService = {
     userId: string,
     request: UpdateServiceUserRoleRequest
   ): Promise<ServiceUser> {
-    const { data } = await apiClient.put<ServiceUser>(`/api/service-users/${userId}/role`, request);
+    // @obsolete DEV ONLY - Mock data
+    if (isMockSession()) {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      const users = getMockServiceUsers();
+      const user = users.find(u => u.id === userId) || users[0];
+      return { ...user, role: request.role };
+    }
+
+    const { data } = await apiClient.put<ServiceUser>(`/service-users/${userId}/role`, request);
     return data;
   },
 
@@ -78,8 +183,16 @@ export const serviceUserService = {
     userId: string,
     request: UpdateServiceUserStatusRequest
   ): Promise<ServiceUser> {
+    // @obsolete DEV ONLY - Mock data
+    if (isMockSession()) {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      const users = getMockServiceUsers();
+      const user = users.find(u => u.id === userId) || users[0];
+      return { ...user, status: request.status };
+    }
+
     const { data } = await apiClient.put<ServiceUser>(
-      `/api/service-users/${userId}/status`,
+      `/service-users/${userId}/status`,
       request
     );
     return data;
@@ -88,8 +201,14 @@ export const serviceUserService = {
    * Reset a service user's password (admin only)
    */
   async resetUserPassword(userId: string): Promise<{ temporaryPassword: string }> {
+    // @obsolete DEV ONLY - Mock data
+    if (isMockSession()) {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return { temporaryPassword: 'TempPass123!' + userId.slice(-4) };
+    }
+
     const { data } = await apiClient.post<{ temporaryPassword: string }>(
-      `/api/service-users/${userId}/reset-password`
+      `/service-users/${userId}/reset-password`
     );
     return data;
   },

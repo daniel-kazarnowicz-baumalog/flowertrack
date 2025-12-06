@@ -106,7 +106,7 @@ export const createTicket = async (data: CreateTicketRequest): Promise<TicketDto
       description: data.description,
       priority: data.priority,
       createdAt: new Date().toISOString(),
-      status: 'Nowy'
+      status: 'New'
     } as TicketDto;
   }
 
