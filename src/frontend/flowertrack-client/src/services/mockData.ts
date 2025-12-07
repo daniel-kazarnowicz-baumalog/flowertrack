@@ -9,7 +9,7 @@ import type { ServiceDashboardStats, ClientDashboardStats, TicketTrend } from '.
  * Check if current session is using mock authentication
  */
 export function isMockSession(): boolean {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     return token?.startsWith('mock-dev-token-') ?? false;
 }
 

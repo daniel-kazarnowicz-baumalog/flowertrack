@@ -11,7 +11,7 @@ const api = axios.create({
 // Request interceptor for adding auth token
 api.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('accessToken');
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }
@@ -28,7 +28,7 @@ api.interceptors.response.use(
     (error) => {
         if (error.response && error.response.status === 401) {
             // Clear token and redirect to login if 401 occurs
-            localStorage.removeItem('token');
+            localStorage.removeItem('accessToken');
             localStorage.removeItem('user');
             // Ideally dispatch a logout action, but simple redirect for now
             // window.location.href = '/'; 

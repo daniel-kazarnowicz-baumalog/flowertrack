@@ -15,15 +15,18 @@ public sealed class LoginServiceUserCommandHandler
 {
     private readonly IAuthService _authService;
     private readonly IServiceUserRepository _serviceUserRepository;
+    private readonly IJwtTokenGenerator _jwtTokenGenerator;
     private readonly ILogger<LoginServiceUserCommandHandler> _logger;
 
     public LoginServiceUserCommandHandler(
         IAuthService authService,
         IServiceUserRepository serviceUserRepository,
+        IJwtTokenGenerator jwtTokenGenerator,
         ILogger<LoginServiceUserCommandHandler> logger)
     {
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         _serviceUserRepository = serviceUserRepository ?? throw new ArgumentNullException(nameof(serviceUserRepository));
+        _jwtTokenGenerator = jwtTokenGenerator ?? throw new ArgumentNullException(nameof(jwtTokenGenerator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -69,6 +72,17 @@ public sealed class LoginServiceUserCommandHandler
                     serviceUser.Status);
                 return Result.Failure<AuthResult>("Your account is not active. Please contact administrator.");
             }
+
+            // Generate Local JWT Token
+            var token = _jwtTokenGenerator.GenerateToken(
+                serviceUser.Id,
+                serviceUser.Email.Value,
+                serviceUser.GetRoleNames()
+            );
+
+            // Replace Supabase token with local token
+            authResult.AccessToken = token;
+            authResult.ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(60); // Match JWT expiration
 
             _logger.LogInformation(
                 "Successfully logged in service user: {Email}, ID: {UserId}", 

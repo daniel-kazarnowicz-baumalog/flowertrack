@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     // Check for persisted token on mount
-    const storedToken = localStorage.getItem('token');
+    const storedToken = localStorage.getItem('accessToken');
     const storedUser = localStorage.getItem('user');
 
     if (storedToken && storedUser) {
@@ -49,21 +49,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } catch (e) {
         console.error('Failed to parse user data', e);
         localStorage.removeItem('user');
-        localStorage.removeItem('token');
+        localStorage.removeItem('accessToken');
       }
     }
     setIsLoading(false);
   }, []);
 
   const login = (newToken: string, newUser: User) => {
-    localStorage.setItem('token', newToken);
+    localStorage.setItem('accessToken', newToken);
     localStorage.setItem('user', JSON.stringify(newUser));
     setToken(newToken);
     setUser(newUser);
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('accessToken');
     localStorage.removeItem('user');
     setToken(null);
     setUser(null);

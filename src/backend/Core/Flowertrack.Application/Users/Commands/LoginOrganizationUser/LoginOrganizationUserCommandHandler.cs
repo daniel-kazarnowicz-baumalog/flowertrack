@@ -16,17 +16,20 @@ public sealed class LoginOrganizationUserCommandHandler
     private readonly IAuthService _authService;
     private readonly IOrganizationUserRepository _organizationUserRepository;
     private readonly IOrganizationRepository _organizationRepository;
+    private readonly IJwtTokenGenerator _jwtTokenGenerator;
     private readonly ILogger<LoginOrganizationUserCommandHandler> _logger;
 
     public LoginOrganizationUserCommandHandler(
         IAuthService authService,
         IOrganizationUserRepository organizationUserRepository,
         IOrganizationRepository organizationRepository,
+        IJwtTokenGenerator jwtTokenGenerator,
         ILogger<LoginOrganizationUserCommandHandler> logger)
     {
         _authService = authService;
         _organizationUserRepository = organizationUserRepository;
         _organizationRepository = organizationRepository;
+        _jwtTokenGenerator = jwtTokenGenerator;
         _logger = logger;
     }
 
@@ -98,18 +101,25 @@ public sealed class LoginOrganizationUserCommandHandler
             return Result.Failure<LoginOrganizationUserResult>("Organization not found");
         }
 
+        // 5. Generate Local JWT Token
+        var token = _jwtTokenGenerator.GenerateToken(
+            organizationUser.Id,
+            organizationUser.Email.Value,
+            new[] { organizationUser.Role.ToString() }
+        );
+
         _logger.LogInformation(
             "Organization user logged in successfully: {Email}, Organization: {OrganizationName}",
             request.Email,
             organization.Name
         );
 
-        // 5. Return successful login result
+        // 6. Return successful login result
         return Result.Success(new LoginOrganizationUserResult
         {
-            AccessToken = authResult.AccessToken ?? string.Empty,
+            AccessToken = token, // Return local JWT instead of Supabase token
             RefreshToken = authResult.RefreshToken ?? string.Empty,
-            ExpiresAt = authResult.ExpiresAt ?? DateTimeOffset.UtcNow.AddHours(1),
+            ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(60), // TODO: Match JWT expiration
             UserId = organizationUser.Id,
             OrganizationId = organizationUser.OrganizationId,
             OrganizationName = organization.Name,

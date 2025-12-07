@@ -15,7 +15,7 @@ public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Applicati
         // Use a connection string for local development
         // This will be used only during migrations
         // NOTE: Update this connection string to match your PostgreSQL setup
-        optionsBuilder.UseNpgsql("Host=localhost;Port=54322;Database=postgres;Username=postgres;Password=postgres");
+        optionsBuilder.UseNpgsql("Host=localhost;Port=56322;Database=postgres;Username=postgres;Password=postgres");
         
         return new ApplicationDbContext(optionsBuilder.Options);
     }

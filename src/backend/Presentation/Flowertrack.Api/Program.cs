@@ -321,9 +321,13 @@ try
         app.MapOpenApi();
     }
 
-    app.UseHttpsRedirection();
-
     app.UseCors();
+
+    // Only use HTTPS redirection in production to avoid CORS issues during development
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseHttpsRedirection();
+    }
 
     // Rate limiting - must be before authentication
     app.UseRateLimiter();

@@ -31,8 +31,17 @@ const ClientLogin = () => {
 
         try {
             const response = await api.post('/auth/client/login', { email, password });
-            const { token, user } = response.data;
-            login(token, user || { email, role: 'client' });
+            const { accessToken, user } = response.data;
+            login(accessToken, {
+                id: user.id,
+                email: user.email,
+                role: 'client',
+                firstName: user.firstName,
+                lastName: user.lastName,
+                fullName: `${user.firstName} ${user.lastName}`,
+                organizationId: user.organizationId,
+                isAdmin: user.roles?.includes('ClientAdmin') ?? false,
+            });
             navigate('/client/dashboard');
         } catch (err: any) {
             console.error('Login error:', err);

@@ -31,8 +31,16 @@ const ServiceLogin = () => {
 
         try {
             const response = await api.post('/auth/service/login', { email, password });
-            const { token, user } = response.data;
-            login(token, user || { email, role: 'service' });
+            const { accessToken, user } = response.data;
+            login(accessToken, {
+                id: user.id,
+                email: user.email,
+                role: 'service',
+                firstName: user.firstName,
+                lastName: user.lastName,
+                fullName: `${user.firstName} ${user.lastName}`,
+                isAdmin: user.roles?.includes('Admin') ?? false,
+            });
             navigate('/service/dashboard');
         } catch (err: any) {
             console.error('Login error:', err);

@@ -1,7 +1,7 @@
 -- =====================================================
 -- KROK 1: Utwórz użytkowników w Supabase Auth
 -- =====================================================
--- Uruchom ten SQL w Supabase Studio (http://127.0.0.1:54323)
+-- Uruchom ten SQL w Supabase Studio (http://127.0.0.1:56323)
 -- SQL Editor → New Query → Wklej i uruchom (Run)
 
 -- Najpierw sprawdź czy użytkownicy już istnieją
@@ -35,13 +35,14 @@ INSERT INTO auth.users (
     email_change,
     email_change_token_new,
     recovery_token
-) VALUES (
+) 
+SELECT
     '00000000-0000-0000-0000-000000000000',
     gen_random_uuid(),
     'authenticated',
     'authenticated',
     'admin@flowertrack.dev',
-    crypt('Admin123!', gen_salt('bf')), -- BCrypt hash
+    crypt('Admin123!', gen_salt('bf')),
     NOW(),
     NOW(),
     NOW(),
@@ -53,8 +54,7 @@ INSERT INTO auth.users (
     '',
     '',
     ''
-) ON CONFLICT (email) DO NOTHING
-RETURNING id, email;
+WHERE NOT EXISTS (SELECT 1 FROM auth.users WHERE email = 'admin@flowertrack.dev');
 
 -- Service Tech
 INSERT INTO auth.users (
@@ -75,7 +75,8 @@ INSERT INTO auth.users (
     email_change,
     email_change_token_new,
     recovery_token
-) VALUES (
+) 
+SELECT
     '00000000-0000-0000-0000-000000000000',
     gen_random_uuid(),
     'authenticated',
@@ -93,8 +94,7 @@ INSERT INTO auth.users (
     '',
     '',
     ''
-) ON CONFLICT (email) DO NOTHING
-RETURNING id, email;
+WHERE NOT EXISTS (SELECT 1 FROM auth.users WHERE email = 'tech@flowertrack.dev');
 
 -- Client Admin
 INSERT INTO auth.users (
@@ -115,7 +115,8 @@ INSERT INTO auth.users (
     email_change,
     email_change_token_new,
     recovery_token
-) VALUES (
+) 
+SELECT
     '00000000-0000-0000-0000-000000000000',
     gen_random_uuid(),
     'authenticated',
@@ -133,8 +134,7 @@ INSERT INTO auth.users (
     '',
     '',
     ''
-) ON CONFLICT (email) DO NOTHING
-RETURNING id, email;
+WHERE NOT EXISTS (SELECT 1 FROM auth.users WHERE email = 'client@test.com');
 
 -- Client Operator
 INSERT INTO auth.users (
@@ -155,7 +155,8 @@ INSERT INTO auth.users (
     email_change,
     email_change_token_new,
     recovery_token
-) VALUES (
+) 
+SELECT
     '00000000-0000-0000-0000-000000000000',
     gen_random_uuid(),
     'authenticated',
@@ -173,5 +174,8 @@ INSERT INTO auth.users (
     '',
     '',
     ''
-) ON CONFLICT (email) DO NOTHING
-RETURNING id, email;
+WHERE NOT EXISTS (SELECT 1 FROM auth.users WHERE email = 'operator@test.com');
+
+-- Sprawdź utworzonych użytkowników
+SELECT id, email, created_at FROM auth.users 
+WHERE email IN ('admin@flowertrack.dev', 'tech@flowertrack.dev', 'client@test.com', 'operator@test.com');
