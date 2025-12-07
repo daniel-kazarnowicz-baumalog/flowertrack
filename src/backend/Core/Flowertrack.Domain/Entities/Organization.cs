@@ -141,6 +141,7 @@ public sealed class Organization : AuditableEntity<Guid>, IAggregateRoot
             throw new ArgumentException("Country cannot exceed 100 characters.", nameof(country));
         }
 
+        var now = DateTimeOffset.UtcNow;
         var organization = new Organization
         {
             Id = Guid.NewGuid(),
@@ -152,7 +153,11 @@ public sealed class Organization : AuditableEntity<Guid>, IAggregateRoot
             PostalCode = postalCode?.Trim(),
             Country = country?.Trim(),
             ServiceStatus = ServiceStatus.Active,
-            Notes = notes?.Trim()
+            Notes = notes?.Trim(),
+            CreatedAt = now,
+            UpdatedAt = now,
+            CreatedBy = Guid.Empty, // Will be set by interceptor
+            UpdatedBy = Guid.Empty  // Will be set by interceptor
         };
 
         organization.RaiseDomainEvent(new OrganizationCreatedEvent(organization.Id, organization.Name));

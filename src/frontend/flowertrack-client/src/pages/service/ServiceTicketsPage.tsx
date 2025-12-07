@@ -93,7 +93,7 @@ export const ServiceTicketsPage: React.FC = () => {
         showOrganizationFilter={true}
         showAssigneeFilter={true}
         organizations={organizations?.map((org) => ({ id: org.id, name: org.name })) || []}
-        assignees={serviceUsers?.items.map((user) => ({ id: user.id, name: user.fullName })) || []}
+        assignees={serviceUsers?.items?.map((user) => ({ id: user.id, name: user.fullName })) || []}
       />
 
       <TicketTable

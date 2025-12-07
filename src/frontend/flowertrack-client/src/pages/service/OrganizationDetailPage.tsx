@@ -78,8 +78,9 @@ export const OrganizationDetailPage = () => {
   };
 
   const handleDeleteOrganization = () => {
+    if (!id) return;
+    
     if (
-      id &&
       window.confirm(
         'Are you sure you want to delete this organization? This action cannot be undone.'
       )

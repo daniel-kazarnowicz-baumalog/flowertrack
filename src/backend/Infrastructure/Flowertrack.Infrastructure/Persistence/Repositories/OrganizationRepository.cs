@@ -28,7 +28,7 @@ public sealed class OrganizationRepository : Repository<Organization>, IOrganiza
 
     public async Task<bool> NameExistsAsync(string name, Guid? excludeId = null, CancellationToken ct = default)
     {
-        var query = DbSet.Where(o => o.Name == name);
+        var query = DbSet.Where(o => o.Name == name && !o.IsDeleted);
 
         if (excludeId.HasValue)
         {

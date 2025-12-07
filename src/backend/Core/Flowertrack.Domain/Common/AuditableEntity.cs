@@ -52,8 +52,11 @@ public abstract class AuditableEntity<TId> : Entity<TId> where TId : notnull
     /// <param name="userId">The identifier of the user creating the entity.</param>
     protected void SetCreatedAudit(Guid userId)
     {
-        CreatedAt = DateTimeOffset.UtcNow;
+        var now = DateTimeOffset.UtcNow;
+        CreatedAt = now;
         CreatedBy = userId;
+        UpdatedAt = now;
+        UpdatedBy = userId;
     }
 
     /// <summary>
@@ -62,8 +65,11 @@ public abstract class AuditableEntity<TId> : Entity<TId> where TId : notnull
     /// <param name="userId">The identifier of the user creating the entity (optional).</param>
     protected void SetCreatedAudit(Guid? userId)
     {
-        CreatedAt = DateTimeOffset.UtcNow;
+        var now = DateTimeOffset.UtcNow;
+        CreatedAt = now;
         CreatedBy = userId;
+        UpdatedAt = now;
+        UpdatedBy = userId;
     }
 
     /// <summary>

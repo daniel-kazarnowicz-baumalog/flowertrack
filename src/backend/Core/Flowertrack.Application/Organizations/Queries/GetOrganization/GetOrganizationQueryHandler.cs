@@ -20,7 +20,7 @@ public sealed class GetOrganizationQueryHandler : IRequestHandler<GetOrganizatio
     {
         var organization = await _organizationRepository.GetByIdAsync(request.OrganizationId, cancellationToken);
 
-        if (organization == null)
+        if (organization == null || organization.IsDeleted)
         {
             return Result.Failure<OrganizationDetailsDto>($"Organization with ID {request.OrganizationId} was not found");
         }

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useClientDashboardStats } from '../../hooks/useDashboard';
+import { useOrganizationMachines } from '../../hooks/useOrganizations';
 import { Loader } from '../../components/ui/Loader';
 import { KPICard } from '../../components/dashboard/KPICard';
 import { RecentActivityFeed } from '../../components/dashboard/RecentActivityFeed';
@@ -20,6 +21,7 @@ const ClientDashboard = () => {
 
   // Use user.organizationId or a fallback if not present
   const { data: stats, isLoading } = useClientDashboardStats(user?.organizationId || '');
+  const { machines, isLoading: isFetchingMachines } = useOrganizationMachines(user?.organizationId);
 
   const handleCreateTicket = async (data: CreateTicketRequest, files: File[]) => {
     try {
@@ -117,7 +119,8 @@ const ClientDashboard = () => {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateTicket}
-        machines={[]} // TODO: Fetch machines from API
+        machines={machines || []}
+        isFetchingMachines={isFetchingMachines}
       />
     </div>
   );

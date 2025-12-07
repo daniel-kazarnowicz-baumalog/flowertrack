@@ -43,7 +43,7 @@ public class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
             .HasConversion<int>();
         
         builder.Property(o => o.ContractStartDate)
-            .IsRequired();
+            .IsRequired(false);
         
         builder.Property(o => o.ContractEndDate)
             .IsRequired(false);

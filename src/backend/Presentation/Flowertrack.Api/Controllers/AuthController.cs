@@ -275,37 +275,41 @@ public class AuthController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var command = new LoginOrganizationUserCommand
-        {
-            Email = request.Email,
-            Password = request.Password
-        };
+        // Use the general LoginCommand which checks local password hash
+        var command = new LoginCommand(
+            request.Email,
+            request.Password,
+            HttpContext.Connection.RemoteIpAddress?.ToString()
+        );
 
         var result = await _mediator.Send(command);
 
         if (!result.IsSuccess || result.Value == null)
         {
             _logger.LogWarning("Organization user login failed: {Error}", result.Error);
-            return Unauthorized(new { message = result.Error ?? "Invalid credentials or account not activated" });
+            return Unauthorized(new { message = result.Error ?? "Invalid credentials" });
         }
 
         var loginResult = result.Value;
 
+        // For OrganizationUser, we need to fetch organization details
+        var user = loginResult.User;
+        
         var response = new LoginOrganizationUserResponse
         {
             AccessToken = loginResult.AccessToken,
             RefreshToken = loginResult.RefreshToken,
-            ExpiresAt = loginResult.ExpiresAt,
+            ExpiresAt = DateTimeOffset.UtcNow.AddSeconds(loginResult.ExpiresIn),
             User = new Flowertrack.Contracts.Users.OrganizationUserDto
             {
-                Id = loginResult.UserId,
-                OrganizationId = loginResult.OrganizationId,
-                OrganizationName = loginResult.OrganizationName,
-                Email = loginResult.Email,
-                FullName = loginResult.FullName,
-                Role = loginResult.Role,
-                Status = loginResult.Status,
-                IsActivated = loginResult.IsActivated
+                Id = user.Id,
+                OrganizationId = user.OrganizationId ?? Guid.Empty,
+                OrganizationName = "", // TODO: fetch from organization
+                Email = user.Email,
+                FullName = $"{user.FirstName} {user.LastName}",
+                Role = user.Roles.FirstOrDefault() ?? "User",
+                Status = "Active",
+                IsActivated = true
             }
         };
 

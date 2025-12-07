@@ -21,6 +21,7 @@ public sealed class OnboardOrganizationCommandHandler
     private readonly ISupabaseClient _supabaseClient;
     private readonly IEmailService _emailService;
     private readonly ITokenGenerator _tokenGenerator;
+    private readonly IPasswordHasher _passwordHasher;
     private readonly ILogger<OnboardOrganizationCommandHandler> _logger;
 
     public OnboardOrganizationCommandHandler(
@@ -29,6 +30,7 @@ public sealed class OnboardOrganizationCommandHandler
         ISupabaseClient supabaseClient,
         IEmailService emailService,
         ITokenGenerator tokenGenerator,
+        IPasswordHasher passwordHasher,
         ILogger<OnboardOrganizationCommandHandler> logger)
     {
         _organizationRepository = organizationRepository;
@@ -36,6 +38,7 @@ public sealed class OnboardOrganizationCommandHandler
         _supabaseClient = supabaseClient;
         _emailService = emailService;
         _tokenGenerator = tokenGenerator;
+        _passwordHasher = passwordHasher;
         _logger = logger;
     }
 
@@ -43,15 +46,15 @@ public sealed class OnboardOrganizationCommandHandler
         OnboardOrganizationCommand request,
         CancellationToken cancellationToken)
     {
-        // 1. Check if organization with same name already exists
+        // 1. Check if organization with same name already exists (ignore soft-deleted)
         if (await _organizationRepository.NameExistsAsync(request.Name, null, cancellationToken))
         {
             return Result.Failure<Guid>("Organization with this name already exists");
         }
 
-        // 2. Check if email already exists in system
-        var existingUser = await _supabaseClient.GetUserByEmailAsync(request.AdminEmail, cancellationToken);
-        if (existingUser != null)
+        // 2. Check if email already exists in local database (ignore soft-deleted users)
+        var existingLocalUser = await _userRepository.GetByEmailAsync(request.AdminEmail, cancellationToken);
+        if (existingLocalUser != null && !existingLocalUser.IsDeleted)
         {
             return Result.Failure<Guid>("Email already exists in the system");
         }
@@ -74,23 +77,27 @@ public sealed class OnboardOrganizationCommandHandler
         // 5. Add organization to repository
         await _organizationRepository.AddAsync(organization, cancellationToken);
 
-        // 6. Create user in Supabase Auth (without password - will be set during activation)
-        var userId = await _supabaseClient.CreateUserAsync(
+        // 6. Create user in Supabase Auth WITH password "Password123!"
+        _logger.LogInformation("Creating Supabase user for email: {Email}", request.AdminEmail);
+        
+        var supabaseUserId = await _supabaseClient.CreateUserAsync(
             email: request.AdminEmail,
-            password: null,
+            password: "Password123!", // Set explicit password for development
             metadata: new
             {
                 first_name = request.AdminFirstName,
                 last_name = request.AdminLastName,
                 organization_id = organization.Id
             },
-            emailConfirm: false,
+            emailConfirm: true, // Auto-confirm email for development
             cancellationToken: cancellationToken
         );
 
-        // 7. Create OrganizationUser profile (Domain)
+        _logger.LogInformation("Supabase user created with ID: {SupabaseUserId}", supabaseUserId);
+
+        // 7. Create OrganizationUser profile (Domain) - use Supabase user ID
         var adminUser = OrganizationUser.Create(
-            userId: userId,
+            userId: supabaseUserId, // Use Supabase user ID as primary ID
             firstName: request.AdminFirstName,
             lastName: request.AdminLastName,
             email: request.AdminEmail,
@@ -98,45 +105,19 @@ public sealed class OnboardOrganizationCommandHandler
             role: OrganizationUserRole.Admin
         );
 
+        // 7a. Set password hash (same password as Supabase) and activate user
+        _logger.LogInformation("Setting password hash and activating user");
+        var defaultPasswordHash = _passwordHasher.HashPassword("Password123!");
+        adminUser.SetPasswordHash(defaultPasswordHash);
+        adminUser.LinkToSupabaseUser(supabaseUserId); // Link to Supabase
+        adminUser.Activate(); // Activate user immediately
+        
         await _userRepository.AddAsync(adminUser, cancellationToken);
 
-        // 8. Generate activation token (valid for 7 days)
-        var activationToken = _tokenGenerator.GenerateSecureToken();
-        var tokenExpiry = DateTimeOffset.UtcNow.AddDays(7);
-
-        await _supabaseClient.StoreActivationTokenAsync(
-            userId,
-            activationToken,
-            tokenExpiry,
-            cancellationToken
-        );
+        _logger.LogInformation("Organization {OrgId} onboarded with user {UserId}", 
+            organization.Id, supabaseUserId);
 
         // Note: SaveChanges will be called by UnitOfWorkBehavior
-
-        // 9. Send invitation email (fire-and-forget, don't block response)
-        _ = Task.Run(async () =>
-        {
-            try
-            {
-                await _emailService.SendOrganizationInvitationAsync(
-                    email: request.AdminEmail,
-                    firstName: request.AdminFirstName,
-                    organizationName: organization.Name,
-                    activationLink: $"https://app.flowertrack.com/activate?token={activationToken}",
-                    cancellationToken: CancellationToken.None
-                );
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to send invitation email to {Email}", request.AdminEmail);
-            }
-        }, cancellationToken);
-
-        _logger.LogInformation(
-            "Organization {OrganizationId} onboarded with admin user {UserId}",
-            organization.Id,
-            userId
-        );
 
         return Result.Success(organization.Id);
     }

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Supabase;
 using Supabase.Gotrue.Interfaces;
 using Supabase.Storage.Interfaces;
+using System.Text.Json.Serialization;
 using SupabaseConfig = Flowertrack.Infrastructure.Configuration.SupabaseOptions;
 
 namespace Flowertrack.Infrastructure.Supabase;
@@ -57,9 +58,81 @@ public class SupabaseClientService : ISupabaseClient
         bool emailConfirm = false,
         CancellationToken cancellationToken = default)
     {
-        // TODO: Implement Supabase Admin Auth user creation
-        // This requires using Admin API with service key
-        throw new NotImplementedException("Supabase user creation not yet implemented");
+        try
+        {
+            _logger.LogInformation("Creating Supabase user for email: {Email}", email);
+
+            // Use Supabase Admin API via HTTP client
+            // The C# SDK doesn't have full admin capabilities yet
+            using var httpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(10) // Set explicit timeout
+            };
+            httpClient.DefaultRequestHeaders.Add("apikey", _options.ServiceKey);
+            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_options.ServiceKey}");
+
+            var requestBody = new
+            {
+                email,
+                password = password ?? GenerateTemporaryPassword(),
+                email_confirm = emailConfirm,
+                user_metadata = metadata
+            };
+
+            var content = new StringContent(
+                System.Text.Json.JsonSerializer.Serialize(requestBody),
+                System.Text.Encoding.UTF8,
+                "application/json");
+
+            _logger.LogDebug("Sending request to Supabase Admin API: {Url}", $"{_options.Url}/auth/v1/admin/users");
+
+            var response = await httpClient.PostAsync(
+                $"{_options.Url}/auth/v1/admin/users",
+                content,
+                cancellationToken);
+
+            var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError(
+                    "Failed to create user in Supabase: {StatusCode} - {Error}",
+                    response.StatusCode,
+                    responseContent);
+                throw new InvalidOperationException(
+                    $"Failed to create user in Supabase: {response.StatusCode} - {responseContent}");
+            }
+
+            var userResponse = System.Text.Json.JsonSerializer.Deserialize<SupabaseUserResponse>(responseContent);
+
+            if (userResponse == null || string.IsNullOrEmpty(userResponse.Id))
+            {
+                _logger.LogError("Invalid response from Supabase: {Response}", responseContent);
+                throw new InvalidOperationException($"Failed to create user for email: {email}");
+            }
+
+            _logger.LogInformation("Successfully created Supabase user {UserId} for email: {Email}", 
+                userResponse.Id, email);
+            
+            return Guid.Parse(userResponse.Id);
+        }
+        catch (TaskCanceledException ex)
+        {
+            _logger.LogError(ex, "Timeout creating Supabase user for email: {Email}", email);
+            throw new InvalidOperationException($"Timeout creating user in Supabase for email: {email}", ex);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to create Supabase user for email: {Email}", email);
+            throw;
+        }
+    }
+
+    private static string GenerateTemporaryPassword()
+    {
+        // TODO: In production, this should generate a secure random password
+        // For development, we use a simple default password: Password123!
+        return "Password123!";
     }
 
     /// <summary>
@@ -69,8 +142,66 @@ public class SupabaseClientService : ISupabaseClient
         string email,
         CancellationToken cancellationToken = default)
     {
-        // TODO: Implement user lookup by email using Admin API
-        throw new NotImplementedException("Supabase user lookup not yet implemented");
+        try
+        {
+            _logger.LogInformation("Looking up Supabase user by email: {Email}", email);
+
+            // Use Supabase Admin API via HTTP client
+            using var httpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(10) // Set explicit timeout
+            };
+            httpClient.DefaultRequestHeaders.Add("apikey", _options.ServiceKey);
+            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_options.ServiceKey}");
+
+            // Query users by email using Admin API
+            // Note: Admin API doesn't support direct email filter, so we get by pagination
+            // For MVP, we'll use a simpler approach - list all users and filter
+            // In production, consider using database query instead
+            _logger.LogDebug("Fetching users from Supabase Admin API");
+
+            var response = await httpClient.GetAsync(
+                $"{_options.Url}/auth/v1/admin/users",
+                cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync(cancellationToken);
+                _logger.LogWarning("Failed to lookup users: {StatusCode} - {Error}", 
+                    response.StatusCode, error);
+                return null;
+            }
+
+            var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+            _logger.LogDebug("Received response from Supabase, parsing...");
+
+            var usersResponse = System.Text.Json.JsonSerializer.Deserialize<SupabaseUsersListResponse>(responseBody);
+
+            var userExists = usersResponse?.Users?.Any(u => 
+                u.Email?.Equals(email, StringComparison.OrdinalIgnoreCase) == true) == true;
+
+            if (userExists)
+            {
+                _logger.LogInformation("Found existing Supabase user for email: {Email}", email);
+                
+                // Return a dummy User object to indicate user exists
+                // The actual User object is not needed, we only check for null
+                return new global::Supabase.Gotrue.User();
+            }
+            
+            _logger.LogInformation("No Supabase user found for email: {Email}", email);
+            return null;
+        }
+        catch (TaskCanceledException ex)
+        {
+            _logger.LogError(ex, "Timeout looking up Supabase user by email: {Email}", email);
+            throw new InvalidOperationException($"Timeout looking up user in Supabase for email: {email}", ex);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to lookup Supabase user by email: {Email}", email);
+            throw;
+        }
     }
 
     /// <summary>
@@ -82,8 +213,31 @@ public class SupabaseClientService : ISupabaseClient
         DateTimeOffset expiry,
         CancellationToken cancellationToken = default)
     {
-        // TODO: Implement token storage in Supabase database table
-        throw new NotImplementedException("Token storage not yet implemented");
+        try
+        {
+            _logger.LogInformation("Storing activation token for user: {UserId}", userId);
+
+            // For MVP, we'll log this instead of storing in database
+            // In production, create an 'activation_tokens' table in Supabase
+            _logger.LogWarning(
+                "Token storage not fully implemented. Token for user {UserId} expires at {Expiry}",
+                userId, expiry);
+
+            // TODO: Implement token storage in Supabase table
+            // Example implementation:
+            // var httpClient = new HttpClient();
+            // httpClient.DefaultRequestHeaders.Add("apikey", _options.ServiceKey);
+            // httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_options.ServiceKey}");
+            // var data = new { user_id = userId, token, expires_at = expiry };
+            // await httpClient.PostAsJsonAsync($"{_options.Url}/rest/v1/activation_tokens", data);
+
+            await Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to store activation token for user: {UserId}", userId);
+            throw;
+        }
     }
 
     /// <summary>
@@ -95,8 +249,32 @@ public class SupabaseClientService : ISupabaseClient
         string htmlBody,
         CancellationToken cancellationToken = default)
     {
-        // TODO: Implement email sending via Supabase Edge Functions
-        throw new NotImplementedException("Email sending not yet implemented");
+        try
+        {
+            _logger.LogInformation("Sending email to: {To}, subject: {Subject}", to, subject);
+
+            // For MVP, we'll log the email instead of sending it
+            // In production, you would call a Supabase Edge Function or use an email service
+            _logger.LogWarning(
+                "Email sending not fully implemented. Email would be sent to {To} with subject '{Subject}'.\nBody: {Body}",
+                to, subject, htmlBody);
+
+            // TODO: Implement actual email sending via:
+            // 1. Supabase Edge Function (recommended)
+            // 2. Third-party service like SendGrid, AWS SES, etc.
+            
+            // Example Edge Function call (when implemented):
+            // var client = _client.Value;
+            // var payload = new { to, subject, html_body = htmlBody };
+            // await client.Functions.Invoke("send-email", payload);
+
+            await Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send email to: {To}", to);
+            throw;
+        }
     }
 
     private Client InitializeClient()
@@ -128,4 +306,25 @@ public class SupabaseClientService : ISupabaseClient
             throw;
         }
     }
+}
+
+/// <summary>
+/// Response from Supabase Admin API for user creation
+/// </summary>
+internal class SupabaseUserResponse
+{
+    [JsonPropertyName("id")]
+    public string? Id { get; set; }
+
+    [JsonPropertyName("email")]
+    public string? Email { get; set; }
+}
+
+/// <summary>
+/// Response from Supabase Admin API for listing users
+/// </summary>
+internal class SupabaseUsersListResponse
+{
+    [JsonPropertyName("users")]
+    public List<SupabaseUserResponse>? Users { get; set; }
 }

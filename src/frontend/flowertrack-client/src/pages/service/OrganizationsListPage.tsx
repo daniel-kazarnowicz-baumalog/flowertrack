@@ -39,10 +39,17 @@ export const OrganizationsListPage = () => {
     try {
       const organization = await createOrganizationAsync(data);
       setIsModalOpen(false);
-      navigate(`/service/organizations/${organization.id}`);
-    } catch (error) {
+      // Navigate only if we got a valid organization with ID
+      if (organization?.id) {
+        navigate(`/service/organizations/${organization.id}`);
+      }
+    } catch (error: any) {
       // Error is already handled by the mutation with toast
       console.error('Failed to onboard organization:', error);
+      console.error('Error response:', error.response?.data);
+      console.error('Error status:', error.response?.status);
+      // Don't navigate on error
+      return;
     }
   };
 

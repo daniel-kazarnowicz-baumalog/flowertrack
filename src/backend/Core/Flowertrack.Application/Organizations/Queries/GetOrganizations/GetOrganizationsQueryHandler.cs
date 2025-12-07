@@ -23,7 +23,10 @@ public sealed class GetOrganizationsQueryHandler
         GetOrganizationsQuery request,
         CancellationToken cancellationToken)
     {
-        var query = _dbContext.Organizations.AsQueryable();
+        // Only include non-deleted organizations
+        var query = _dbContext.Organizations
+            .Where(o => !o.IsDeleted)
+            .AsQueryable();
 
         // Apply filters
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
