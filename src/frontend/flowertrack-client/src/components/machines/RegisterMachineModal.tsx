@@ -2,7 +2,7 @@
  * RegisterMachineModal - Modal for registering new machines (Service Portal)
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
@@ -15,62 +15,60 @@ interface RegisterMachineModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: (machine: MachineDto) => void;
+  /** Pre-selected organization ID. When provided, the organization selector is disabled. */
+  organizationId?: string;
 }
 
 export const RegisterMachineModal: React.FC<RegisterMachineModalProps> = ({
   isOpen,
   onClose,
   onSuccess,
+  organizationId: preselectedOrgId,
 }) => {
   const { organizations, isLoading: loadingOrgs } = useOrganizations();
   const { createMachine, isCreating } = useMachineMutations();
 
   const [formData, setFormData] = useState<CreateMachineRequest>({
-    organizationId: '',
+    organizationId: preselectedOrgId || '',
     serialNumber: '',
+    brand: '',
     model: '',
-    installationDate: '',
     location: '',
-    notes: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState('');
+
+  // Update organizationId when preselectedOrgId changes
+  useEffect(() => {
+    if (preselectedOrgId) {
+      setFormData((prev) => ({ ...prev, organizationId: preselectedOrgId }));
+    }
+  }, [preselectedOrgId]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
     if (!formData.serialNumber.trim()) {
       newErrors.serialNumber = 'Serial number is required';
-    } else if (formData.serialNumber.length > 100) {
-      newErrors.serialNumber = 'Serial number cannot exceed 100 characters';
-    }
-
-    if (!formData.model.trim()) {
-      newErrors.model = 'Model is required';
-    } else if (formData.model.length > 100) {
-      newErrors.model = 'Model cannot exceed 100 characters';
+    } else if (formData.serialNumber.length > 255) {
+      newErrors.serialNumber = 'Serial number cannot exceed 255 characters';
     }
 
     if (!formData.organizationId) {
       newErrors.organizationId = 'Organization is required';
     }
 
-    if (formData.location && formData.location.length > 200) {
-      newErrors.location = 'Location cannot exceed 200 characters';
+    if (formData.brand && formData.brand.length > 100) {
+      newErrors.brand = 'Brand cannot exceed 100 characters';
     }
 
-    if (formData.notes && formData.notes.length > 1000) {
-      newErrors.notes = 'Notes cannot exceed 1000 characters';
+    if (formData.model && formData.model.length > 100) {
+      newErrors.model = 'Model cannot exceed 100 characters';
     }
 
-    if (formData.installationDate) {
-      const date = new Date(formData.installationDate);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (date > today) {
-        newErrors.installationDate = 'Installation date cannot be in the future';
-      }
+    if (formData.location && formData.location.length > 255) {
+      newErrors.location = 'Location cannot exceed 255 characters';
     }
 
     setErrors(newErrors);
@@ -96,12 +94,11 @@ export const RegisterMachineModal: React.FC<RegisterMachineModalProps> = ({
 
   const handleClose = () => {
     setFormData({
-      organizationId: '',
+      organizationId: preselectedOrgId || '',
       serialNumber: '',
+      brand: '',
       model: '',
-      installationDate: '',
       location: '',
-      notes: '',
     });
     setErrors({});
     setFormError('');
@@ -147,14 +144,13 @@ export const RegisterMachineModal: React.FC<RegisterMachineModalProps> = ({
 
           <div className="registerMachine__field">
             <Input
-              label="Model"
+              label="Brand"
               type="text"
-              value={formData.model}
-              onChange={(e) => setFormData({ ...formData, model: e.target.value })}
-              error={errors.model}
-              required
+              value={formData.brand || ''}
+              onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
+              error={errors.brand}
               disabled={isCreating}
-              placeholder="e.g., Model X-2000"
+              placeholder="e.g., Baumalog"
             />
           </div>
         </div>
@@ -167,7 +163,7 @@ export const RegisterMachineModal: React.FC<RegisterMachineModalProps> = ({
             value={formData.organizationId}
             onChange={(e) => setFormData({ ...formData, organizationId: e.target.value })}
             className={`registerMachine__select ${errors.organizationId ? 'registerMachine__select--error' : ''}`}
-            disabled={isCreating || loadingOrgs}
+            disabled={isCreating || loadingOrgs || !!preselectedOrgId}
             required
           >
             <option value="">Select an organization</option>
@@ -182,44 +178,29 @@ export const RegisterMachineModal: React.FC<RegisterMachineModalProps> = ({
           )}
         </div>
 
-        <div className="registerMachine__field">
-          <Input
-            label="Location"
-            type="text"
-            value={formData.location || ''}
-            onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-            error={errors.location}
-            disabled={isCreating}
-            placeholder="e.g., Building A, Floor 2"
-          />
-        </div>
+        <div className="registerMachine__grid">
+          <div className="registerMachine__field">
+            <Input
+              label="Model"
+              type="text"
+              value={formData.model || ''}
+              onChange={(e) => setFormData({ ...formData, model: e.target.value })}
+              error={errors.model}
+              disabled={isCreating}
+              placeholder="e.g., Model X-2000"
+            />
+          </div>
 
-        <div className="registerMachine__field">
-          <Input
-            label="Installation Date"
-            type="date"
-            value={formData.installationDate || ''}
-            onChange={(e) => setFormData({ ...formData, installationDate: e.target.value })}
-            error={errors.installationDate}
-            disabled={isCreating}
-            max={new Date().toISOString().split('T')[0]}
-          />
-        </div>
-
-        <div className="registerMachine__field">
-          <label className="registerMachine__label">Notes</label>
-          <textarea
-            value={formData.notes || ''}
-            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-            className={`registerMachine__textarea ${errors.notes ? 'registerMachine__textarea--error' : ''}`}
-            disabled={isCreating}
-            placeholder="Add any relevant specifications or notes..."
-            rows={4}
-            maxLength={1000}
-          />
-          {errors.notes && <span className="registerMachine__errorText">{errors.notes}</span>}
-          <div className="registerMachine__charCount">
-            {formData.notes?.length || 0} / 1000 characters
+          <div className="registerMachine__field">
+            <Input
+              label="Location"
+              type="text"
+              value={formData.location || ''}
+              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              error={errors.location}
+              disabled={isCreating}
+              placeholder="e.g., Building A, Floor 2"
+            />
           </div>
         </div>
       </form>

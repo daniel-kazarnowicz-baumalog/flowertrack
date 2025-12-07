@@ -264,28 +264,44 @@ export interface OrganizationDto {
   contactEmail: string;
   contactPhone?: string;
   address?: string;
+  city?: string;
+  postalCode?: string;
+  country?: string;
+  serviceStatus: string;
+  contractStartDate?: string;
+  contractEndDate?: string;
+  notes?: string;
   apiKey?: string; // Only visible to service admins
+  hasApiKey: boolean;
   machinesCount: number;
   activeTicketsCount: number;
   hasAlarmMachines: boolean;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface OnboardOrganizationRequest {
-  organizationName: string;
+  name: string;
   adminEmail: string;
   adminFirstName: string;
   adminLastName: string;
-  contactEmail?: string;
-  contactPhone?: string;
+  phone?: string;
   address?: string;
+  city?: string;
+  postalCode?: string;
+  country?: string;
+  notes?: string;
 }
 
 export interface UpdateOrganizationRequest {
   name?: string;
-  contactEmail?: string;
-  contactPhone?: string;
+  email?: string;
+  phone?: string;
   address?: string;
+  city?: string;
+  postalCode?: string;
+  country?: string;
+  notes?: string;
 }
 
 export interface RegenerateApiKeyResponse {
@@ -315,11 +331,10 @@ export interface MachineDto {
 
 export interface CreateMachineRequest {
   organizationId: string;
-  model: string;
   serialNumber: string;
-  installationDate?: string;
+  brand?: string;
+  model?: string;
   location?: string;
-  notes?: string;
 }
 
 export interface UpdateMachineRequest {

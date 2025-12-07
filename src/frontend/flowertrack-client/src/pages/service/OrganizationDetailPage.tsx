@@ -9,6 +9,7 @@ import {
   useOrganizations,
 } from '../../hooks/useOrganizations';
 import { EditOrganizationModal } from '../../components/organizations';
+import { RegisterMachineModal } from '../../components/machines';
 import { Loader } from '../../components/ui/Loader';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
@@ -32,13 +33,24 @@ export const OrganizationDetailPage = () => {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [showApiKey, setShowApiKey] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isRegisterMachineModalOpen, setIsRegisterMachineModalOpen] = useState(false);
 
   const { organization, isLoading, error, refetch } = useOrganization(id);
-  const { machines, isLoading: machinesLoading } = useOrganizationMachines(id);
+  const {
+    machines,
+    isLoading: machinesLoading,
+    refetch: refetchMachines,
+  } = useOrganizationMachines(id);
   const { tickets, isLoading: ticketsLoading } = useOrganizationTickets(id);
   const { users, isLoading: usersLoading } = useOrganizationUsers(id);
-  const { updateOrganization, isUpdating, regenerateApiKey, isRegeneratingApiKey } =
-    useOrganizations();
+  const {
+    updateOrganization,
+    isUpdating,
+    deleteOrganization,
+    isDeleting,
+    regenerateApiKey,
+    isRegeneratingApiKey,
+  } = useOrganizations();
 
   const handleRegenerateApiKey = () => {
     if (
@@ -63,6 +75,27 @@ export const OrganizationDetailPage = () => {
         }
       );
     }
+  };
+
+  const handleDeleteOrganization = () => {
+    if (
+      id &&
+      window.confirm(
+        'Are you sure you want to delete this organization? This action cannot be undone.'
+      )
+    ) {
+      deleteOrganization(id, {
+        onSuccess: () => {
+          navigate('/service/organizations');
+        },
+      });
+    }
+  };
+
+  const handleMachineRegistered = () => {
+    refetchMachines();
+    refetch();
+    setIsRegisterMachineModalOpen(false);
   };
 
   const copyApiKey = () => {
@@ -97,25 +130,49 @@ export const OrganizationDetailPage = () => {
             <h3>Contact Information</h3>
             <div className="organizationDetail__infoRow">
               <span className="organizationDetail__label">Email:</span>
-              <span className="organizationDetail__value">{organization.contactEmail}</span>
+              <span className="organizationDetail__value">{organization.contactEmail || '—'}</span>
             </div>
-            {organization.contactPhone && (
-              <div className="organizationDetail__infoRow">
-                <span className="organizationDetail__label">Phone:</span>
-                <span className="organizationDetail__value">{organization.contactPhone}</span>
-              </div>
-            )}
-            {organization.address && (
-              <div className="organizationDetail__infoRow">
-                <span className="organizationDetail__label">Address:</span>
-                <span className="organizationDetail__value">{organization.address}</span>
-              </div>
-            )}
+            <div className="organizationDetail__infoRow">
+              <span className="organizationDetail__label">Phone:</span>
+              <span className="organizationDetail__value">{organization.contactPhone || '—'}</span>
+            </div>
+            <div className="organizationDetail__infoRow">
+              <span className="organizationDetail__label">Service Status:</span>
+              <span className="organizationDetail__value">
+                <span
+                  className={`organizationDetail__statusBadge organizationDetail__statusBadge--${organization.serviceStatus?.toLowerCase() || 'active'}`}
+                >
+                  {organization.serviceStatus || 'Active'}
+                </span>
+              </span>
+            </div>
             <div className="organizationDetail__infoRow">
               <span className="organizationDetail__label">Created:</span>
               <span className="organizationDetail__value">
                 {format(new Date(organization.createdAt), 'MMM dd, yyyy')}
               </span>
+            </div>
+          </div>
+        </Card>
+
+        <Card>
+          <div className="organizationDetail__infoCard">
+            <h3>Address</h3>
+            <div className="organizationDetail__infoRow">
+              <span className="organizationDetail__label">Street:</span>
+              <span className="organizationDetail__value">{organization.address || '—'}</span>
+            </div>
+            <div className="organizationDetail__infoRow">
+              <span className="organizationDetail__label">City:</span>
+              <span className="organizationDetail__value">{organization.city || '—'}</span>
+            </div>
+            <div className="organizationDetail__infoRow">
+              <span className="organizationDetail__label">Postal Code:</span>
+              <span className="organizationDetail__value">{organization.postalCode || '—'}</span>
+            </div>
+            <div className="organizationDetail__infoRow">
+              <span className="organizationDetail__label">Country:</span>
+              <span className="organizationDetail__value">{organization.country || '—'}</span>
             </div>
           </div>
         </Card>
@@ -134,7 +191,7 @@ export const OrganizationDetailPage = () => {
               </span>
             </div>
             <div className="organizationDetail__statRow">
-              <span className="organizationDetail__statLabel">Status</span>
+              <span className="organizationDetail__statLabel">Machine Status</span>
               <span className="organizationDetail__statValue">
                 {organization.hasAlarmMachines ? (
                   <span className="organizationDetail__alarmBadge">⚠️ Has Alarms</span>
@@ -145,11 +202,52 @@ export const OrganizationDetailPage = () => {
             </div>
           </div>
         </Card>
+
+        <Card>
+          <div className="organizationDetail__infoCard">
+            <h3>Contract Information</h3>
+            <div className="organizationDetail__infoRow">
+              <span className="organizationDetail__label">Contract Start:</span>
+              <span className="organizationDetail__value">
+                {organization.contractStartDate
+                  ? format(new Date(organization.contractStartDate), 'MMM dd, yyyy')
+                  : '—'}
+              </span>
+            </div>
+            <div className="organizationDetail__infoRow">
+              <span className="organizationDetail__label">Contract End:</span>
+              <span className="organizationDetail__value">
+                {organization.contractEndDate
+                  ? format(new Date(organization.contractEndDate), 'MMM dd, yyyy')
+                  : '—'}
+              </span>
+            </div>
+          </div>
+        </Card>
       </div>
 
-      <div className="organizationDetail__editSection">
+      {organization.notes && (
+        <Card className="organizationDetail__notesCard">
+          <h3>Notes</h3>
+          <p className="organizationDetail__notes">{organization.notes}</p>
+        </Card>
+      )}
+
+      <div className="organizationDetail__actionsSection">
         <Button variant="secondary" onClick={() => setIsEditModalOpen(true)}>
           ✏️ Edit Organization
+        </Button>
+        <Button
+          variant="danger"
+          onClick={handleDeleteOrganization}
+          disabled={isDeleting || organization.activeTicketsCount > 0}
+          title={
+            organization.activeTicketsCount > 0
+              ? 'Cannot delete organization with active tickets'
+              : ''
+          }
+        >
+          {isDeleting ? 'Deleting...' : '🗑️ Delete Organization'}
         </Button>
       </div>
 
@@ -190,6 +288,12 @@ export const OrganizationDetailPage = () => {
 
   const renderMachinesTab = () => (
     <div className="organizationDetail__machines">
+      <div className="organizationDetail__tabHeader">
+        <h3>Registered Machines</h3>
+        <Button variant="primary" onClick={() => setIsRegisterMachineModalOpen(true)}>
+          + Register Machine
+        </Button>
+      </div>
       {machinesLoading ? (
         <div className="organizationDetail__tabLoading">
           <Loader />
@@ -197,6 +301,9 @@ export const OrganizationDetailPage = () => {
       ) : machines.length === 0 ? (
         <div className="organizationDetail__empty">
           <p>No machines registered for this organization.</p>
+          <Button variant="primary" onClick={() => setIsRegisterMachineModalOpen(true)}>
+            + Register First Machine
+          </Button>
         </div>
       ) : (
         <div className="organizationDetail__tableWrapper">
@@ -418,6 +525,14 @@ export const OrganizationDetailPage = () => {
         onSubmit={handleEditOrganization}
         organization={organization}
         isLoading={isUpdating}
+      />
+
+      {/* Register Machine Modal */}
+      <RegisterMachineModal
+        isOpen={isRegisterMachineModalOpen}
+        onClose={() => setIsRegisterMachineModalOpen(false)}
+        onSuccess={handleMachineRegistered}
+        organizationId={id!}
       />
     </div>
   );

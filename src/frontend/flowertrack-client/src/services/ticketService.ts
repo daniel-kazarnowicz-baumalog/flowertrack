@@ -23,24 +23,9 @@ import type {
 /**
  * Fetch paginated tickets with optional filters
  */
-// @obsolete DEV ONLY - Mock imports
-import { isMockSession, getMockTickets } from './mockData';
-
-/**
- * Fetch paginated tickets with optional filters
- */
 export const getTickets = async (
   filters: TicketFilters = {}
 ): Promise<PaginatedResponse<TicketDto>> => {
-  // @obsolete DEV ONLY - Mock data
-  if (isMockSession()) {
-    // Filter the mock data if needed, or just return all for checking
-    const mockData = getMockTickets();
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return mockData as PaginatedResponse<TicketDto>;
-  }
-
   const params = new URLSearchParams();
 
   // Add filter parameters
@@ -88,14 +73,6 @@ export const getTickets = async (
  * Fetch single ticket by ID
  */
 export const getTicketById = async (id: string): Promise<TicketDto> => {
-  // @obsolete DEV ONLY - Mock data
-  if (isMockSession()) {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    const mockData = getMockTickets();
-    const ticket = mockData.items.find((t) => t.id === id) || mockData.items[0];
-    return ticket as TicketDto;
-  }
-
   const response = await apiClient.get<TicketDto>(`/tickets/${id}`);
   return mapTicketEnums(response.data);
 };
@@ -104,21 +81,6 @@ export const getTicketById = async (id: string): Promise<TicketDto> => {
  * Create new ticket (client portal)
  */
 export const createTicket = async (data: CreateTicketRequest): Promise<TicketDto> => {
-  // @obsolete DEV ONLY - Mock data
-  if (isMockSession()) {
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    const mockData = getMockTickets();
-    return {
-      ...mockData.items[0],
-      id: 'mock-new-' + Date.now(),
-      title: data.title,
-      description: data.description,
-      priority: data.priority,
-      createdAt: new Date().toISOString(),
-      status: 'New',
-    } as TicketDto;
-  }
-
   const response = await apiClient.post<TicketDto>('/tickets', data);
   return response.data;
 };
@@ -289,27 +251,6 @@ export const bulkChangeStatus = async (
   });
 };
 
-export default {
-  getTickets,
-  getTicketById,
-  createTicket,
-  updateTicket,
-  changeTicketStatus,
-  assignTicket,
-  getTicketHistory,
-  getTicketComments,
-  addComment,
-  addNote,
-  updateComment,
-  deleteComment,
-  getTicketAttachments,
-  uploadAttachment,
-  downloadAttachment,
-  deleteAttachment,
-  bulkAssignTickets,
-  bulkChangeStatus,
-};
-
 /**
  * Map backend integer enums to frontend string unions
  */
@@ -338,3 +279,24 @@ function mapTicketEnums(ticket: any): TicketDto {
         : ticket.priority,
   };
 }
+
+export default {
+  getTickets,
+  getTicketById,
+  createTicket,
+  updateTicket,
+  changeTicketStatus,
+  assignTicket,
+  getTicketHistory,
+  getTicketComments,
+  addComment,
+  addNote,
+  updateComment,
+  deleteComment,
+  getTicketAttachments,
+  uploadAttachment,
+  downloadAttachment,
+  deleteAttachment,
+  bulkAssignTickets,
+  bulkChangeStatus,
+};

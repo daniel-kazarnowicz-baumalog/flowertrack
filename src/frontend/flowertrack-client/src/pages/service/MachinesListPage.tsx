@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMachines } from '../../hooks/useMachines';
 import { RegisterMachineModal } from '../../components/machines';
@@ -26,13 +26,13 @@ export const MachinesListPage = () => {
 
   // Debounced search
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  useState(() => {
+  useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(search);
       setPage(1); // Reset to first page on search
     }, 300);
     return () => clearTimeout(handler);
-  });
+  }, [search]);
 
   const { data, isLoading, error } = useMachines({
     page,
@@ -132,7 +132,7 @@ export const MachinesListPage = () => {
           <Loader size="lg" />
           <p>Loading machines...</p>
         </div>
-      ) : !data || data.items.length === 0 ? (
+      ) : !data?.items?.length ? (
         <div className="machinesList__empty">
           <div className="machinesList__emptyIcon">🏭</div>
           <h2>No Machines Found</h2>
@@ -211,13 +211,13 @@ export const MachinesListPage = () => {
 
           <div className="machinesList__footer">
             <div className="machinesList__info">
-              Showing {(page - 1) * pageSize + 1} to {Math.min(page * pageSize, data.totalCount)} of{' '}
-              {data.totalCount} machines
+              Showing {(page - 1) * pageSize + 1} to {Math.min(page * pageSize, data?.totalCount ?? 0)} of{' '}
+              {data?.totalCount ?? 0} machines
             </div>
             <Pagination
               currentPage={page}
-              totalPages={data.totalPages}
-              totalItems={data.totalCount}
+              totalPages={data?.totalPages ?? 1}
+              totalItems={data?.totalCount ?? 0}
               pageSize={pageSize}
               onPageChange={setPage}
             />

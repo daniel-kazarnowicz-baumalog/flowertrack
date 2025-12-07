@@ -16,7 +16,12 @@ public sealed record OrganizationDetailsResponse
     public string ServiceStatus { get; init; } = string.Empty;
     public DateTimeOffset? ContractStartDate { get; init; }
     public DateTimeOffset? ContractEndDate { get; init; }
+    public bool HasApiKey { get; init; }
+    public string? ApiKey { get; init; }
     public string? Notes { get; init; }
+    public int MachinesCount { get; init; }
+    public int ActiveTicketsCount { get; init; }
+    public bool HasAlarmMachines { get; init; }
     public DateTimeOffset CreatedAt { get; init; }
     public DateTimeOffset? UpdatedAt { get; init; }
 }

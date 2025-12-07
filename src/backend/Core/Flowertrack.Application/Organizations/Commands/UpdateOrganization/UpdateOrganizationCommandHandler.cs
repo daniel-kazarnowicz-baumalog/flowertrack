@@ -30,14 +30,26 @@ public sealed class UpdateOrganizationCommandHandler : IRequestHandler<UpdateOrg
             return Result.Failure<Guid>($"Organization with ID {request.OrganizationId} was not found");
         }
 
-        // Update contact information if provided
-        if (request.Email != null || request.Phone != null || request.Address != null)
+        // Check for name uniqueness if name is being changed
+        if (!string.IsNullOrWhiteSpace(request.Name) && request.Name != organization.Name)
         {
-            organization.UpdateContactInfo(request.Email, request.Phone, request.Address);
+            var nameExists = await _organizationRepository.NameExistsAsync(request.Name, request.OrganizationId, cancellationToken);
+            if (nameExists)
+            {
+                return Result.Failure<Guid>($"Organization with name '{request.Name}' already exists");
+            }
         }
 
-        // TODO: Add Update method to Organization entity for Name, City, PostalCode, Country, Notes
-        // For now, we'll update only contact info which is supported by the domain
+        // Update organization with all provided fields
+        organization.Update(
+            request.Name,
+            request.Email,
+            request.Phone,
+            request.Address,
+            request.City,
+            request.PostalCode,
+            request.Country,
+            request.Notes);
 
         await _organizationRepository.UpdateAsync(organization, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

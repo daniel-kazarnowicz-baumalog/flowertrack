@@ -22,6 +22,8 @@ public sealed class OrganizationUserRepository : Repository<OrganizationUser>, I
     public async Task<OrganizationUser?> GetBySupabaseUserIdAsync(Guid supabaseUserId, CancellationToken ct = default)
     {
         return await DbSet
+            .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
             .FirstOrDefaultAsync(u => u.SupabaseUserId == supabaseUserId, ct);
     }
 

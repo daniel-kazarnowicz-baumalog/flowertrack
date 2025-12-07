@@ -1,139 +1,139 @@
 .kpi-card {
-    background: var(--color-bg-primary);
-    border-radius: var(--radius-xl);
-    padding: var(--space-6);
-    box-shadow: var(--shadow-sm);
-    position: relative;
-    overflow: hidden;
-    transition: var(--transition-all);
-    border: 1px solid var(--color-border);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-    min-height: 140px;
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition-all);
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  min-height: 140px;
 }
 
 .kpi-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-    border-color: var(--color-border-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-border-dark);
 }
 
 .kpi-card--clickable {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 /* Variants */
 .kpi-card--primary {
-    border-left: 4px solid var(--color-primary);
+  border-left: 4px solid var(--color-primary);
 }
 
 .kpi-card--success {
-    border-left: 4px solid var(--color-success);
+  border-left: 4px solid var(--color-success);
 }
 
 .kpi-card--warning {
-    border-left: 4px solid var(--color-warning);
+  border-left: 4px solid var(--color-warning);
 }
 
 .kpi-card--danger {
-    border-left: 4px solid var(--color-error);
+  border-left: 4px solid var(--color-error);
 }
 
 .kpi-card--info {
-    border-left: 4px solid var(--color-info);
+  border-left: 4px solid var(--color-info);
 }
 
 /* Content */
 .kpi-card__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: var(--space-2);
-    z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-2);
+  z-index: 1;
 }
 
 .kpi-card__title {
-    font-size: var(--text-sm);
-    font-weight: var(--font-semibold);
-    color: var(--color-text-secondary);
-    text-transform: uppercase;
-    letter-spacing: var(--tracking-wider);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
 }
 
 .kpi-card__icon {
-    color: var(--color-text-tertiary);
-    font-size: var(--text-xl);
+  color: var(--color-text-tertiary);
+  font-size: var(--text-xl);
 }
 
 .kpi-card__content {
-    z-index: 1;
+  z-index: 1;
 }
 
 .kpi-card__value {
-    font-size: var(--text-4xl);
-    font-weight: var(--font-bold);
-    color: var(--color-text-primary);
-    line-height: var(--leading-tight);
-    margin-bottom: var(--space-1);
+  font-size: var(--text-4xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  line-height: var(--leading-tight);
+  margin-bottom: var(--space-1);
 }
 
 .kpi-card__trend {
-    font-size: var(--text-sm);
-    font-weight: var(--font-medium);
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
 }
 
 .kpi-card__trend--up {
-    color: var(--color-success);
+  color: var(--color-success);
 }
 
 .kpi-card__trend--down {
-    color: var(--color-error);
+  color: var(--color-error);
 }
 
 .kpi-card__trend--neutral {
-    color: var(--color-text-secondary);
+  color: var(--color-text-secondary);
 }
 
 /* Background Icon Effect */
 .kpi-card__bg-icon {
-    position: absolute;
-    right: -10px;
-    bottom: -10px;
-    font-size: 5rem;
-    color: var(--color-bg-tertiary);
-    /* Use tertiary bg color for subtle effect */
-    /* Very subtle */
-    transform: rotate(-15deg);
-    z-index: 0;
-    pointer-events: none;
-    opacity: 0.5;
+  position: absolute;
+  right: -10px;
+  bottom: -10px;
+  font-size: 5rem;
+  color: var(--color-bg-tertiary);
+  /* Use tertiary bg color for subtle effect */
+  /* Very subtle */
+  transform: rotate(-15deg);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 /* Loading State */
 .kpi-card__loading {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .kpi-card__loading-bar {
-    width: 40px;
-    height: 40px;
-    border: 3px solid var(--color-border);
-    border-top-color: var(--color-primary);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
+  to {
+    transform: rotate(360deg);
+  }
 }

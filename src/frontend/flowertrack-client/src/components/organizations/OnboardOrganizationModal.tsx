@@ -12,7 +12,7 @@ import './OnboardOrganizationModal.css';
 interface OnboardOrganizationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: OnboardOrganizationRequest) => void;
+  onSubmit: (data: OnboardOrganizationRequest) => Promise<void> | void;
   isLoading?: boolean;
 }
 
@@ -23,13 +23,16 @@ export const OnboardOrganizationModal: React.FC<OnboardOrganizationModalProps> =
   isLoading = false,
 }) => {
   const [formData, setFormData] = useState<OnboardOrganizationRequest>({
-    organizationName: '',
+    name: '',
     adminEmail: '',
     adminFirstName: '',
     adminLastName: '',
-    contactEmail: '',
-    contactPhone: '',
+    phone: '',
     address: '',
+    city: '',
+    postalCode: '',
+    country: '',
+    notes: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -37,8 +40,10 @@ export const OnboardOrganizationModal: React.FC<OnboardOrganizationModalProps> =
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.organizationName.trim()) {
-      newErrors.organizationName = 'Organization name is required';
+    if (!formData.name.trim()) {
+      newErrors.name = 'Organization name is required';
+    } else if (formData.name.length < 3) {
+      newErrors.name = 'Organization name must be at least 3 characters';
     }
     if (!formData.adminEmail.trim()) {
       newErrors.adminEmail = 'Admin email is required';
@@ -56,25 +61,28 @@ export const OnboardOrganizationModal: React.FC<OnboardOrganizationModalProps> =
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validate()) {
       return;
     }
 
-    onSubmit(formData);
+    await onSubmit(formData);
   };
 
   const handleClose = () => {
     setFormData({
-      organizationName: '',
+      name: '',
       adminEmail: '',
       adminFirstName: '',
       adminLastName: '',
-      contactEmail: '',
-      contactPhone: '',
+      phone: '',
       address: '',
+      city: '',
+      postalCode: '',
+      country: '',
+      notes: '',
     });
     setErrors({});
     onClose();
@@ -86,6 +94,7 @@ export const OnboardOrganizationModal: React.FC<OnboardOrganizationModalProps> =
       onClose={handleClose}
       title="Onboard New Organization"
       size="lg"
+      closeOnOverlayClick={false}
       footer={
         <div className="onboardOrg__footer">
           <Button variant="ghost" onClick={handleClose} disabled={isLoading}>
@@ -104,17 +113,21 @@ export const OnboardOrganizationModal: React.FC<OnboardOrganizationModalProps> =
             <Input
               label="Organization Name"
               type="text"
-              value={formData.organizationName}
-              onChange={(e) => setFormData({ ...formData, organizationName: e.target.value })}
-              error={errors.organizationName}
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              error={errors.name}
               required
               disabled={isLoading}
+              placeholder="e.g., Acme Corporation"
             />
           </div>
         </div>
 
         <div className="onboardOrg__section">
           <h3>Admin User</h3>
+          <p className="onboardOrg__sectionHint">
+            This person will be the organization administrator and receive an activation email.
+          </p>
           <div className="onboardOrg__grid">
             <div className="onboardOrg__field">
               <Input
@@ -141,44 +154,86 @@ export const OnboardOrganizationModal: React.FC<OnboardOrganizationModalProps> =
           </div>
           <div className="onboardOrg__field">
             <Input
-              label="Email"
+              label="Admin Email"
               type="email"
               value={formData.adminEmail}
               onChange={(e) => setFormData({ ...formData, adminEmail: e.target.value })}
               error={errors.adminEmail}
               required
               disabled={isLoading}
+              placeholder="admin@example.com"
             />
           </div>
         </div>
 
         <div className="onboardOrg__section">
-          <h3>Contact Information (Optional)</h3>
+          <h3>Contact Information</h3>
           <div className="onboardOrg__field">
             <Input
-              label="Contact Email"
-              type="email"
-              value={formData.contactEmail || ''}
-              onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
-              disabled={isLoading}
-            />
-          </div>
-          <div className="onboardOrg__field">
-            <Input
-              label="Contact Phone"
+              label="Phone"
               type="tel"
-              value={formData.contactPhone || ''}
-              onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
+              value={formData.phone || ''}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               disabled={isLoading}
+              placeholder="+48 123 456 789"
             />
           </div>
+        </div>
+
+        <div className="onboardOrg__section">
+          <h3>Address</h3>
           <div className="onboardOrg__field">
             <Input
-              label="Address"
+              label="Street Address"
               type="text"
               value={formData.address || ''}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
               disabled={isLoading}
+              placeholder="123 Main Street"
+            />
+          </div>
+          <div className="onboardOrg__grid">
+            <div className="onboardOrg__field">
+              <Input
+                label="City"
+                type="text"
+                value={formData.city || ''}
+                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                disabled={isLoading}
+              />
+            </div>
+            <div className="onboardOrg__field">
+              <Input
+                label="Postal Code"
+                type="text"
+                value={formData.postalCode || ''}
+                onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
+                disabled={isLoading}
+              />
+            </div>
+          </div>
+          <div className="onboardOrg__field">
+            <Input
+              label="Country"
+              type="text"
+              value={formData.country || ''}
+              onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+              disabled={isLoading}
+              placeholder="Poland"
+            />
+          </div>
+        </div>
+
+        <div className="onboardOrg__section">
+          <h3>Notes</h3>
+          <div className="onboardOrg__field">
+            <textarea
+              className="onboardOrg__textarea"
+              value={formData.notes || ''}
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              disabled={isLoading}
+              rows={3}
+              placeholder="Additional notes about this organization..."
             />
           </div>
         </div>

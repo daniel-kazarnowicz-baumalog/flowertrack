@@ -23,11 +23,6 @@ export interface AuthContextType {
   logout: () => void;
   loginService: (email: string, password: string) => Promise<void>;
   loginClient: (email: string, password: string) => Promise<void>;
-  /**
-   * @obsolete DEV ONLY - Mock login without backend authentication
-   * TODO: Remove before production deployment
-   */
-  mockLogin: (role: 'client' | 'service') => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -94,27 +89,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  /**
-   * @obsolete DEV ONLY - Mock login without backend authentication
-   * TODO: Remove this function before production deployment
-   */
-  const mockLogin = (role: 'client' | 'service') => {
-    const mockToken = 'mock-dev-token-' + Date.now();
-    const mockUser: User = {
-      id: 'mock-user-' + Date.now(),
-      email: role === 'client' ? 'testclient@demo.pl' : 'testserwis@demo.pl',
-      role,
-      name: role === 'client' ? 'Test Klient' : 'Test Serwisant',
-      fullName: role === 'client' ? 'Test Klient' : 'Test Serwisant',
-      firstName: 'Test',
-      lastName: role === 'client' ? 'Klient' : 'Serwisant',
-      organizationId: role === 'client' ? 'mock-org-1' : undefined,
-      organizationName: role === 'client' ? 'Demo Firma Sp. z o.o.' : undefined,
-      isAdmin: true, // Grant admin rights to mock users for testing
-    };
-    login(mockToken, mockUser);
-  };
-
   return (
     <AuthContext.Provider
       value={{
@@ -126,7 +100,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         logout,
         loginService,
         loginClient,
-        mockLogin,
       }}
     >
       {children}

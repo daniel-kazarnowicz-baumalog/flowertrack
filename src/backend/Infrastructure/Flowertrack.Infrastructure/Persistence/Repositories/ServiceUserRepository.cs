@@ -23,6 +23,8 @@ public sealed class ServiceUserRepository : Repository<ServiceUser>, IServiceUse
     public async Task<ServiceUser?> GetBySupabaseUserIdAsync(Guid supabaseUserId, CancellationToken ct = default)
     {
         return await DbSet
+            .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
             .FirstOrDefaultAsync(u => u.SupabaseUserId == supabaseUserId, ct);
     }
 

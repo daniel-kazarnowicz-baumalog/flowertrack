@@ -1,3 +1,4 @@
+using Flowertrack.Application.Organizations.Commands.DeleteOrganization;
 using Flowertrack.Application.Organizations.Commands.OnboardOrganization;
 using Flowertrack.Application.Organizations.Commands.RegenerateApiKey;
 using Flowertrack.Application.Organizations.Commands.UpdateOrganization;
@@ -92,7 +93,7 @@ public class OrganizationsController : ControllerBase
     /// US-025: Inicjowanie onboardingu nowej organizacji
     /// </summary>
     [HttpPost("onboard")]
-    [Authorize(Roles = "ServiceAdministrator")]
+    [Authorize(Roles = "ServiceAdministrator,ServiceTechnician")]
     [ProducesResponseType(typeof(OnboardingConfirmationResponse), StatusCodes.Status202Accepted)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
@@ -171,7 +172,7 @@ public class OrganizationsController : ControllerBase
     /// Update organization information
     /// </summary>
     [HttpPatch("{id:guid}")]
-    [Authorize(Roles = "ServiceAdministrator")]
+    [Authorize(Roles = "ServiceAdministrator,ServiceTechnician")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
@@ -203,6 +204,34 @@ public class OrganizationsController : ControllerBase
                 return NotFound(new ErrorResponse(result.Error));
             }
             return BadRequest(new ErrorResponse(result.Error ?? "Failed to update organization"));
+        }
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Delete an organization (soft delete)
+    /// Only ServiceAdministrator can delete organizations
+    /// </summary>
+    [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "ServiceAdministrator")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> DeleteOrganization([FromRoute] Guid id)
+    {
+        var command = new DeleteOrganizationCommand(id);
+        var result = await _mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            if (result.Error?.Contains("not found") == true)
+            {
+                return NotFound(new ErrorResponse(result.Error));
+            }
+            return BadRequest(new ErrorResponse(result.Error ?? "Failed to delete organization"));
         }
 
         return NoContent();

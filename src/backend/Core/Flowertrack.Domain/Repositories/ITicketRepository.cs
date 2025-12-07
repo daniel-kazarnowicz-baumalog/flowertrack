@@ -65,4 +65,12 @@ public interface ITicketRepository : IRepository<Ticket>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>True if the ticket number exists; otherwise, false.</returns>
     Task<bool> TicketNumberExistsAsync(TicketNumber ticketNumber, CancellationToken ct = default);
+
+    /// <summary>
+    /// Checks if an organization has any active (non-closed) tickets.
+    /// </summary>
+    /// <param name="organizationId">The organization identifier.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>True if the organization has active tickets; otherwise, false.</returns>
+    Task<bool> HasActiveTicketsForOrganizationAsync(Guid organizationId, CancellationToken ct = default);
 }

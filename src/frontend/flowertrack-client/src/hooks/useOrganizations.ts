@@ -57,6 +57,21 @@ export const useOrganizations = () => {
     },
   });
 
+  // Delete organization mutation
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => organizationService.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['organizations'] });
+      showToast('Organization deleted successfully', 'success');
+    },
+    onError: (error: unknown) => {
+      const message =
+        (error as { response?: { data?: { message?: string } } }).response?.data?.message ||
+        'Failed to delete organization';
+      showToast(message, 'error');
+    },
+  });
+
   // Regenerate API key mutation
   const regenerateApiKeyMutation = useMutation({
     mutationFn: (id: string) => organizationService.regenerateApiKey(id),
@@ -86,6 +101,9 @@ export const useOrganizations = () => {
     updateOrganization: updateMutation.mutate,
     updateOrganizationAsync: updateMutation.mutateAsync,
     isUpdating: updateMutation.isPending,
+    deleteOrganization: deleteMutation.mutate,
+    deleteOrganizationAsync: deleteMutation.mutateAsync,
+    isDeleting: deleteMutation.isPending,
     regenerateApiKey: regenerateApiKeyMutation.mutate,
     isRegeneratingApiKey: regenerateApiKeyMutation.isPending,
   };

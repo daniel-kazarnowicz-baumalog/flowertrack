@@ -6,13 +6,6 @@
 
 import { apiClient } from '../lib/apiClient';
 import type { TicketDto } from '../types/api';
-// @obsolete DEV ONLY - Mock data import, remove before production
-import {
-  isMockSession,
-  getMockServiceDashboardStats,
-  getMockClientDashboardStats,
-  getMockTicketTrends,
-} from './mockData';
 
 export interface ServiceDashboardStats {
   activeTicketsCount: number;
@@ -74,11 +67,6 @@ export interface TicketTrend {
  * Get service dashboard statistics
  */
 export async function getServiceDashboardStats(userId?: string): Promise<ServiceDashboardStats> {
-  // @obsolete DEV ONLY - Return mock data for testing without backend
-  if (isMockSession()) {
-    return getMockServiceDashboardStats();
-  }
-
   // Fetch all tickets to aggregate stats
   const response = await apiClient.get<{
     items: TicketDto[];
@@ -98,14 +86,16 @@ export async function getServiceDashboardStats(userId?: string): Promise<Service
   const myAssignedTickets = userId ? tickets.filter((t) => t.assignedToId === userId) : [];
   const unassignedTickets = tickets.filter((t) => !t.assignedToId);
 
-  // Group tickets by status (organization-specific)
+  // Group tickets by status
   const ticketsByStatus = tickets.reduce<Record<string, number>>(
     (acc, ticket) => {
       acc[ticket.status] = (acc[ticket.status] || 0) + 1;
       return acc;
     },
     {} as Record<string, number>
-  ); // Group tickets by priority
+  );
+
+  // Group tickets by priority
   const ticketsByPriority = tickets.reduce<Record<string, number>>(
     (acc, ticket) => {
       acc[ticket.priority] = (acc[ticket.priority] || 0) + 1;
@@ -140,29 +130,13 @@ export async function getServiceDashboardStats(userId?: string): Promise<Service
     criticalTicketsCount: criticalTickets.length,
     myAssignedTicketsCount: myAssignedTickets.length,
     unassignedTicketsCount: unassignedTickets.length,
-    activeAlarmsCount: 3, // Mock data until machine integration
+    activeAlarmsCount: 0, // TODO: Integrate with machine alarms API when available
     resolvedThisWeekCount,
     ticketsByStatus,
     ticketsByPriority,
     recentActivity,
-    organizationsWithAlarms: [
-      { id: 'org-1', name: 'Baumalog Sp. z o.o.', alarmCount: 2 },
-      { id: 'org-2', name: 'Stal-Met', alarmCount: 1 },
-    ], // Mock data
-    upcomingMaintenance: [
-      {
-        id: 'mach-1',
-        name: 'Laser Fiber 3015',
-        organizationName: 'Baumalog Sp. z o.o.',
-        date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: 'mach-2',
-        name: 'Prasa krawędziowa',
-        organizationName: 'Stal-Met',
-        date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-    ], // Mock data
+    organizationsWithAlarms: [], // TODO: Integrate with machine alarms API when available
+    upcomingMaintenance: [], // TODO: Integrate with maintenance schedule API when available
   };
 }
 
@@ -172,11 +146,6 @@ export async function getServiceDashboardStats(userId?: string): Promise<Service
 export async function getClientDashboardStats(
   organizationId: string
 ): Promise<ClientDashboardStats> {
-  // @obsolete DEV ONLY - Return mock data for testing without backend
-  if (isMockSession()) {
-    return getMockClientDashboardStats();
-  }
-
   // Fetch tickets for organization
   const ticketsResponse = await apiClient.get<{
     items: TicketDto[];
@@ -257,11 +226,6 @@ export async function getClientDashboardStats(
  * Get ticket trends over time (last 30 days)
  */
 export async function getTicketTrends(organizationId?: string): Promise<TicketTrend[]> {
-  // @obsolete DEV ONLY - Return mock data for testing without backend
-  if (isMockSession()) {
-    return getMockTicketTrends();
-  }
-
   const response = await apiClient.get<{
     items: TicketDto[];
     totalCount: number;

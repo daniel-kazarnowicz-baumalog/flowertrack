@@ -67,4 +67,10 @@ public sealed class TicketRepository : Repository<Ticket>, ITicketRepository
    return await DbSet
    .AnyAsync(t => t.TicketNumber == ticketNumber, ct);
     }
+
+    public async Task<bool> HasActiveTicketsForOrganizationAsync(Guid organizationId, CancellationToken ct = default)
+    {
+        return await DbSet
+            .AnyAsync(t => t.OrganizationId == organizationId && t.Status != TicketStatus.Closed, ct);
+    }
 }

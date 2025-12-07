@@ -12,17 +12,8 @@ const ServiceLogin = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const { login, mockLogin } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
-
-  /**
-   * @obsolete DEV ONLY - Handle mock login without backend
-   * TODO: Remove before production deployment
-   */
-  const handleMockLogin = () => {
-    mockLogin('service');
-    navigate('/service/dashboard');
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,20 +88,6 @@ const ServiceLogin = () => {
 
           <button type="submit" className="login-btn" disabled={isLoading}>
             {isLoading ? t('auth.loggingIn') : t('auth.loginButton')}
-          </button>
-
-          {/* @obsolete DEV ONLY - Remove this button before production deployment */}
-          <button
-            type="button"
-            className="login-btn"
-            onClick={handleMockLogin}
-            style={{
-              marginTop: '0.5rem',
-              background: 'linear-gradient(135deg, #ff6b6b, #ee5a24)',
-              border: '2px dashed #fff',
-            }}
-          >
-            {t('auth.mockLoginDev')}
           </button>
         </form>
 

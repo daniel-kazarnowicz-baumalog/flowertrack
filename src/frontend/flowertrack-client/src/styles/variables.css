@@ -143,8 +143,9 @@
      ======================================== */
 
   /* ---------- Font Family ---------- */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, sans-serif;
+  --font-sans:
+    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 
   /* ---------- Font Sizes ---------- */
@@ -319,7 +320,8 @@
   --transition-fast: var(--duration-150) var(--ease-in-out);
   --transition-base: var(--duration-200) var(--ease-in-out);
   --transition-slow: var(--duration-300) var(--ease-in-out);
-  --transition-colors: color var(--duration-150) var(--ease-in-out),
+  --transition-colors:
+    color var(--duration-150) var(--ease-in-out),
     background-color var(--duration-150) var(--ease-in-out),
     border-color var(--duration-150) var(--ease-in-out);
   --transition-transform: transform var(--duration-200) var(--ease-out);
@@ -485,8 +487,7 @@
   --color-status-closed-bg: rgba(107, 114, 128, 0.1);
 
   /* ---------- Card Shadow (subtle in dark mode) ---------- */
-  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3),
-    0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
 
   /* ---------- Focus Ring ---------- */
   --shadow-focus: 0 0 0 4px rgba(99, 102, 241, 0.25);
@@ -553,7 +554,6 @@
 
 /* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {

@@ -274,6 +274,87 @@ public sealed class Organization : AuditableEntity<Guid>, IAggregateRoot
     }
 
     /// <summary>
+    /// Updates all organization details.
+    /// </summary>
+    /// <param name="name">The new name (if not null or empty, will be updated).</param>
+    /// <param name="email">The new email address.</param>
+    /// <param name="phone">The new phone number.</param>
+    /// <param name="address">The new street address.</param>
+    /// <param name="city">The new city.</param>
+    /// <param name="postalCode">The new postal code.</param>
+    /// <param name="country">The new country.</param>
+    /// <param name="notes">The new notes.</param>
+    /// <exception cref="ArgumentException">Thrown when any parameter exceeds maximum length or name is empty.</exception>
+    public void Update(
+        string? name,
+        string? email,
+        string? phone,
+        string? address,
+        string? city,
+        string? postalCode,
+        string? country,
+        string? notes)
+    {
+        // Validate and update name if provided
+        if (name != null)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("Organization name cannot be empty.", nameof(name));
+            }
+            if (name.Length > 255)
+            {
+                throw new ArgumentException("Organization name cannot exceed 255 characters.", nameof(name));
+            }
+            Name = name.Trim();
+        }
+
+        // Validate and update other fields
+        if (email?.Length > 255)
+        {
+            throw new ArgumentException("Email cannot exceed 255 characters.", nameof(email));
+        }
+        if (phone?.Length > 50)
+        {
+            throw new ArgumentException("Phone cannot exceed 50 characters.", nameof(phone));
+        }
+        if (address?.Length > 255)
+        {
+            throw new ArgumentException("Address cannot exceed 255 characters.", nameof(address));
+        }
+        if (city?.Length > 100)
+        {
+            throw new ArgumentException("City cannot exceed 100 characters.", nameof(city));
+        }
+        if (postalCode?.Length > 20)
+        {
+            throw new ArgumentException("Postal code cannot exceed 20 characters.", nameof(postalCode));
+        }
+        if (country?.Length > 100)
+        {
+            throw new ArgumentException("Country cannot exceed 100 characters.", nameof(country));
+        }
+
+        Email = email?.Trim();
+        Phone = phone?.Trim();
+        Address = address?.Trim();
+        City = city?.Trim();
+        PostalCode = postalCode?.Trim();
+        Country = country?.Trim();
+        Notes = notes?.Trim();
+    }
+
+    /// <summary>
+    /// Marks the organization as deleted (soft delete).
+    /// </summary>
+    /// <param name="deletedByUserId">The ID of the user performing the deletion.</param>
+    public void Delete(Guid deletedByUserId)
+    {
+        SetDeletedAudit(deletedByUserId);
+        RaiseDomainEvent(new OrganizationDeletedEvent(Id, Name));
+    }
+
+    /// <summary>
     /// Renews the organization's contract.
     /// </summary>
     /// <param name="newEndDate">The new contract end date.</param>

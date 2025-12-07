@@ -3,7 +3,22 @@
 .editOrg__form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2rem;
+}
+
+.editOrg__section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.editOrg__section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .editOrg__field {
@@ -11,8 +26,49 @@
   flex-direction: column;
 }
 
+.editOrg__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
 .editOrg__footer {
   display: flex;
   gap: 0.75rem;
   justify-content: flex-end;
+}
+
+.editOrg__label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.editOrg__textarea {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.editOrg__textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.editOrg__textarea:disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .editOrg__grid {
+    grid-template-columns: 1fr;
+  }
 }
