@@ -89,7 +89,7 @@ export const useCreateTicket = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: CreateTicketRequest) => ({ id: 'mock', ...data } as TicketDto),
+    mutationFn: async (data: CreateTicketRequest) => ({ id: 'mock', ...data }) as TicketDto,
     onSuccess: () => {
       // Invalidate ticket lists to refetch with new ticket
       queryClient.invalidateQueries({ queryKey: ticketKeys.lists() });
@@ -102,8 +102,8 @@ export const useCreateTicket = () => {
  */
 export const useUpdateTicket = () => {
   const queryClient = useQueryClient();
-  return useMutation({ 
-    mutationFn: async (_data: { id: string; data: unknown }) => ({} as TicketDto),
+  return useMutation({
+    mutationFn: async (_data: { id: string; data: unknown }) => ({}) as TicketDto,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ticketKeys.lists() });
     },
@@ -115,8 +115,11 @@ export const useUpdateTicket = () => {
  */
 export const useChangeTicketStatus = () => {
   const queryClient = useQueryClient();
-  return useMutation({ 
-    mutationFn: async (_data: { id: string; data: { newStatus: string; justification?: string } }) => {},
+  return useMutation({
+    mutationFn: async (_data: {
+      id: string;
+      data: { newStatus: string; justification?: string };
+    }) => {},
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ticketKeys.lists() });
     },
@@ -128,7 +131,7 @@ export const useChangeTicketStatus = () => {
  */
 export const useAssignTicket = () => {
   const queryClient = useQueryClient();
-  return useMutation({ 
+  return useMutation({
     mutationFn: async (_data: { id: string; data: { serviceUserId?: string } }) => {},
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ticketKeys.lists() });
@@ -141,7 +144,7 @@ export const useAssignTicket = () => {
  */
 export const useBulkAssignTickets = () => {
   const queryClient = useQueryClient();
-  return useMutation({ 
+  return useMutation({
     mutationFn: async () => {},
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ticketKeys.lists() });
@@ -154,7 +157,7 @@ export const useBulkAssignTickets = () => {
  */
 export const useBulkChangeStatus = () => {
   const queryClient = useQueryClient();
-  return useMutation({ 
+  return useMutation({
     mutationFn: async () => {},
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ticketKeys.lists() });

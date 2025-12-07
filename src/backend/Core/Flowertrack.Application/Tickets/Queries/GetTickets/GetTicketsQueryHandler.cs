@@ -14,6 +14,7 @@ public sealed class GetTicketsQueryHandler : IRequestHandler<GetTicketsQuery, Re
     private readonly IOrganizationRepository _organizationRepository;
     private readonly IMachineRepository _machineRepository;
     private readonly IOrganizationUserRepository _organizationUserRepository;
+    private readonly IServiceUserRepository _serviceUserRepository;
     private readonly ILogger<GetTicketsQueryHandler> _logger;
 
     public GetTicketsQueryHandler(
@@ -21,12 +22,14 @@ public sealed class GetTicketsQueryHandler : IRequestHandler<GetTicketsQuery, Re
         IOrganizationRepository organizationRepository,
         IMachineRepository machineRepository,
         IOrganizationUserRepository organizationUserRepository,
+        IServiceUserRepository serviceUserRepository,
         ILogger<GetTicketsQueryHandler> logger)
     {
         _ticketRepository = ticketRepository;
         _organizationRepository = organizationRepository;
         _machineRepository = machineRepository;
         _organizationUserRepository = organizationUserRepository;
+        _serviceUserRepository = serviceUserRepository;
         _logger = logger;
     }
 
@@ -49,24 +52,41 @@ public sealed class GetTicketsQueryHandler : IRequestHandler<GetTicketsQuery, Re
 
             var pageNumber = Math.Max(request.PageNumber, 1);
 
-            // Get user's organizations to determine access
-            var userOrganizations = await _organizationUserRepository.GetByIdAsync(
-                request.RequestedBy,
-                cancellationToken);
+            // Check if user is a Service User
+            var serviceUser = await _serviceUserRepository.GetByIdAsync(request.RequestedBy, cancellationToken);
+            Guid? userOrganizationId = null;
 
-            if (userOrganizations == null)
+            if (serviceUser == null)
             {
-                _logger.LogWarning("User {UserId} not found", request.RequestedBy);
-                return Result.Failure<PagedResult<TicketListItemDto>>("User not found");
+                // If not service user, check organization user
+                var userOrganizations = await _organizationUserRepository.GetByIdAsync(
+                    request.RequestedBy,
+                    cancellationToken);
+
+                if (userOrganizations == null)
+                {
+                    _logger.LogWarning("User {UserId} not found", request.RequestedBy);
+                    return Result.Failure<PagedResult<TicketListItemDto>>("User not found");
+                }
+
+                userOrganizationId = userOrganizations.OrganizationId;
             }
 
             // Get all tickets (filtered by access)
             var allTickets = await _ticketRepository.GetAllAsync(cancellationToken);
 
+            var query = allTickets.AsQueryable();
+
             // Filter by organization access (user can only see tickets from their organization)
-            var query = allTickets
-                .Where(t => !t.IsDeleted && t.OrganizationId == userOrganizations.OrganizationId)
-                .AsQueryable();
+            if (userOrganizationId.HasValue)
+            {
+                query = query.Where(t => !t.IsDeleted && t.OrganizationId == userOrganizationId.Value);
+            }
+            else
+            {
+                // Service users see all non-deleted tickets
+                query = query.Where(t => !t.IsDeleted);
+            }
 
             // Apply filters
             if (request.OrganizationId.HasValue)

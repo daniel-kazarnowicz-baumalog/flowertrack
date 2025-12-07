@@ -45,9 +45,7 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
  */
 function getSystemTheme(): ResolvedTheme {
   if (typeof window !== 'undefined') {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
   return 'light';
 }
@@ -90,10 +88,7 @@ function applyTheme(resolvedTheme: ResolvedTheme): void {
     // Opcjonalnie: meta tag dla mobile browsers
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
-      metaThemeColor.setAttribute(
-        'content',
-        resolvedTheme === 'dark' ? '#0f172a' : '#ffffff'
-      );
+      metaThemeColor.setAttribute('content', resolvedTheme === 'dark' ? '#0f172a' : '#ffffff');
     }
   }
 }
@@ -214,9 +209,7 @@ export function ThemeProvider({
     [theme, resolvedTheme, setTheme, toggleTheme, isLoading, forcedTheme]
   );
 
-  return (
-    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
 /**

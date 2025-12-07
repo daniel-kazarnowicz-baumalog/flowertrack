@@ -15,6 +15,9 @@ interface TicketTableProps {
   showOrganization?: boolean;
   showAssignee?: boolean;
   basePath: string; // '/service/tickets' or '/client/tickets'
+  onSort?: (field: string) => void;
+  sortField?: string;
+  sortDirection?: 'asc' | 'desc';
 }
 
 export const TicketTable: React.FC<TicketTableProps> = ({
@@ -24,6 +27,9 @@ export const TicketTable: React.FC<TicketTableProps> = ({
   showOrganization = false,
   showAssignee = false,
   basePath,
+  onSort,
+  sortField,
+  sortDirection,
 }) => {
   const navigate = useNavigate();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -47,6 +53,17 @@ export const TicketTable: React.FC<TicketTableProps> = ({
       return;
     }
     navigate(`${basePath}/${ticketId}`);
+  };
+
+  const renderSortIcon = (field: string) => {
+    if (sortField !== field) return <span className="ticketTable__sortIcon">↕</span>;
+    return <span className="ticketTable__sortIcon">{sortDirection === 'asc' ? '↑' : '↓'}</span>;
+  };
+
+  const handleSort = (field: string) => {
+    if (onSort) {
+      onSort(field);
+    }
   };
 
   if (isLoading) {
@@ -103,14 +120,37 @@ export const TicketTable: React.FC<TicketTableProps> = ({
                   />
                 </th>
               )}
-              <th>Numer</th>
-              <th>Tytuł</th>
-              <th>Status</th>
-              <th>Priorytet</th>
-              {showOrganization && <th>Organizacja</th>}
-              <th>Maszyna</th>
-              {showAssignee && <th>Przypisane do</th>}
-              <th>Utworzono</th>
+              <th onClick={() => handleSort('ticketNumber')} className="ticketTable__sortable">
+                Numer {renderSortIcon('ticketNumber')}
+              </th>
+              <th onClick={() => handleSort('title')} className="ticketTable__sortable">
+                Tytuł {renderSortIcon('title')}
+              </th>
+              <th onClick={() => handleSort('status')} className="ticketTable__sortable">
+                Status {renderSortIcon('status')}
+              </th>
+              <th onClick={() => handleSort('priority')} className="ticketTable__sortable">
+                Priorytet {renderSortIcon('priority')}
+              </th>
+              {showOrganization && (
+                <th
+                  onClick={() => handleSort('organizationName')}
+                  className="ticketTable__sortable"
+                >
+                  Organizacja {renderSortIcon('organizationName')}
+                </th>
+              )}
+              <th onClick={() => handleSort('machineModel')} className="ticketTable__sortable">
+                Maszyna {renderSortIcon('machineModel')}
+              </th>
+              {showAssignee && (
+                <th onClick={() => handleSort('assignedToName')} className="ticketTable__sortable">
+                  Przypisane do {renderSortIcon('assignedToName')}
+                </th>
+              )}
+              <th onClick={() => handleSort('createdAt')} className="ticketTable__sortable">
+                Utworzono {renderSortIcon('createdAt')}
+              </th>
             </tr>
           </thead>
           <tbody>

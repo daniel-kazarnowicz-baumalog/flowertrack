@@ -100,24 +100,23 @@ export const serviceUserService = {
   async getServiceUsers(params?: ServiceUsersFilters): Promise<PaginatedResponse<ServiceUser>> {
     // @obsolete DEV ONLY - Mock data
     if (isMockSession()) {
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
       let users = getMockServiceUsers();
-      
+
       // Apply filters
       if (params?.searchTerm) {
         const search = params.searchTerm.toLowerCase();
-        users = users.filter(u => 
-          u.fullName.toLowerCase().includes(search) ||
-          u.email.toLowerCase().includes(search)
+        users = users.filter(
+          (u) => u.fullName.toLowerCase().includes(search) || u.email.toLowerCase().includes(search)
         );
       }
       if (params?.role && params.role !== 'All') {
-        users = users.filter(u => u.role === params.role);
+        users = users.filter((u) => u.role === params.role);
       }
       if (params?.status && params.status !== 'All') {
-        users = users.filter(u => u.status === params.status);
+        users = users.filter((u) => u.status === params.status);
       }
-      
+
       return {
         items: users,
         totalCount: users.length,
@@ -127,7 +126,7 @@ export const serviceUserService = {
       };
     }
 
-    const { data } = await apiClient.get<PaginatedResponse<ServiceUser>>('/service-users', {
+    const { data } = await apiClient.get<PaginatedResponse<ServiceUser>>('/admin/users/service', {
       params,
     });
     return data;
@@ -139,7 +138,7 @@ export const serviceUserService = {
   async inviteServiceUser(request: InviteServiceUserRequest): Promise<ServiceUser> {
     // @obsolete DEV ONLY - Mock data
     if (isMockSession()) {
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       return {
         id: 'mock-user-' + Date.now(),
         email: request.email,
@@ -166,9 +165,9 @@ export const serviceUserService = {
   ): Promise<ServiceUser> {
     // @obsolete DEV ONLY - Mock data
     if (isMockSession()) {
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
       const users = getMockServiceUsers();
-      const user = users.find(u => u.id === userId) || users[0];
+      const user = users.find((u) => u.id === userId) || users[0];
       return { ...user, role: request.role };
     }
 
@@ -185,16 +184,13 @@ export const serviceUserService = {
   ): Promise<ServiceUser> {
     // @obsolete DEV ONLY - Mock data
     if (isMockSession()) {
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
       const users = getMockServiceUsers();
-      const user = users.find(u => u.id === userId) || users[0];
+      const user = users.find((u) => u.id === userId) || users[0];
       return { ...user, status: request.status };
     }
 
-    const { data } = await apiClient.put<ServiceUser>(
-      `/service-users/${userId}/status`,
-      request
-    );
+    const { data } = await apiClient.put<ServiceUser>(`/service-users/${userId}/status`, request);
     return data;
   },
   /**
@@ -203,7 +199,7 @@ export const serviceUserService = {
   async resetUserPassword(userId: string): Promise<{ temporaryPassword: string }> {
     // @obsolete DEV ONLY - Mock data
     if (isMockSession()) {
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       return { temporaryPassword: 'TempPass123!' + userId.slice(-4) };
     }
 

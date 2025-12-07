@@ -177,6 +177,8 @@ export interface TicketFilters {
   search?: string;
   page?: number;
   pageSize?: number;
+  sortBy?: string;
+  sortDirection?: 'asc' | 'desc';
 }
 
 export interface TicketGroupedByStatus {

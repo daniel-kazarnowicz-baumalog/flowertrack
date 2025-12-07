@@ -20,7 +20,9 @@ const NotFound = () => {
           color: 'white',
         }}
       >
-        <h1 style={{ fontSize: '6rem', fontWeight: '800', marginBottom: '1rem' }}>{t('notFound.title')}</h1>
+        <h1 style={{ fontSize: '6rem', fontWeight: '800', marginBottom: '1rem' }}>
+          {t('notFound.title')}
+        </h1>
         <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>{t('notFound.heading')}</h2>
         <p style={{ fontSize: '1.25rem', marginBottom: '2rem', opacity: 0.9 }}>
           {t('notFound.description')}

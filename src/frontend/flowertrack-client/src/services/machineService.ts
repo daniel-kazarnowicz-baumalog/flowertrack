@@ -28,25 +28,25 @@ export const machineService = {
   }): Promise<PaginatedResponse<MachineDto>> => {
     // @obsolete DEV ONLY - Mock data
     if (isMockSession()) {
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
       const mockData = getMockMachines();
       let items = [...mockData.items];
-      
+
       // Apply filters
       if (params?.search) {
         const search = params.search.toLowerCase();
-        items = items.filter(m => 
-          m.name.toLowerCase().includes(search) ||
-          m.serialNumber.toLowerCase().includes(search)
+        items = items.filter(
+          (m) =>
+            m.name.toLowerCase().includes(search) || m.serialNumber.toLowerCase().includes(search)
         );
       }
       if (params?.status) {
-        items = items.filter(m => m.status === params.status);
+        items = items.filter((m) => m.status === params.status);
       }
       if (params?.organizationId) {
-        items = items.filter(m => m.organizationId === params.organizationId);
+        items = items.filter((m) => m.organizationId === params.organizationId);
       }
-      
+
       return {
         items: items as unknown as MachineDto[],
         totalCount: items.length,
@@ -83,9 +83,9 @@ export const machineService = {
   ): Promise<PaginatedResponse<MachineDto>> => {
     // @obsolete DEV ONLY - Mock data
     if (isMockSession()) {
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
       const mockData = getMockMachines();
-      const items = mockData.items.filter(m => m.organizationId === organizationId);
+      const items = mockData.items.filter((m) => m.organizationId === organizationId);
       return {
         items: items as unknown as MachineDto[],
         totalCount: items.length,
@@ -114,9 +114,9 @@ export const machineService = {
   getMachine: async (id: string): Promise<MachineDto> => {
     // @obsolete DEV ONLY - Mock data
     if (isMockSession()) {
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, 200));
       const mockData = getMockMachines();
-      const machine = mockData.items.find(m => m.id === id) || mockData.items[0];
+      const machine = mockData.items.find((m) => m.id === id) || mockData.items[0];
       return machine as unknown as MachineDto;
     }
 
@@ -130,7 +130,7 @@ export const machineService = {
   createMachine: async (data: CreateMachineRequest): Promise<MachineDto> => {
     // @obsolete DEV ONLY - Mock data
     if (isMockSession()) {
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       return {
         id: 'mock-machine-' + Date.now(),
         ...data,
@@ -149,7 +149,7 @@ export const machineService = {
   updateMachine: async (id: string, data: UpdateMachineRequest): Promise<MachineDto> => {
     // @obsolete DEV ONLY - Mock data
     if (isMockSession()) {
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
       return { id, ...data } as unknown as MachineDto;
     }
 
@@ -166,7 +166,7 @@ export const machineService = {
   ): Promise<MachineDto> => {
     // @obsolete DEV ONLY - Mock data
     if (isMockSession()) {
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
       return { id, status: data.status } as unknown as MachineDto;
     }
 
@@ -180,7 +180,7 @@ export const machineService = {
   deleteMachine: async (id: string): Promise<void> => {
     // @obsolete DEV ONLY - Mock data
     if (isMockSession()) {
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
       console.log('Mock delete machine:', id);
       return;
     }

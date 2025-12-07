@@ -37,7 +37,7 @@ export const getTickets = async (
     // Filter the mock data if needed, or just return all for checking
     const mockData = getMockTickets();
     // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
     return mockData as PaginatedResponse<TicketDto>;
   }
 
@@ -68,11 +68,20 @@ export const getTickets = async (
   if (filters.pageSize) {
     params.append('pageSize', filters.pageSize.toString());
   }
+  if (filters.sortBy) {
+    params.append('sortBy', filters.sortBy);
+  }
+  if (filters.sortDirection) {
+    params.append('sortDirection', filters.sortDirection);
+  }
 
   const response = await apiClient.get<PaginatedResponse<TicketDto>>(
     `/tickets?${params.toString()}`
   );
-  return response.data;
+  return {
+    ...response.data,
+    items: response.data.items.map(mapTicketEnums),
+  };
 };
 
 /**
@@ -81,14 +90,14 @@ export const getTickets = async (
 export const getTicketById = async (id: string): Promise<TicketDto> => {
   // @obsolete DEV ONLY - Mock data
   if (isMockSession()) {
-    await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 300));
     const mockData = getMockTickets();
-    const ticket = mockData.items.find(t => t.id === id) || mockData.items[0];
+    const ticket = mockData.items.find((t) => t.id === id) || mockData.items[0];
     return ticket as TicketDto;
   }
 
   const response = await apiClient.get<TicketDto>(`/tickets/${id}`);
-  return response.data;
+  return mapTicketEnums(response.data);
 };
 
 /**
@@ -97,7 +106,7 @@ export const getTicketById = async (id: string): Promise<TicketDto> => {
 export const createTicket = async (data: CreateTicketRequest): Promise<TicketDto> => {
   // @obsolete DEV ONLY - Mock data
   if (isMockSession()) {
-    await new Promise(resolve => setTimeout(resolve, 800));
+    await new Promise((resolve) => setTimeout(resolve, 800));
     const mockData = getMockTickets();
     return {
       ...mockData.items[0],
@@ -106,7 +115,7 @@ export const createTicket = async (data: CreateTicketRequest): Promise<TicketDto
       description: data.description,
       priority: data.priority,
       createdAt: new Date().toISOString(),
-      status: 'New'
+      status: 'New',
     } as TicketDto;
   }
 
@@ -300,3 +309,32 @@ export default {
   bulkAssignTickets,
   bulkChangeStatus,
 };
+
+/**
+ * Map backend integer enums to frontend string unions
+ */
+function mapTicketEnums(ticket: any): TicketDto {
+  const statusMap: Record<number, string> = {
+    0: 'New',
+    1: 'Accepted',
+    2: 'InProgress',
+    3: 'Resolved',
+    4: 'Closed',
+    5: 'Reopened',
+  };
+  const priorityMap: Record<number, string> = {
+    0: 'Low',
+    1: 'Medium',
+    2: 'High',
+    3: 'Critical',
+  };
+
+  return {
+    ...ticket,
+    status: typeof ticket.status === 'number' ? statusMap[ticket.status] || 'New' : ticket.status,
+    priority:
+      typeof ticket.priority === 'number'
+        ? priorityMap[ticket.priority] || 'Medium'
+        : ticket.priority,
+  };
+}

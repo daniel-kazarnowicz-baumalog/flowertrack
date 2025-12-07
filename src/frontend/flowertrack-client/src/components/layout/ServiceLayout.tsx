@@ -25,11 +25,17 @@ export const ServiceLayout = () => {
         <nav className="serviceLayout__nav">
           <div className="serviceLayout__navSection">
             <h3 className="serviceLayout__navTitle">Main</h3>
-            <NavLink to="/service/dashboard" className={({ isActive }) => `serviceLayout__navLink ${isActive ? 'active' : ''}`}>
+            <NavLink
+              to="/service/dashboard"
+              className={({ isActive }) => `serviceLayout__navLink ${isActive ? 'active' : ''}`}
+            >
               <span className="icon">📊</span>
               <span className="text">Dashboard</span>
             </NavLink>
-            <NavLink to="/service/tickets" className={({ isActive }) => `serviceLayout__navLink ${isActive ? 'active' : ''}`}>
+            <NavLink
+              to="/service/tickets"
+              className={({ isActive }) => `serviceLayout__navLink ${isActive ? 'active' : ''}`}
+            >
               <span className="icon">🎫</span>
               <span className="text">Zgłoszenia</span>
             </NavLink>
@@ -37,15 +43,24 @@ export const ServiceLayout = () => {
 
           <div className="serviceLayout__navSection">
             <h3 className="serviceLayout__navTitle">Manage</h3>
-            <NavLink to="/service/organizations" className={({ isActive }) => `serviceLayout__navLink ${isActive ? 'active' : ''}`}>
+            <NavLink
+              to="/service/organizations"
+              className={({ isActive }) => `serviceLayout__navLink ${isActive ? 'active' : ''}`}
+            >
               <span className="icon">🏢</span>
               <span className="text">Klienci</span>
             </NavLink>
-            <NavLink to="/service/machines" className={({ isActive }) => `serviceLayout__navLink ${isActive ? 'active' : ''}`}>
+            <NavLink
+              to="/service/machines"
+              className={({ isActive }) => `serviceLayout__navLink ${isActive ? 'active' : ''}`}
+            >
               <span className="icon">🏭</span>
               <span className="text">Maszyny</span>
             </NavLink>
-            <NavLink to="/service/users" className={({ isActive }) => `serviceLayout__navLink ${isActive ? 'active' : ''}`}>
+            <NavLink
+              to="/service/users"
+              className={({ isActive }) => `serviceLayout__navLink ${isActive ? 'active' : ''}`}
+            >
               <span className="icon">👥</span>
               <span className="text">Zespól</span>
             </NavLink>

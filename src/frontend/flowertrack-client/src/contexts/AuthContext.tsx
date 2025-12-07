@@ -103,7 +103,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const mockUser: User = {
       id: 'mock-user-' + Date.now(),
       email: role === 'client' ? 'testclient@demo.pl' : 'testserwis@demo.pl',
-      role: role,
+      role,
       name: role === 'client' ? 'Test Klient' : 'Test Serwisant',
       fullName: role === 'client' ? 'Test Klient' : 'Test Serwisant',
       firstName: 'Test',

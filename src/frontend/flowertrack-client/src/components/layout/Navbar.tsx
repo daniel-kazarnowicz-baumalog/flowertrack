@@ -26,7 +26,7 @@ export function Navbar({ portal }: NavbarProps) {
   }
 
   const isService = portal === 'service';
-  
+
   // Get user display name
   const getUserName = (u: User): string => {
     if (u.fullName) return u.fullName;
@@ -34,7 +34,7 @@ export function Navbar({ portal }: NavbarProps) {
     if (u.name) return u.name;
     return u.email;
   };
-  
+
   const userName = getUserName(user);
   const isAdmin = user.isAdmin || false;
 

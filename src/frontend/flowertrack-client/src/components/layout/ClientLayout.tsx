@@ -23,15 +23,24 @@ export const ClientLayout = () => {
         </Link>
 
         <nav className="clientLayout__nav">
-          <NavLink to="/client/dashboard" className={({ isActive }) => `clientLayout__navLink ${isActive ? 'active' : ''}`}>
+          <NavLink
+            to="/client/dashboard"
+            className={({ isActive }) => `clientLayout__navLink ${isActive ? 'active' : ''}`}
+          >
             <span className="icon">📊</span>
             <span className="text">Pulpit</span>
           </NavLink>
-          <NavLink to="/client/tickets" className={({ isActive }) => `clientLayout__navLink ${isActive ? 'active' : ''}`}>
+          <NavLink
+            to="/client/tickets"
+            className={({ isActive }) => `clientLayout__navLink ${isActive ? 'active' : ''}`}
+          >
             <span className="icon">🎫</span>
             <span className="text">Zgłoszenia</span>
           </NavLink>
-          <NavLink to="/client/team" className={({ isActive }) => `clientLayout__navLink ${isActive ? 'active' : ''}`}>
+          <NavLink
+            to="/client/team"
+            className={({ isActive }) => `clientLayout__navLink ${isActive ? 'active' : ''}`}
+          >
             <span className="icon">👥</span>
             <span className="text">Mój Zespół</span>
           </NavLink>
@@ -59,7 +68,10 @@ export const ClientLayout = () => {
           >
             ☰
           </button>
-          <div className="clientLayout__headerActions" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div
+            className="clientLayout__headerActions"
+            style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}
+          >
             <span className="clientLayout__welcome">Witaj, {user?.name}</span>
             <ThemeSwitcher variant="buttons" />
           </div>

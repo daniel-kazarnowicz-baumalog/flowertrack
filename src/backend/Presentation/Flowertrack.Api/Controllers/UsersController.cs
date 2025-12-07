@@ -22,7 +22,7 @@ namespace Flowertrack.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/admin/users")]
-[Authorize(Roles = "ServiceAdministrator")]
+[Authorize]
 public class UsersController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -41,6 +41,7 @@ public class UsersController : ControllerBase
     /// US-032: Dodawanie nowego serwisanta
     /// </summary>
     [HttpPost("service/invite")]
+    [Authorize(Roles = "ServiceAdministrator")]
     [ProducesResponseType(typeof(InvitationResponse), StatusCodes.Status202Accepted)]
     [ProducesResponseType(typeof(ValidationErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
@@ -77,6 +78,7 @@ public class UsersController : ControllerBase
     /// Get all service users
     /// </summary>
     [HttpGet("service")]
+    [Authorize(Roles = "ServiceAdministrator,ServiceTechnician")]
     [ProducesResponseType(typeof(List<ServiceUserDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
@@ -100,6 +102,7 @@ public class UsersController : ControllerBase
     /// Get service user details
     /// </summary>
     [HttpGet("service/{id:guid}")]
+    [Authorize(Roles = "ServiceAdministrator,ServiceTechnician")]
     [ProducesResponseType(typeof(ServiceUserDetailsResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
@@ -140,6 +143,7 @@ public class UsersController : ControllerBase
     /// US-031: Statystyki serwisanta (tickets assigned, resolved, avg resolution time)
     /// </summary>
     [HttpGet("service/{id:guid}/stats")]
+    [Authorize(Roles = "ServiceAdministrator,ServiceTechnician")]
     [ProducesResponseType(typeof(ServiceUserStatsResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
@@ -179,6 +183,7 @@ public class UsersController : ControllerBase
     /// Update service user
     /// </summary>
     [HttpPatch("service/{id:guid}")]
+    [Authorize(Roles = "ServiceAdministrator")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
@@ -211,6 +216,7 @@ public class UsersController : ControllerBase
     /// Deactivate service user
     /// </summary>
     [HttpPost("service/{id:guid}/deactivate")]
+    [Authorize(Roles = "ServiceAdministrator")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
@@ -236,6 +242,7 @@ public class UsersController : ControllerBase
     /// Reactivate service user
     /// </summary>
     [HttpPost("service/{id:guid}/reactivate")]
+    [Authorize(Roles = "ServiceAdministrator")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
@@ -260,6 +267,7 @@ public class UsersController : ControllerBase
     /// Reset service user password
     /// </summary>
     [HttpPost("service/{id:guid}/reset-password")]
+    [Authorize(Roles = "ServiceAdministrator")]
     [ProducesResponseType(typeof(ResetPasswordResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
@@ -284,6 +292,7 @@ public class UsersController : ControllerBase
     /// Get organization users
     /// </summary>
     [HttpGet("organization/{organizationId:guid}")]
+    [Authorize(Roles = "ServiceAdministrator,ServiceTechnician")]
     [ProducesResponseType(typeof(List<OrganizationUserDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
@@ -307,6 +316,7 @@ public class UsersController : ControllerBase
     /// Get organization user details
     /// </summary>
     [HttpGet("organization/{organizationId:guid}/users/{id:guid}")]
+    [Authorize(Roles = "ServiceAdministrator,ServiceTechnician")]
     [ProducesResponseType(typeof(OrganizationUserDetailsResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
@@ -344,6 +354,7 @@ public class UsersController : ControllerBase
     /// Remove organization user
     /// </summary>
     [HttpDelete("organization/{organizationId:guid}/users/{id:guid}")]
+    [Authorize(Roles = "ServiceAdministrator")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]

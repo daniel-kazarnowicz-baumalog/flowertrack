@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import {
@@ -14,6 +14,7 @@ import {
   useAssignTicket,
   useTicketHistory,
 } from '../../hooks/useTickets';
+import { useServiceUsers } from '../../hooks/useServiceUsers';
 import { useToast } from '../../hooks/useToast';
 import {
   Timeline,
@@ -30,13 +31,6 @@ import type { TicketStatus } from '../../types/api';
 import styles from './ServiceTicketDetailPage.module.css';
 
 type TabType = 'overview' | 'timeline' | 'comments' | 'attachments';
-
-// Mock service users - TODO: Replace with real API call
-const MOCK_SERVICE_USERS = [
-  { id: '1', fullName: 'Jan Kowalski', email: 'jan@flowertrack.dev', role: 'Technician' },
-  { id: '2', fullName: 'Anna Nowak', email: 'anna@flowertrack.dev', role: 'Technician' },
-  { id: '3', fullName: 'Piotr Wiśniewski', email: 'piotr@flowertrack.dev', role: 'Admin' },
-];
 
 export const ServiceTicketDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -55,6 +49,7 @@ export const ServiceTicketDetailPage: React.FC = () => {
 
   const { data: ticket, isLoading: isLoadingTicket } = useTicket(id || '');
   const { data: history, isLoading: isLoadingHistory } = useTicketHistory(id || '');
+  const { data: serviceUsersData, isLoading: isLoadingUsers } = useServiceUsers();
   const updateMutation = useUpdateTicket();
   const changeStatusMutation = useChangeTicketStatus();
   const assignMutation = useAssignTicket();
@@ -64,7 +59,7 @@ export const ServiceTicketDetailPage: React.FC = () => {
 
     try {
       await changeStatusMutation.mutateAsync({
-        id: id,
+        id,
         data: {
           newStatus: newStatus as string,
           justification,
@@ -82,7 +77,7 @@ export const ServiceTicketDetailPage: React.FC = () => {
 
     try {
       await assignMutation.mutateAsync({
-        id: id,
+        id,
         data: {
           serviceUserId: userId,
         },
@@ -116,7 +111,7 @@ export const ServiceTicketDetailPage: React.FC = () => {
 
     try {
       await updateMutation.mutateAsync({
-        id: id,
+        id,
         data: {
           title: editTitle,
           description: editDescription,
@@ -274,12 +269,21 @@ export const ServiceTicketDetailPage: React.FC = () => {
                     </div>
                     <div className={styles.infoRow}>
                       <span className={styles.label}>Organizacja:</span>
-                      <span className={styles.value}>{ticket.organizationName}</span>
+                      <span className={styles.value}>
+                        <Link
+                          to={`/service/organizations/${ticket.organizationId}`}
+                          className={styles.link}
+                        >
+                          {ticket.organizationName}
+                        </Link>
+                      </span>
                     </div>
                     <div className={styles.infoRow}>
                       <span className={styles.label}>Maszyna:</span>
                       <span className={styles.value}>
-                        {ticket.machineModel} (S/N: {ticket.machineSerialNumber})
+                        <Link to={`/service/machines/${ticket.machineId}`} className={styles.link}>
+                          {ticket.machineModel} (S/N: {ticket.machineSerialNumber})
+                        </Link>
                       </span>
                     </div>
                     <div className={styles.infoRow}>
@@ -365,10 +369,10 @@ export const ServiceTicketDetailPage: React.FC = () => {
         isOpen={isAssignmentModalOpen}
         onClose={() => setIsAssignmentModalOpen(false)}
         currentAssigneeId={ticket.assignedToId}
-        serviceUsers={MOCK_SERVICE_USERS}
+        serviceUsers={serviceUsersData?.items || []}
         onConfirm={handleAssignment}
         isLoading={assignMutation.isPending}
-        isFetchingUsers={false}
+        isFetchingUsers={isLoadingUsers}
       />
     </div>
   );

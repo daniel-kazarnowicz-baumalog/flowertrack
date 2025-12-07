@@ -247,3 +247,12 @@
     padding: 0.625rem 0.75rem;
   }
 }
+
+.link {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}

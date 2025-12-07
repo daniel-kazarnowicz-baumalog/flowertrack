@@ -97,3 +97,48 @@
     gap: var(--space-6);
   }
 }
+
+/* Bottom Grid Section */
+.serviceDashboard__bottomGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.serviceDashboard__activitySection {
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  height: 100%;
+}
+
+.serviceDashboard__listSection {
+  height: 100%;
+}
+
+.serviceDashboard__sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 1200px) {
+  .serviceDashboard__bottomGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .serviceDashboard__activitySection {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .serviceDashboard__bottomGrid {
+    grid-template-columns: 1fr;
+  }
+  .serviceDashboard__activitySection {
+    grid-column: span 1;
+  }
+}

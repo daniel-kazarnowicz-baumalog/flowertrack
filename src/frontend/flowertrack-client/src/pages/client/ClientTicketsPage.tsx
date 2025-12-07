@@ -61,22 +61,26 @@ export const ClientTicketsPage: React.FC = () => {
         ) : data?.items && data.items.length > 0 ? (
           <div className="clientTicketsPage__list">
             {data.items.map((ticket) => (
-              <Card 
-                key={ticket.id} 
-                hoverable 
+              <Card
+                key={ticket.id}
+                hoverable
                 onClick={() => navigate(`/client/tickets/${ticket.id}`)}
               >
                 <div className="ticketCard">
                   <div className="ticketCard__header">
                     <span className="ticketCard__number">{ticket.ticketNumber}</span>
-                    <span className={`ticketCard__priority ticketCard__priority--${ticket.priority?.toLowerCase()}`}>
+                    <span
+                      className={`ticketCard__priority ticketCard__priority--${ticket.priority?.toLowerCase()}`}
+                    >
                       {ticket.priority}
                     </span>
                   </div>
                   <h3 className="ticketCard__title">{ticket.title}</h3>
                   <p className="ticketCard__description">{ticket.description}</p>
                   <div className="ticketCard__footer">
-                    <span className={`ticketCard__status ticketCard__status--${ticket.status?.toLowerCase().replace(' ', '-')}`}>
+                    <span
+                      className={`ticketCard__status ticketCard__status--${ticket.status?.toLowerCase().replace(' ', '-')}`}
+                    >
                       {ticket.status}
                     </span>
                     <span className="ticketCard__date">
@@ -100,18 +104,16 @@ export const ClientTicketsPage: React.FC = () => {
 
         {data && data.totalPages > 1 && (
           <div className="clientTicketsPage__pagination">
-            <Button 
-              variant="ghost" 
-              disabled={page <= 1}
-              onClick={() => setPage(p => p - 1)}
-            >
+            <Button variant="ghost" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
               ← Poprzednia
             </Button>
-            <span>Strona {page} z {data.totalPages}</span>
-            <Button 
-              variant="ghost" 
+            <span>
+              Strona {page} z {data.totalPages}
+            </span>
+            <Button
+              variant="ghost"
               disabled={page >= data.totalPages}
-              onClick={() => setPage(p => p + 1)}
+              onClick={() => setPage((p) => p + 1)}
             >
               Następna →
             </Button>

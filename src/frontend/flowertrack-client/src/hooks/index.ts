@@ -1,91 +1,87 @@
 // Export all custom hooks
 
 // Attachments
-export { 
+export {
   attachmentKeys,
-  useTicketAttachments, 
-  useUploadAttachment, 
+  useTicketAttachments,
+  useUploadAttachment,
   useDeleteAttachment,
-  downloadAttachmentFile 
+  downloadAttachmentFile,
 } from './useAttachments';
 
 // Comments
-export { 
+export {
   commentKeys,
-  useTicketComments, 
-  useAddComment, 
+  useTicketComments,
+  useAddComment,
   useAddNote,
-  useUpdateComment, 
-  useDeleteComment 
+  useUpdateComment,
+  useDeleteComment,
 } from './useComments';
 
 // Dashboard
-export { 
-  useServiceDashboardStats, 
-  useClientDashboardStats, 
-  useTicketTrends 
-} from './useDashboard';
+export { useServiceDashboardStats, useClientDashboardStats, useTicketTrends } from './useDashboard';
 
 // Machines
-export { 
-  useMachines, 
-  useMachine, 
+export {
+  useMachines,
+  useMachine,
   useMachinesByOrganization,
-  useMachineMutations 
+  useMachineMutations,
 } from './useMachines';
 
 // Organizations
-export { 
-  useOrganizations, 
+export {
+  useOrganizations,
   useOrganization,
   useOrganizationMachines,
   useOrganizationTickets,
-  useOrganizationUsers
+  useOrganizationUsers,
 } from './useOrganizations';
 
 // Service Users
-export { 
-  useServiceUsers, 
-  useInviteServiceUser, 
+export {
+  useServiceUsers,
+  useInviteServiceUser,
   useUpdateServiceUserRole,
-  useUpdateServiceUserStatus 
+  useUpdateServiceUserStatus,
 } from './useServiceUsers';
 
 // Team
-export { 
+export {
   teamKeys,
-  useTeamMembers, 
-  useInviteTeamMember, 
-  useUpdateMemberRole, 
-  useRemoveMember 
+  useTeamMembers,
+  useInviteTeamMember,
+  useUpdateMemberRole,
+  useRemoveMember,
 } from './useTeam';
 
 // Tickets
-export { 
+export {
   ticketKeys,
-  useTickets, 
-  useTicket, 
+  useTickets,
+  useTicket,
   useTicketHistory,
-  useCreateTicket, 
-  useUpdateTicket, 
+  useCreateTicket,
+  useUpdateTicket,
   useChangeTicketStatus,
   useAssignTicket,
   useBulkAssignTickets,
-  useBulkChangeStatus
+  useBulkChangeStatus,
 } from './useTickets';
 
 // Toast
 export { useToast, ToastContext } from './useToast';
 
 // Media query hooks
-export { 
-  useMediaQuery, 
+export {
+  useMediaQuery,
   breakpoints,
-  useIsMobile, 
-  useIsTablet, 
+  useIsMobile,
+  useIsTablet,
   useIsDesktop,
   useIsLargeDesktop,
   usePrefersColorScheme,
   usePrefersReducedMotion,
-  usePrefersContrast
+  usePrefersContrast,
 } from './useMediaQuery';

@@ -97,7 +97,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
   };
 
   const handleRemoveFile = (index: number) => {
-    setFiles(prev => prev.filter((_, i) => i !== index));
+    setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -200,7 +200,9 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
             <div className={styles.fileList}>
               {files.map((file, idx) => (
                 <div key={idx} className={styles.fileItem}>
-                  <span className={styles.fileName}>{file.name} ({(file.size / 1024).toFixed(0)} KB)</span>
+                  <span className={styles.fileName}>
+                    {file.name} ({(file.size / 1024).toFixed(0)} KB)
+                  </span>
                   <button
                     type="button"
                     className={styles.removeFile}

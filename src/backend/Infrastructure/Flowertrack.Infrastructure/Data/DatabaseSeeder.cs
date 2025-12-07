@@ -1,4 +1,5 @@
 using Flowertrack.Domain.Entities;
+using Flowertrack.Domain.Entities.Users;
 using Flowertrack.Domain.Enums;
 using Flowertrack.Domain.ValueObjects;
 using Flowertrack.Infrastructure.Persistence;
@@ -23,6 +24,14 @@ public static class DatabaseSeeder
         {
             // Ensure database is created
             await context.Database.EnsureCreatedAsync();
+
+            // Ensure Roles exist
+            if (!await context.Roles.AnyAsync())
+            {
+                logger.LogInformation("Seeding roles...");
+                await context.Roles.AddRangeAsync(Role.GetAllRoles());
+                await context.SaveChangesAsync();
+            }
 
             // Check if data already exists
             if (await context.Organizations.AnyAsync())
@@ -269,6 +278,7 @@ END $$");
             if (adminAuthUser != null)
             {
                 var existingAdmin = await context.ServiceUsers
+                    .Include(u => u.UserRoles)
                     .FirstOrDefaultAsync(su => su.SupabaseUserId == adminAuthUser.Id);
                 
                 if (existingAdmin == null)
@@ -285,15 +295,22 @@ END $$");
                     typeof(ServiceUser).GetProperty("SupabaseUserId")!.SetValue(adminUser, adminAuthUser.Id);
                     adminUser.Activate();
                     adminUser.SetAvailability(true);
+                    adminUser.AssignRole(Role.ServiceAdministrator.Id);
                     
                     await context.ServiceUsers.AddAsync(adminUser);
                     logger.LogInformation("Admin ServiceUser created and linked.");
+                }
+                else if (!existingAdmin.HasRole(Role.ServiceAdministrator.Id))
+                {
+                    existingAdmin.AssignRole(Role.ServiceAdministrator.Id);
+                    logger.LogInformation("Assigned ServiceAdministrator role to existing Admin user.");
                 }
             }
 
             if (techAuthUser != null)
             {
                 var existingTech = await context.ServiceUsers
+                    .Include(u => u.UserRoles)
                     .FirstOrDefaultAsync(su => su.SupabaseUserId == techAuthUser.Id);
                 
                 if (existingTech == null)
@@ -309,9 +326,15 @@ END $$");
                     typeof(ServiceUser).GetProperty("SupabaseUserId")!.SetValue(techUser, techAuthUser.Id);
                     techUser.Activate();
                     techUser.SetAvailability(true);
+                    techUser.AssignRole(Role.ServiceTechnician.Id);
                     
                     await context.ServiceUsers.AddAsync(techUser);
                     logger.LogInformation("Tech ServiceUser created and linked.");
+                }
+                else if (!existingTech.HasRole(Role.ServiceTechnician.Id))
+                {
+                    existingTech.AssignRole(Role.ServiceTechnician.Id);
+                    logger.LogInformation("Assigned ServiceTechnician role to existing Tech user.");
                 }
             }
 
@@ -319,6 +342,7 @@ END $$");
             if (clientAuthUser != null)
             {
                 var existingClient = await context.OrganizationUsers
+                    .Include(u => u.UserRoles)
                     .FirstOrDefaultAsync(ou => ou.SupabaseUserId == clientAuthUser.Id);
                 
                 if (existingClient == null)
@@ -333,15 +357,22 @@ END $$");
                     
                     typeof(OrganizationUser).GetProperty("SupabaseUserId")!.SetValue(clientUser, clientAuthUser.Id);
                     clientUser.Activate();
+                    clientUser.AssignRole(Role.OrganizationAdministrator.Id);
                     
                     await context.OrganizationUsers.AddAsync(clientUser);
                     logger.LogInformation("Client Admin OrganizationUser created and linked.");
+                }
+                else if (!existingClient.HasRole(Role.OrganizationAdministrator.Id))
+                {
+                    existingClient.AssignRole(Role.OrganizationAdministrator.Id);
+                    logger.LogInformation("Assigned OrganizationAdministrator role to existing Client user.");
                 }
             }
 
             if (operatorAuthUser != null)
             {
                 var existingOperator = await context.OrganizationUsers
+                    .Include(u => u.UserRoles)
                     .FirstOrDefaultAsync(ou => ou.SupabaseUserId == operatorAuthUser.Id);
                 
                 if (existingOperator == null)
@@ -356,9 +387,15 @@ END $$");
                     
                     typeof(OrganizationUser).GetProperty("SupabaseUserId")!.SetValue(operatorUser, operatorAuthUser.Id);
                     operatorUser.Activate();
+                    operatorUser.AssignRole(Role.Operator.Id);
                     
                     await context.OrganizationUsers.AddAsync(operatorUser);
                     logger.LogInformation("Operator OrganizationUser created and linked.");
+                }
+                else if (!existingOperator.HasRole(Role.Operator.Id))
+                {
+                    existingOperator.AssignRole(Role.Operator.Id);
+                    logger.LogInformation("Assigned Operator role to existing Operator user.");
                 }
             }
 

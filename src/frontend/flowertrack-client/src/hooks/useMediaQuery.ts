@@ -64,9 +64,7 @@ export function useIsMobile(): boolean {
 }
 
 export function useIsTablet(): boolean {
-  return useMediaQuery(
-    `(min-width: ${breakpoints.md}) and (max-width: ${breakpoints.lg})`
-  );
+  return useMediaQuery(`(min-width: ${breakpoints.md}) and (max-width: ${breakpoints.lg})`);
 }
 
 export function useIsDesktop(): boolean {

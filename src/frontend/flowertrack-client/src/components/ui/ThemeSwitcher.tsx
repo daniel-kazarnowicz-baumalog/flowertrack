@@ -45,9 +45,7 @@ export function ThemeSwitcher({
             aria-pressed={theme === value}
           >
             <span className="themeSwitcher__icon">{icon}</span>
-            {showLabels && (
-              <span className="themeSwitcher__label">{label}</span>
-            )}
+            {showLabels && <span className="themeSwitcher__label">{label}</span>}
           </button>
         ))}
       </div>
@@ -83,9 +81,7 @@ export function ThemeSwitcher({
         </span>
         {showLabels && (
           <span className="themeSwitcher__label">
-            {resolvedTheme === 'dark'
-              ? t('theme.dark', 'Ciemny')
-              : t('theme.light', 'Jasny')}
+            {resolvedTheme === 'dark' ? t('theme.dark', 'Ciemny') : t('theme.light', 'Jasny')}
           </span>
         )}
       </button>

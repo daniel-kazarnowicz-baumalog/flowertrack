@@ -38,18 +38,18 @@ const isMockMode = (): boolean => {
  */
 const mockServiceLogin = async (email: string, _password: string): Promise<LoginResponse> => {
   // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
   // Simple validation
   if (!email.includes('@')) {
     throw new Error('Nieprawidłowy email');
   }
-  
+
   return {
     token: `mock-service-token-${Date.now()}`,
     user: {
       id: `service-user-${Date.now()}`,
-      email: email,
+      email,
       fullName: 'Jan Kowalski',
       firstName: 'Jan',
       lastName: 'Kowalski',
@@ -59,17 +59,17 @@ const mockServiceLogin = async (email: string, _password: string): Promise<Login
 };
 
 const mockClientLogin = async (email: string, _password: string): Promise<LoginResponse> => {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
   if (!email.includes('@')) {
     throw new Error('Nieprawidłowy email');
   }
-  
+
   return {
     token: `mock-client-token-${Date.now()}`,
     user: {
       id: `client-user-${Date.now()}`,
-      email: email,
+      email,
       fullName: 'Anna Nowak',
       firstName: 'Anna',
       lastName: 'Nowak',
@@ -88,7 +88,7 @@ export const authService: AuthServiceType = {
     if (isMockMode()) {
       return mockServiceLogin(email, password);
     }
-    
+
     try {
       const response = await axios.post<LoginResponse>(`${API_BASE_URL}/auth/service/login`, {
         email,
@@ -110,7 +110,7 @@ export const authService: AuthServiceType = {
     if (isMockMode()) {
       return mockClientLogin(email, password);
     }
-    
+
     try {
       const response = await axios.post<LoginResponse>(`${API_BASE_URL}/auth/client/login`, {
         email,
@@ -132,7 +132,7 @@ export const authService: AuthServiceType = {
     if (isMockMode()) {
       return;
     }
-    
+
     try {
       await axios.post(`${API_BASE_URL}/auth/logout`);
     } catch {
@@ -147,7 +147,7 @@ export const authService: AuthServiceType = {
     if (isMockMode()) {
       return `mock-refreshed-token-${Date.now()}`;
     }
-    
+
     const response = await axios.post<{ token: string }>(`${API_BASE_URL}/auth/refresh`);
     return response.data.token;
   },
@@ -157,10 +157,10 @@ export const authService: AuthServiceType = {
    */
   forgotPassword: async (email: string): Promise<void> => {
     if (isMockMode()) {
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       return;
     }
-    
+
     await axios.post(`${API_BASE_URL}/auth/forgot-password`, { email });
   },
 
@@ -169,10 +169,10 @@ export const authService: AuthServiceType = {
    */
   resetPassword: async (token: string, newPassword: string): Promise<void> => {
     if (isMockMode()) {
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       return;
     }
-    
+
     await axios.post(`${API_BASE_URL}/auth/reset-password`, {
       token,
       newPassword,

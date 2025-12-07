@@ -19,6 +19,8 @@ export interface ServiceDashboardStats {
   criticalTicketsCount: number;
   myAssignedTicketsCount: number;
   unassignedTicketsCount: number;
+  activeAlarmsCount: number;
+  resolvedThisWeekCount: number;
   ticketsByStatus: Record<string, number>;
   ticketsByPriority: Record<string, number>;
   recentActivity: Array<{
@@ -28,6 +30,17 @@ export interface ServiceDashboardStats {
     ticketTitle: string;
     timestamp: string;
     user: string;
+  }>;
+  organizationsWithAlarms: Array<{
+    id: string;
+    name: string;
+    alarmCount: number;
+  }>;
+  upcomingMaintenance: Array<{
+    id: string;
+    name: string;
+    organizationName: string;
+    date: string;
   }>;
 }
 
@@ -72,12 +85,12 @@ export async function getServiceDashboardStats(userId?: string): Promise<Service
     totalCount: number;
   }>('/tickets', {
     params: {
-      pageSize: 1000, // Get enough data for accurate stats
-      pageNumber: 1,
+      pageSize: 100, // Max allowed by backend
+      page: 1,
     },
   });
 
-  const tickets = response.data.items;
+  const tickets = response.data.items.map(mapTicketEnums);
 
   // Calculate stats
   const activeTickets = tickets.filter((t) => t.status !== 'Closed' && t.status !== 'Resolved');
@@ -115,14 +128,41 @@ export async function getServiceDashboardStats(userId?: string): Promise<Service
     user: ticket.assignedToName || 'Nieprzypisany',
   }));
 
+  // Calculate resolved this week
+  const oneWeekAgo = new Date();
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+  const resolvedThisWeekCount = tickets.filter(
+    (t) => (t.status === 'Resolved' || t.status === 'Closed') && new Date(t.updatedAt) >= oneWeekAgo
+  ).length;
+
   return {
     activeTicketsCount: activeTickets.length,
     criticalTicketsCount: criticalTickets.length,
     myAssignedTicketsCount: myAssignedTickets.length,
     unassignedTicketsCount: unassignedTickets.length,
+    activeAlarmsCount: 3, // Mock data until machine integration
+    resolvedThisWeekCount,
     ticketsByStatus,
     ticketsByPriority,
     recentActivity,
+    organizationsWithAlarms: [
+      { id: 'org-1', name: 'Baumalog Sp. z o.o.', alarmCount: 2 },
+      { id: 'org-2', name: 'Stal-Met', alarmCount: 1 },
+    ], // Mock data
+    upcomingMaintenance: [
+      {
+        id: 'mach-1',
+        name: 'Laser Fiber 3015',
+        organizationName: 'Baumalog Sp. z o.o.',
+        date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: 'mach-2',
+        name: 'Prasa krawędziowa',
+        organizationName: 'Stal-Met',
+        date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+    ], // Mock data
   };
 }
 
@@ -144,26 +184,21 @@ export async function getClientDashboardStats(
   }>('/tickets', {
     params: {
       organizationId,
-      pageSize: 1000,
-      pageNumber: 1,
+      pageSize: 100,
+      page: 1,
     },
   });
 
-  const tickets = ticketsResponse.data.items;
+  const tickets = ticketsResponse.data.items.map(mapTicketEnums);
 
   // Fetch machines for organization
-  const machinesResponse = await apiClient.get<{
-    items: Array<{ id: string; status: string }>;
-    totalCount: number;
-  }>('/machines', {
+  const machinesResponse = await apiClient.get<Array<{ id: string; status: string }>>('/machines', {
     params: {
       organizationId,
-      pageSize: 1000,
-      pageNumber: 1,
     },
   });
 
-  const machines = machinesResponse.data.items;
+  const machines = machinesResponse.data;
 
   // Calculate machine stats
   const activeMachines = machines.filter((m) => m.status === 'Active');
@@ -233,12 +268,12 @@ export async function getTicketTrends(organizationId?: string): Promise<TicketTr
   }>('/tickets', {
     params: {
       organizationId,
-      pageSize: 1000,
-      pageNumber: 1,
+      pageSize: 100,
+      page: 1,
     },
   });
 
-  const tickets = response.data.items;
+  const tickets = response.data.items.map(mapTicketEnums);
 
   // Generate last 30 days
   const trends: TicketTrend[] = [];
@@ -266,6 +301,35 @@ export async function getTicketTrends(organizationId?: string): Promise<TicketTr
   }
 
   return trends;
+}
+
+/**
+ * Map backend integer enums to frontend string unions
+ */
+function mapTicketEnums(ticket: any): TicketDto {
+  const statusMap: Record<number, string> = {
+    0: 'New',
+    1: 'Accepted',
+    2: 'InProgress',
+    3: 'Resolved',
+    4: 'Closed',
+    5: 'Reopened',
+  };
+  const priorityMap: Record<number, string> = {
+    0: 'Low',
+    1: 'Medium',
+    2: 'High',
+    3: 'Critical',
+  };
+
+  return {
+    ...ticket,
+    status: typeof ticket.status === 'number' ? statusMap[ticket.status] || 'New' : ticket.status,
+    priority:
+      typeof ticket.priority === 'number'
+        ? priorityMap[ticket.priority] || 'Medium'
+        : ticket.priority,
+  };
 }
 
 /**
