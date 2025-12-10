@@ -11,8 +11,9 @@ import type {
   TicketFilters,
   PaginatedResponse,
   TicketHistoryEvent,
+  AssignTicketRequest,
 } from '../types/api';
-import { getTickets, getTicketById } from '../services/ticketService';
+import { getTickets, getTicketById, assignTicket } from '../services/ticketService';
 
 // ============================================================================
 // Query Keys
@@ -132,9 +133,12 @@ export const useChangeTicketStatus = () => {
 export const useAssignTicket = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (_data: { id: string; data: { serviceUserId?: string } }) => {},
-    onSuccess: () => {
+    mutationFn: async (params: { id: string; data: AssignTicketRequest }) => {
+      await assignTicket(params.id, params.data);
+    },
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ticketKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: ticketKeys.detail(variables.id) });
     },
   });
 };

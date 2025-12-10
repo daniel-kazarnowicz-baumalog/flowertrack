@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, isValid } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import {
   useTicketComments,
@@ -32,7 +32,7 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
 }) => {
   const { user } = useAuth();
   const { showToast } = useToast();
-  const { data: comments, isLoading } = useTicketComments(ticketId);
+  const { data: comments, isLoading, isError } = useTicketComments(ticketId);
   const addCommentMutation = useAddComment();
   const addNoteMutation = useAddNote();
   const updateCommentMutation = useUpdateComment();
@@ -115,12 +115,35 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
     return comment.authorId === user?.id || (user as any)?.role === 'Admin';
   };
 
+  const formatDateDistance = (dateString: string) => {
+    const date = new Date(dateString);
+    if (!isValid(date)) return 'nieznana data';
+    try {
+      return formatDistanceToNow(date, {
+        addSuffix: true,
+        locale: pl,
+      });
+    } catch {
+      return 'nieznana data';
+    }
+  };
+
   if (isLoading) {
     return (
       <div className={styles.commentThread}>
         <div className={styles.loading}>
           <div className={styles.skeleton}></div>
           <div className={styles.skeleton}></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className={styles.commentThread}>
+        <div className={styles.error}>
+          <p>Nie udało się załadować komentarzy.</p>
         </div>
       </div>
     );
@@ -180,10 +203,7 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
                 </div>
                 <div className={styles.commentMeta}>
                   <span className={styles.commentTime}>
-                    {formatDistanceToNow(new Date(comment.createdAt), {
-                      addSuffix: true,
-                      locale: pl,
-                    })}
+                    {formatDateDistance(comment.createdAt)}
                   </span>
                   {canEditComment(comment) && (
                     <button
@@ -210,12 +230,7 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
               <div className={styles.commentContent}>{comment.content}</div>
               {comment.updatedAt && comment.updatedAt !== comment.createdAt && (
                 <div className={styles.commentEdited}>
-                  (edytowano{' '}
-                  {formatDistanceToNow(new Date(comment.updatedAt), {
-                    addSuffix: true,
-                    locale: pl,
-                  })}
-                  )
+                  (edytowano {formatDateDistance(comment.updatedAt)})
                 </div>
               )}
             </div>
@@ -271,3 +286,4 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
     </div>
   );
 };
+

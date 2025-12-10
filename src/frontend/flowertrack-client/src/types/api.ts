@@ -166,7 +166,7 @@ export interface ChangeTicketStatusRequest {
 }
 
 export interface AssignTicketRequest {
-  serviceUserId?: string; // null to unassign
+  assignedToUserId: string; // User ID of service technician
 }
 
 export interface TicketFilters {

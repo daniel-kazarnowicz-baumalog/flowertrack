@@ -73,16 +73,16 @@ export const ServiceTicketDetailPage: React.FC = () => {
   };
 
   const handleAssignment = async (userId?: string) => {
-    if (!id) return;
+    if (!id || !userId) return;
 
     try {
       await assignMutation.mutateAsync({
         id,
         data: {
-          serviceUserId: userId,
+          assignedToUserId: userId,
         },
       });
-      showToast(userId ? 'Zgłoszenie przypisane' : 'Przypisanie cofnięte', 'success');
+      showToast('Zgłoszenie przypisane', 'success');
       setIsAssignmentModalOpen(false);
     } catch {
       showToast('Nie udało się przypisać zgłoszenia', 'error');

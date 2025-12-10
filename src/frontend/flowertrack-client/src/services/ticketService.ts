@@ -120,7 +120,7 @@ export const changeTicketStatus = async (
  * Assign ticket to service user (or unassign if serviceUserId is null)
  */
 export const assignTicket = async (id: string, data: AssignTicketRequest): Promise<void> => {
-  await apiClient.post(`/tickets/${id}/assign`, data);
+  await apiClient.patch(`/tickets/${id}/assign`, data);
 };
 
 /**
