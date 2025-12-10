@@ -44,6 +44,7 @@ class ApiClient {
 
           // Handle 401 Unauthorized - token expired or invalid
           if (status === 401) {
+            console.error('[ApiClient] 401 Unauthorized. Redirecting to login.');
             this.clearAuth();
             // Redirect to login if not already there
             const currentPath = window.location.pathname;

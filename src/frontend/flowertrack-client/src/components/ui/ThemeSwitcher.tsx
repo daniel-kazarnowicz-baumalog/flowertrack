@@ -2,7 +2,7 @@ import { useTheme, type Theme } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import './ThemeSwitcher.css';
 
-export type ThemeSwitcherVariant = 'buttons' | 'dropdown' | 'toggle';
+export type ThemeSwitcherVariant = 'buttons' | 'dropdown' | 'toggle' | 'icon';
 
 export interface ThemeSwitcherProps {
   /** Wariant wyświetlania */
@@ -29,6 +29,31 @@ export function ThemeSwitcher({
     { value: 'dark', icon: '🌙', label: t('theme.dark', 'Ciemny') },
     { value: 'system', icon: '💻', label: t('theme.system', 'Systemowy') },
   ];
+
+  // Wariant ikony (prosty przycisk)
+  if (variant === 'icon') {
+    return (
+      <button
+        type="button"
+        className={`themeSwitcher themeSwitcher--icon ${className}`}
+        onClick={toggleTheme}
+        title={
+          resolvedTheme === 'dark'
+            ? t('theme.switchToLight', 'Przełącz na jasny')
+            : t('theme.switchToDark', 'Przełącz na ciemny')
+        }
+        aria-label={
+          resolvedTheme === 'dark'
+            ? t('theme.switchToLight', 'Przełącz na jasny')
+            : t('theme.switchToDark', 'Przełącz na ciemny')
+        }
+      >
+        <span className="themeSwitcher__icon">
+          {resolvedTheme === 'dark' ? '🌙' : '☀️'}
+        </span>
+      </button>
+    );
+  }
 
   // Wariant z przyciskami
   if (variant === 'buttons') {

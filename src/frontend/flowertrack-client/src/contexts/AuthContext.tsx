@@ -37,20 +37,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const storedToken = localStorage.getItem('accessToken');
     const storedUser = localStorage.getItem('user');
 
+    console.log('[AuthContext] Initializing...', { hasToken: !!storedToken, hasUser: !!storedUser });
+
     if (storedToken && storedUser) {
       setToken(storedToken);
       try {
-        setUser(JSON.parse(storedUser));
+        const parsedUser = JSON.parse(storedUser);
+        console.log('[AuthContext] Restored user:', parsedUser);
+        setUser(parsedUser);
       } catch (e) {
         console.error('Failed to parse user data', e);
         localStorage.removeItem('user');
         localStorage.removeItem('accessToken');
       }
+    } else {
+      console.log('[AuthContext] No session found.');
     }
     setIsLoading(false);
   }, []);
 
   const login = (newToken: string, newUser: User) => {
+    console.log('[AuthContext] Login called', { token: newToken, user: newUser });
+    if (!newToken) console.error('[AuthContext] Token is missing/undefined!');
+
     localStorage.setItem('accessToken', newToken);
     localStorage.setItem('user', JSON.stringify(newUser));
     setToken(newToken);
@@ -67,10 +76,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const loginService = async (email: string, password: string): Promise<void> => {
     try {
       const response = await authService.loginService(email, password);
-      login(response.token, {
+      login(response.accessToken, {
         ...response.user,
         role: 'service',
-      });
+      } as User);
     } catch (error) {
       // Re-throw to let the component handle it
       throw error;
@@ -80,10 +89,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const loginClient = async (email: string, password: string): Promise<void> => {
     try {
       const response = await authService.loginClient(email, password);
-      login(response.token, {
+      login(response.accessToken, {
         ...response.user,
         role: 'client',
-      });
+      } as User);
     } catch (error) {
       throw error;
     }

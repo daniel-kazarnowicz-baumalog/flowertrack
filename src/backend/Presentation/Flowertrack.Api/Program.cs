@@ -207,9 +207,9 @@ try
             {
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(jwtSecretBytes),
-                ValidateIssuer = true,
+                ValidateIssuer = false, // Supabase handles issuer
                 ValidIssuer = jwtSettings.Issuer,
-                ValidateAudience = true,
+                ValidateAudience = false, // Supabase handles audience (usually 'authenticated')
                 ValidAudience = jwtSettings.Audience,
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.Zero,

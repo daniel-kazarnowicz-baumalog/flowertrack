@@ -1,34 +1,28 @@
 import { useTranslation } from 'react-i18next';
 import './LanguageSwitcher.css';
 
-const languages = [
-  { code: 'pl', label: 'PL', flag: '🇵🇱' },
-  { code: 'en', label: 'EN', flag: '🇬🇧' },
-];
-
 export const LanguageSwitcher = () => {
   const { i18n } = useTranslation();
-  const currentLang = i18n.language;
 
-  const handleLanguageChange = (langCode: string) => {
-    i18n.changeLanguage(langCode);
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
   };
 
   return (
     <div className="languageSwitcher">
-      {languages.map((lang) => (
-        <button
-          key={lang.code}
-          className={`languageSwitcher__btn ${currentLang === lang.code ? 'languageSwitcher__btn--active' : ''}`}
-          onClick={() => handleLanguageChange(lang.code)}
-          title={lang.label}
-        >
-          <span className="languageSwitcher__flag">{lang.flag}</span>
-          <span className="languageSwitcher__label">{lang.label}</span>
-        </button>
-      ))}
+      <button
+        className={`languageSwitcher__btn ${i18n.language === 'pl' ? 'active' : ''}`}
+        onClick={() => changeLanguage('pl')}
+      >
+        PL
+      </button>
+      <span className="languageSwitcher__separator">|</span>
+      <button
+        className={`languageSwitcher__btn ${i18n.language === 'en' ? 'active' : ''}`}
+        onClick={() => changeLanguage('en')}
+      >
+        EN
+      </button>
     </div>
   );
 };
-
-export default LanguageSwitcher;

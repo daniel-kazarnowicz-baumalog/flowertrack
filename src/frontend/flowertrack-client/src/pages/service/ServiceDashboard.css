@@ -1,11 +1,80 @@
+/* Service Dashboard Layout */
 .serviceDashboard {
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
-  padding: var(--space-6);
-  width: 100%;
-  max-width: 1600px;
-  margin: 0 auto;
+  gap: 2rem;
+  /* Add padding to dashboard to pull content away from edges if needed, though AppShell has padding */
+}
+
+.serviceDashboard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.serviceDashboard__title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.serviceDashboard__subtitle {
+  color: var(--color-text-secondary);
+}
+
+/* Grid Layouts */
+.serviceDashboard__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.serviceDashboard__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+.serviceDashboard__card {
+  height: 100%;
+  min-height: 350px;
+  /* Ensure charts have space */
+  display: flex;
+  flex-direction: column;
+  /* Wrapper card background is handled by .card in Card.css */
+  padding: 1.5rem;
+  /* Add padding here since we removed it from charts */
+}
+
+.serviceDashboard__card--full {
+  grid-column: 1 / -1;
+}
+
+/* Bottom Section */
+.serviceDashboard__bottomGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 1280px) {
+  .serviceDashboard__bottomGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 1024px) {
+  .serviceDashboard__bottomGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.serviceDashboard__sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 1rem;
 }
 
 .serviceDashboard__loading,
@@ -14,131 +83,15 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 400px;
+  min-height: 50vh;
   text-align: center;
-  background: var(--color-bg-primary);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  margin: var(--space-4);
-  border: 1px solid var(--color-border);
 }
 
-.serviceDashboard__header {
-  margin-bottom: var(--space-2);
+.serviceDashboard__error h2 {
+  color: var(--color-rose-600);
+  margin-bottom: 0.5rem;
 }
 
-.serviceDashboard__title {
-  font-size: var(--text-3xl);
-  font-weight: var(--font-bold);
-  color: var(--color-text-primary);
-  line-height: var(--leading-tight);
-}
-
-.serviceDashboard__subtitle {
-  font-size: var(--text-base);
+.serviceDashboard__error p {
   color: var(--color-text-secondary);
-  margin-top: var(--space-2);
-}
-
-/* Grids and Rows */
-.serviceDashboard__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: var(--space-6);
-}
-
-.serviceDashboard__row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: var(--space-6);
-}
-
-.serviceDashboard__fullRow {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-/* Card overrides if needed */
-.serviceDashboard__card {
-  height: 100%;
-  min-height: 350px;
-  display: flex;
-  flex-direction: column;
-}
-
-.serviceDashboard__activityCard {
-  min-height: auto;
-}
-
-.serviceDashboard__cardTitle {
-  font-size: var(--text-lg);
-  font-weight: var(--font-semibold);
-  color: var(--color-text-secondary);
-  margin-bottom: var(--space-6);
-  padding-bottom: var(--space-3);
-  border-bottom: 1px solid var(--color-border-light);
-}
-
-/* Responsive adjustments */
-@media (max-width: 1024px) {
-  .serviceDashboard__row {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .serviceDashboard__grid {
-    grid-template-columns: 1fr;
-  }
-
-  .serviceDashboard {
-    padding: var(--space-4);
-    gap: var(--space-6);
-  }
-}
-
-/* Bottom Grid Section */
-.serviceDashboard__bottomGrid {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: var(--space-6);
-  align-items: start;
-}
-
-.serviceDashboard__activitySection {
-  background-color: var(--bg-secondary);
-  border-radius: 12px;
-  padding: 1.5rem;
-  border: 1px solid var(--border-color);
-  height: 100%;
-}
-
-.serviceDashboard__listSection {
-  height: 100%;
-}
-
-.serviceDashboard__sectionTitle {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 1rem;
-}
-
-@media (max-width: 1200px) {
-  .serviceDashboard__bottomGrid {
-    grid-template-columns: 1fr 1fr;
-  }
-  .serviceDashboard__activitySection {
-    grid-column: span 2;
-  }
-}
-
-@media (max-width: 768px) {
-  .serviceDashboard__bottomGrid {
-    grid-template-columns: 1fr;
-  }
-  .serviceDashboard__activitySection {
-    grid-column: span 1;
-  }
 }

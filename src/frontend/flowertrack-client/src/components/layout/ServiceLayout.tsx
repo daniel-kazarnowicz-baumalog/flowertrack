@@ -1,109 +1,51 @@
-import { useState } from 'react';
-import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import { ThemeSwitcher } from '../ui/ThemeSwitcher';
-import './ServiceLayout.css';
+import { useTranslation } from 'react-i18next';
+import { Outlet } from 'react-router-dom';
+import { AppShell } from './AppShell';
 
 export const ServiceLayout = () => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const { t } = useTranslation();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/service');
-  };
+  const navSections = [
+    {
+      title: t('nav.main', 'Główne'),
+      items: [
+        {
+          to: '/service/dashboard',
+          icon: '📊',
+          label: t('nav.dashboard', 'Dashboard'),
+        },
+        {
+          to: '/service/tickets',
+          icon: '🎫',
+          label: t('nav.tickets', 'Zgłoszenia'),
+        },
+      ],
+    },
+    {
+      title: t('nav.manage', 'Zarządzanie'),
+      items: [
+        {
+          to: '/service/organizations',
+          icon: '🏢',
+          label: t('nav.clients', 'Klienci'),
+        },
+        {
+          to: '/service/machines',
+          icon: '🏭',
+          label: t('nav.machines', 'Maszyny'),
+        },
+        {
+          to: '/service/users',
+          icon: '👥',
+          label: t('nav.team', 'Zespół'),
+        },
+      ],
+    },
+  ];
 
   return (
-    <div className={`serviceLayout ${isSidebarCollapsed ? 'serviceLayout--collapsed' : ''}`}>
-      <aside className="serviceLayout__sidebar">
-        <Link to="/service/dashboard" className="serviceLayout__logo">
-          <span className="serviceLayout__logoIcon">🌸</span>
-          <span className="serviceLayout__logoText">FLOWerTRACK</span>
-        </Link>
-
-        <nav className="serviceLayout__nav">
-          <div className="serviceLayout__navSection">
-            <h3 className="serviceLayout__navTitle">Main</h3>
-            <NavLink
-              to="/service/dashboard"
-              className={({ isActive }) => `serviceLayout__navLink ${isActive ? 'active' : ''}`}
-            >
-              <span className="icon">📊</span>
-              <span className="text">Dashboard</span>
-            </NavLink>
-            <NavLink
-              to="/service/tickets"
-              className={({ isActive }) => `serviceLayout__navLink ${isActive ? 'active' : ''}`}
-            >
-              <span className="icon">🎫</span>
-              <span className="text">Zgłoszenia</span>
-            </NavLink>
-          </div>
-
-          <div className="serviceLayout__navSection">
-            <h3 className="serviceLayout__navTitle">Manage</h3>
-            <NavLink
-              to="/service/organizations"
-              className={({ isActive }) => `serviceLayout__navLink ${isActive ? 'active' : ''}`}
-            >
-              <span className="icon">🏢</span>
-              <span className="text">Klienci</span>
-            </NavLink>
-            <NavLink
-              to="/service/machines"
-              className={({ isActive }) => `serviceLayout__navLink ${isActive ? 'active' : ''}`}
-            >
-              <span className="icon">🏭</span>
-              <span className="text">Maszyny</span>
-            </NavLink>
-            <NavLink
-              to="/service/users"
-              className={({ isActive }) => `serviceLayout__navLink ${isActive ? 'active' : ''}`}
-            >
-              <span className="icon">👥</span>
-              <span className="text">Zespól</span>
-            </NavLink>
-          </div>
-        </nav>
-
-        <div className="serviceLayout__user">
-          <div className="serviceLayout__userInfo">
-            <div className="serviceLayout__userAvatar">
-              {(user?.fullName || user?.firstName || user?.email || 'S').charAt(0).toUpperCase()}
-            </div>
-            <div className="serviceLayout__userDetails">
-              <span className="serviceLayout__userName">
-                {user?.fullName || `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'Service User'}
-              </span>
-              <span className="serviceLayout__userRole">
-                {user?.isAdmin ? 'Administrator' : 'Technik'}
-              </span>
-            </div>
-          </div>
-          <button onClick={handleLogout} className="serviceLayout__logoutBtn" title="Logout">
-            ↪
-          </button>
-        </div>
-      </aside>
-
-      <main className="serviceLayout__content">
-        <header className="serviceLayout__header">
-          <button
-            className="serviceLayout__toggleBtn"
-            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-          >
-            ☰
-          </button>
-          <div className="serviceLayout__headerActions">
-            <span className="serviceLayout__date">{new Date().toLocaleDateString()}</span>
-            <ThemeSwitcher variant="buttons" />
-          </div>
-        </header>
-        <div className="serviceLayout__pageContainer">
-          <Outlet />
-        </div>
-      </main>
-    </div>
+    <AppShell navSections={navSections} logoLink="/service/dashboard" logoText="FLOWerTRACK">
+      <Outlet />
+    </AppShell>
   );
 };

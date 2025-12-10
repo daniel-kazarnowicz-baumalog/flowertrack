@@ -1,5 +1,5 @@
 import { apiClient } from '../lib/apiClient';
-import type { PaginatedResponse } from '../types/api';
+// import type { PaginatedResponse } from '../types/api';
 
 /**
  * Service User Service

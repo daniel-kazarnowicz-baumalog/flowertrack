@@ -13,7 +13,7 @@ import type {
   TicketHistoryEvent,
   AssignTicketRequest,
 } from '../types/api';
-import { getTickets, getTicketById, assignTicket } from '../services/ticketService';
+import { getTickets, getTicketById, assignTicket, createTicket, getTicketHistory } from '../services/ticketService';
 
 // ============================================================================
 // Query Keys
@@ -72,7 +72,7 @@ export const useTicketHistory = (
 ) => {
   return useQuery({
     queryKey: ticketKeys.history(ticketId),
-    queryFn: async () => [],
+    queryFn: () => getTicketHistory(ticketId),
     enabled: !!ticketId,
     staleTime: 30 * 1000, // 30 seconds
     ...options,
@@ -90,7 +90,7 @@ export const useCreateTicket = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: CreateTicketRequest) => ({ id: 'mock', ...data }) as TicketDto,
+    mutationFn: (data: CreateTicketRequest) => createTicket(data),
     onSuccess: () => {
       // Invalidate ticket lists to refetch with new ticket
       queryClient.invalidateQueries({ queryKey: ticketKeys.lists() });
@@ -120,7 +120,7 @@ export const useChangeTicketStatus = () => {
     mutationFn: async (_data: {
       id: string;
       data: { newStatus: string; justification?: string };
-    }) => {},
+    }) => { },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ticketKeys.lists() });
     },
@@ -149,7 +149,7 @@ export const useAssignTicket = () => {
 export const useBulkAssignTickets = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async () => {},
+    mutationFn: async () => { },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ticketKeys.lists() });
     },
@@ -162,7 +162,7 @@ export const useBulkAssignTickets = () => {
 export const useBulkChangeStatus = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async () => {},
+    mutationFn: async () => { },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ticketKeys.lists() });
     },

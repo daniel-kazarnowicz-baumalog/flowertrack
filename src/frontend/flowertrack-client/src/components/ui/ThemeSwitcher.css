@@ -11,7 +11,8 @@
   align-items: center;
   gap: var(--space-1);
   padding: var(--space-1);
-  background-color: var(--color-bg-tertiary);
+  background-color: var(--color-bg-subtle);
+  /* Updated to subtle */
   border-radius: var(--radius-lg);
 }
 
@@ -27,14 +28,16 @@
   border: none;
   border-radius: var(--radius-md);
   color: var(--color-text-secondary);
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
+  font-size: 0.875rem;
+  /* text-sm */
+  font-weight: 500;
+  /* font-medium */
   cursor: pointer;
-  transition: var(--transition-colors), var(--transition-transform);
+  transition: all 0.2s;
 }
 
 .themeSwitcher__btn:hover {
-  background-color: var(--color-bg-hover);
+  background-color: var(--color-bg-card);
   color: var(--color-text-primary);
 }
 
@@ -43,18 +46,20 @@
 }
 
 .themeSwitcher__btn--active {
-  background-color: var(--color-bg-primary);
+  background-color: var(--color-bg-card);
   color: var(--color-text-primary);
   box-shadow: var(--shadow-sm);
 }
 
 .themeSwitcher__icon {
-  font-size: var(--text-base);
+  font-size: 1rem;
+  /* text-base */
   line-height: 1;
 }
 
 .themeSwitcher__label {
-  font-size: var(--text-sm);
+  font-size: 0.875rem;
+  /* text-sm */
 }
 
 /* ========================================
@@ -75,14 +80,14 @@
   position: relative;
   width: 56px;
   height: 28px;
-  background-color: var(--color-bg-tertiary);
+  background-color: var(--color-bg-subtle);
   border-radius: var(--radius-full);
-  border: 1px solid var(--color-border);
-  transition: var(--transition-colors);
+  border: 1px solid var(--color-border-default);
+  transition: all 0.2s;
 }
 
 .themeSwitcher--toggle:hover .themeSwitcher__track {
-  border-color: var(--color-border-dark);
+  border-color: var(--color-border-strong);
 }
 
 .themeSwitcher__thumb {
@@ -91,7 +96,7 @@
   left: 2px;
   width: 22px;
   height: 22px;
-  background-color: var(--color-bg-primary);
+  background-color: var(--color-bg-card);
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-sm);
   display: flex;
@@ -105,7 +110,7 @@
 }
 
 .themeSwitcher__thumbIcon {
-  font-size: var(--text-sm);
+  font-size: 0.75rem;
   line-height: 1;
 }
 
@@ -120,33 +125,66 @@
 .themeSwitcher__select {
   padding: var(--space-2) var(--space-3);
   padding-right: var(--space-8);
-  background-color: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-subtle);
+  border: 1px solid var(--color-border-default);
   border-radius: var(--radius-md);
   color: var(--color-text-primary);
-  font-size: var(--text-sm);
+  font-size: 0.875rem;
   font-family: inherit;
   cursor: pointer;
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right var(--space-2) center;
-  transition: var(--transition-colors);
+  transition: border-color 0.2s;
 }
 
 .themeSwitcher__select:hover {
-  border-color: var(--color-border-dark);
+  border-color: var(--color-border-strong);
 }
 
 .themeSwitcher__select:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: var(--shadow-focus);
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 2px var(--color-primary-100);
 }
 
 /* Dark mode adjustments for select dropdown icon */
 [data-theme='dark'] .themeSwitcher__select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+/* ========================================
+   ICON VARIANT
+   ======================================== */
+
+.themeSwitcher--icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: transparent;
+  border: 1px solid var(--color-border-subtle);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--duration-200);
+}
+
+.themeSwitcher--icon:hover {
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-default);
+  transform: translateY(-1px);
+}
+
+.themeSwitcher--icon:active {
+  transform: translateY(0);
+}
+
+.themeSwitcher--icon .themeSwitcher__icon {
+  font-size: 1.25rem;
 }
 
 /* ========================================

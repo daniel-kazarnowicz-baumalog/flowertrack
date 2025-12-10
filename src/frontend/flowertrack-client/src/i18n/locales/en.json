@@ -5,6 +5,7 @@
     "delete": "Delete",
     "edit": "Edit",
     "add": "Add",
+    "new": "New",
     "close": "Close",
     "confirm": "Confirm",
     "back": "Back",
@@ -56,6 +57,15 @@
     "contactAdmin": "Contact your administrator",
     "welcome": "Welcome"
   },
+  "nav": {
+    "main": "Main",
+    "manage": "Manage",
+    "dashboard": "Dashboard",
+    "tickets": "Tickets",
+    "clients": "Clients",
+    "machines": "Machines",
+    "team": "Team"
+  },
   "gateway": {
     "title": "FLOWerTRACK",
     "subtitle": "Service Management System",
@@ -77,6 +87,7 @@
     "awaitingAssignment": "Awaiting assignment",
     "ticketsByStatus": "Tickets by Status",
     "ticketsByPriority": "Tickets by Priority",
+    "ticketTrends": "Ticket Trends",
     "recentActivity": "Recent Activity",
     "noRecentActivity": "No recent activity",
     "analyticsCharts": "Analytics & Charts",

@@ -1,0 +1,51 @@
+.themeToggle {
+    background: none;
+    border: 1px solid var(--color-border-default);
+    cursor: pointer;
+    padding: 0.5rem;
+    font-size: 1.25rem;
+    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.themeToggle:hover {
+    background-color: var(--color-bg-subtle);
+    color: var(--color-text-primary);
+    border-color: var(--color-border-strong);
+}
+
+.themeToggle-buttons {
+    display: flex;
+    background-color: var(--color-bg-subtle);
+    padding: 0.25rem;
+    border-radius: var(--radius-lg);
+    gap: 0.25rem;
+    border: 1px solid var(--color-border-subtle);
+}
+
+.themeToggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    font-size: 1rem;
+    border-radius: var(--radius-md);
+    color: var(--color-text-tertiary);
+    transition: all 0.2s;
+}
+
+.themeToggle-btn:hover {
+    color: var(--color-text-primary);
+}
+
+.themeToggle-btn.active {
+    background-color: var(--color-bg-card);
+    color: var(--color-text-primary);
+    box-shadow: var(--shadow-sm);
+}

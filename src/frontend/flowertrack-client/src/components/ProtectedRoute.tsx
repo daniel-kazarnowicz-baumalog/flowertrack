@@ -21,11 +21,20 @@ const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
     );
   }
 
+  console.log('[ProtectedRoute] Check:', {
+    path: window.location.pathname,
+    isAuthenticated,
+    userRole: user?.role,
+    requiredRole
+  });
+
   if (!isAuthenticated || !user) {
+    console.warn('[ProtectedRoute] Not authenticated. Redirecting to Gateway.');
     return <Navigate to="/" replace />;
   }
 
   if (requiredRole && user.role !== requiredRole) {
+    console.warn(`[ProtectedRoute] Role mismatch. User: ${user.role}, Required: ${requiredRole}`);
     // Redirect to appropriate dashboard
     if (user.role === 'service') return <Navigate to="/service/dashboard" replace />;
     if (user.role === 'client') return <Navigate to="/client/dashboard" replace />;

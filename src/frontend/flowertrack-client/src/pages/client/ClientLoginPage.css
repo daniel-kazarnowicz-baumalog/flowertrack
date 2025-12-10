@@ -1,84 +1,131 @@
-.client-login {
-  min-height: 100vh;
+/* Client Login Page - Glass Card Theme */
+
+.login-card-wrapper {
   display: flex;
-  align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  padding: 1rem;
-}
-
-.client-login__container {
+  align-items: center;
   width: 100%;
-  max-width: 420px;
-  background: white;
-  border-radius: 1rem;
-  box-shadow:
-    0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  padding: 2.5rem;
+  position: relative;
+  background: transparent !important;
 }
 
-.client-login__header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.client-login__logo {
-  display: inline-block;
-  margin-bottom: 1.5rem;
-}
-
-.client-login__title {
-  font-size: 1.875rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin: 0 0 0.5rem 0;
-}
-
-.client-login__subtitle {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0;
-}
-
-.client-login__form {
+.login-content-stack {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
 }
 
-.client-login__link {
-  color: #10b981;
+.back-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-secondary);
   text-decoration: none;
-  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  margin-bottom: var(--space-4);
+  align-self: flex-start;
+}
+
+.back-link:hover {
+  color: var(--color-primary-500);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: var(--space-8) var(--space-10);
+  border-radius: var(--radius-2xl);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  animation: cardEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+[data-theme='dark'] .login-card {
+  background: rgba(30, 41, 59, 0.7);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Header */
+.login-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.login-logo {
+  display: inline-flex;
+  padding: var(--space-3);
+  background: var(--color-portal-client);
+  /* Fallback */
+  background: rgba(139, 92, 246, 0.1);
+  color: var(--color-portal-client);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-4);
+}
+
+[data-theme='dark'] .login-logo {
+  background: rgba(139, 92, 246, 0.2);
+}
+
+.login-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.login-subtitle {
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+}
+
+/* Form */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.form-link {
+  color: var(--color-portal-client);
+  text-decoration: none;
+  font-size: 0.9rem;
   font-weight: 500;
   transition: color 0.2s;
 }
 
-.client-login__link:hover {
-  color: #059669;
+.form-link:hover {
   text-decoration: underline;
 }
 
-.client-login__footer {
-  margin-top: 2rem;
-  padding-top: 2rem;
-  border-top: 1px solid #e5e7eb;
+/* Footer */
+.form-footer {
+  margin-top: var(--space-8);
   text-align: center;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  border-top: 1px solid var(--color-border-subtle);
+  padding-top: var(--space-6);
 }
 
-.client-login__footer-text {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0;
-}
-
-@media (max-width: 640px) {
-  .client-login__container {
-    padding: 2rem 1.5rem;
-  }
-
-  .client-login__title {
-    font-size: 1.5rem;
-  }
-}
+/* Client Theme Specifics handled above */

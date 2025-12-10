@@ -1,9 +1,10 @@
-/* Input Component Styles */
+/* Input Component Styles - Modern Redesign */
 
 .input-wrapper {
   display: flex;
   flex-direction: column;
   gap: var(--space-1-5);
+  position: relative;
 }
 
 .input-wrapper--full-width {
@@ -13,64 +14,96 @@
 .input-label {
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
-  color: var(--color-text-primary);
-  display: block;
+  color: var(--color-text-secondary);
+  display: flex;
+  justify-content: space-between;
 }
 
 .input-label__required {
-  color: var(--color-error);
+  color: var(--color-rose-500);
   margin-left: var(--space-1);
 }
 
 .input {
   width: 100%;
-  padding: var(--space-2) var(--input-padding-x);
+  padding: 0 var(--input-padding-x);
+  height: var(--input-height-md);
+  box-sizing: border-box;
+  /* Critical for correct sizing */
+  display: flex;
+  /* Or use line-height trick, but modern flex often safer if container */
+  align-items: center;
+  /* Vertical center text */
+
   font-size: var(--text-base);
   line-height: var(--leading-normal);
-  border: var(--input-border-width) solid var(--color-border);
-  border-radius: var(--input-border-radius);
-  background-color: var(--color-bg-primary);
-  color: var(--color-text-primary);
-  transition: var(--transition-colors), var(--transition-shadow);
   font-family: inherit;
-  min-height: var(--input-height-md);
+
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text-primary);
+
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+
+  transition: all var(--duration-200) var(--ease-out);
+
+  /* Modern Touch */
+  box-shadow: var(--shadow-xs);
 }
 
 .input::placeholder {
   color: var(--color-text-tertiary);
+  opacity: 1;
+  /* Firefox fix */
 }
 
+/* Hover State */
 .input:hover:not(:disabled) {
-  border-color: var(--color-border-dark);
+  border-color: var(--color-border-strong);
+  background-color: var(--color-bg-app);
 }
 
+/* Focus State */
 .input:focus {
   outline: none;
-  border-color: var(--color-border-focus);
-  box-shadow: var(--shadow-focus);
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px var(--color-primary-200);
+  background-color: var(--color-bg-app);
 }
 
+[data-theme='dark'] .input:focus {
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* Disabled State */
 .input:disabled {
-  background-color: var(--color-bg-tertiary);
+  background-color: var(--color-bg-subtle);
   color: var(--color-text-disabled);
+  border-color: var(--color-border-subtle);
   cursor: not-allowed;
+  box-shadow: none;
 }
 
+/* Error State */
 .input--error {
-  border-color: var(--color-error);
+  border-color: var(--color-rose-500);
 }
 
 .input--error:focus {
-  border-color: var(--color-error);
-  box-shadow: var(--shadow-focus-error);
+  border-color: var(--color-rose-500);
+  box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.2);
 }
 
+/* Validation Message */
 .input-message {
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   color: var(--color-text-secondary);
-  margin: 0;
+  margin-top: var(--space-1);
+  min-height: 1.25em;
+  /* Prevent layout jump */
 }
 
 .input-message--error {
-  color: var(--color-error);
+  color: var(--color-rose-500);
+  font-weight: var(--font-medium);
 }

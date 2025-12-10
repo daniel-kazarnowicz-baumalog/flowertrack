@@ -1,19 +1,16 @@
 import axios from 'axios';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+import { apiClient } from '../lib/apiClient';
 
 export interface LoginResponse {
-  token: string;
+  accessToken: string;
+  refreshToken?: string;
   user: {
     id: string;
     email: string;
-    name?: string;
     fullName?: string;
-    firstName?: string;
-    lastName?: string;
+    role?: string;
     organizationId?: string;
     organizationName?: string;
-    isAdmin?: boolean;
   };
 }
 
@@ -26,74 +23,17 @@ export interface AuthServiceType {
   resetPassword: (token: string, newPassword: string) => Promise<void>;
 }
 
-/**
- * Check if we're in mock mode (no backend available)
- */
-const isMockMode = (): boolean => {
-  return import.meta.env.VITE_MOCK_API === 'true' || !import.meta.env.VITE_API_URL;
-};
-
-/**
- * Mock login for development without backend
- */
-const mockServiceLogin = async (email: string, _password: string): Promise<LoginResponse> => {
-  // Simulate network delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  // Simple validation
-  if (!email.includes('@')) {
-    throw new Error('Nieprawidłowy email');
-  }
-
-  return {
-    token: `mock-service-token-${Date.now()}`,
-    user: {
-      id: `service-user-${Date.now()}`,
-      email,
-      fullName: 'Jan Kowalski',
-      firstName: 'Jan',
-      lastName: 'Kowalski',
-      isAdmin: email.toLowerCase().includes('admin'),
-    },
-  };
-};
-
-const mockClientLogin = async (email: string, _password: string): Promise<LoginResponse> => {
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  if (!email.includes('@')) {
-    throw new Error('Nieprawidłowy email');
-  }
-
-  return {
-    token: `mock-client-token-${Date.now()}`,
-    user: {
-      id: `client-user-${Date.now()}`,
-      email,
-      fullName: 'Anna Nowak',
-      firstName: 'Anna',
-      lastName: 'Nowak',
-      organizationId: 'org-1',
-      organizationName: 'Demo Firma Sp. z o.o.',
-      isAdmin: email.toLowerCase().includes('admin'),
-    },
-  };
-};
-
 export const authService: AuthServiceType = {
   /**
    * Login as service user (technician/admin)
    */
   loginService: async (email: string, password: string): Promise<LoginResponse> => {
-    if (isMockMode()) {
-      return mockServiceLogin(email, password);
-    }
-
     try {
-      const response = await axios.post<LoginResponse>(`${API_BASE_URL}/auth/service/login`, {
+      const response = await apiClient.post<LoginResponse>('/auth/service/login', {
         email,
         password,
       });
+      console.log('[AuthService] Login response:', response.data);
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -107,12 +47,8 @@ export const authService: AuthServiceType = {
    * Login as client user
    */
   loginClient: async (email: string, password: string): Promise<LoginResponse> => {
-    if (isMockMode()) {
-      return mockClientLogin(email, password);
-    }
-
     try {
-      const response = await axios.post<LoginResponse>(`${API_BASE_URL}/auth/client/login`, {
+      const response = await apiClient.post<LoginResponse>('/auth/client/login', {
         email,
         password,
       });
@@ -129,12 +65,8 @@ export const authService: AuthServiceType = {
    * Logout and invalidate token
    */
   logout: async (): Promise<void> => {
-    if (isMockMode()) {
-      return;
-    }
-
     try {
-      await axios.post(`${API_BASE_URL}/auth/logout`);
+      await apiClient.post('/auth/logout');
     } catch {
       // Ignore logout errors
     }
@@ -144,36 +76,22 @@ export const authService: AuthServiceType = {
    * Refresh authentication token
    */
   refreshToken: async (): Promise<string> => {
-    if (isMockMode()) {
-      return `mock-refreshed-token-${Date.now()}`;
-    }
-
-    const response = await axios.post<{ token: string }>(`${API_BASE_URL}/auth/refresh`);
-    return response.data.token;
+    const response = await apiClient.post<{ accessToken: string }>('/auth/refresh');
+    return response.data.accessToken;
   },
 
   /**
    * Request password reset email
    */
   forgotPassword: async (email: string): Promise<void> => {
-    if (isMockMode()) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      return;
-    }
-
-    await axios.post(`${API_BASE_URL}/auth/forgot-password`, { email });
+    await apiClient.post('/auth/forgot-password', { email });
   },
 
   /**
    * Reset password with token
    */
   resetPassword: async (token: string, newPassword: string): Promise<void> => {
-    if (isMockMode()) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      return;
-    }
-
-    await axios.post(`${API_BASE_URL}/auth/reset-password`, {
+    await apiClient.post('/auth/reset-password', {
       token,
       newPassword,
     });

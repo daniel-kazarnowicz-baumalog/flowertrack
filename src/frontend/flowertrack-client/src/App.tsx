@@ -1,13 +1,14 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Gateway from './pages/Gateway';
-import ServiceLogin from './pages/ServiceLogin';
-import ClientLogin from './pages/ClientLogin';
+import ServiceLogin from './pages/service/ServiceLoginPage';
+import ClientLogin from './pages/client/ClientLoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ServiceDashboard } from './pages/service/ServiceDashboard';
 import ClientDashboard from './pages/client/Dashboard';
 import NotFound from './pages/NotFound';
 import { ServiceLayout } from './components/layout/ServiceLayout';
 import { ClientLayout } from './components/layout/ClientLayout';
+import { PublicLayout } from './components/layout/PublicLayout';
 
 // Service Pages
 import { ServiceTicketsPage } from './pages/service/ServiceTicketsPage';
@@ -30,13 +31,15 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Gateway />} />
-        <Route path="/service" element={<ServiceLogin />} />
-        <Route path="/client" element={<ClientLogin />} />
-        <Route path="/client/activate" element={<ClientActivatePage />} />
-        <Route path="/service/forgot-password" element={<ServiceForgotPasswordPage />} />
-        <Route path="/service/reset-password" element={<ServiceResetPasswordPage />} />
+        {/* Public Routes with Persistent Layout */}
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<Gateway />} />
+          <Route path="/service" element={<ServiceLogin />} />
+          <Route path="/client" element={<ClientLogin />} />
+          <Route path="/client/activate" element={<ClientActivatePage />} />
+          <Route path="/service/forgot-password" element={<ServiceForgotPasswordPage />} />
+          <Route path="/service/reset-password" element={<ServiceResetPasswordPage />} />
+        </Route>
 
         {/* Service - Protected Routes */}
         {/* Service - Protected Routes */}

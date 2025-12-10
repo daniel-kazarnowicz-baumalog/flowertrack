@@ -1,11 +1,12 @@
 .dashboardList {
-  background-color: var(--bg-secondary);
-  border-radius: 12px;
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-lg);
   padding: 1.5rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-border-subtle);
   height: 100%;
   display: flex;
   flex-direction: column;
+  box-shadow: var(--shadow-sm);
 }
 
 .dashboardList__header {
@@ -18,7 +19,7 @@
 .dashboardList__title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--color-text-primary);
   margin: 0;
 }
 
@@ -28,7 +29,7 @@
 }
 
 .dashboardList__empty {
-  color: var(--text-secondary);
+  color: var(--color-text-tertiary);
   font-style: italic;
   text-align: center;
   padding: 1rem;
@@ -39,7 +40,13 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 0;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--color-border-subtle);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dashboardList__item:hover {
+  background-color: var(--color-bg-subtle);
 }
 
 .dashboardList__item:last-child {
@@ -54,12 +61,12 @@
 
 .dashboardList__itemName {
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--color-text-primary);
 }
 
 .dashboardList__itemSub {
   font-size: 0.85rem;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 .dashboardList__badge {
@@ -69,12 +76,17 @@
   font-weight: 600;
 }
 
+.dashboardList__badge--info {
+  background-color: var(--color-status-info-bg);
+  color: var(--color-status-info-text);
+}
+
 .dashboardList__badge--danger {
-  background-color: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  background-color: var(--color-status-error-bg);
+  color: var(--color-status-error-text);
 }
 
 .dashboardList__badge--warning {
-  background-color: rgba(245, 158, 11, 0.1);
-  color: #f59e0b;
+  background-color: var(--color-status-warning-bg);
+  color: var(--color-status-warning-text);
 }

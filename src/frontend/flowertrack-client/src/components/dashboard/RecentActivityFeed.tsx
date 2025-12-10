@@ -56,15 +56,15 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
   const getActivityColor = (type: string) => {
     switch (type) {
       case 'created':
-        return 'bg-blue-100 text-blue-600';
+        return 'activity-icon-wrapper--created';
       case 'updated':
-        return 'bg-gray-100 text-gray-600';
+        return 'activity-icon-wrapper--updated';
       case 'assigned':
-        return 'bg-purple-100 text-purple-600';
+        return 'activity-icon-wrapper--assigned';
       case 'resolved':
-        return 'bg-green-100 text-green-600';
+        return 'activity-icon-wrapper--resolved';
       default:
-        return 'bg-gray-100 text-gray-400';
+        return 'activity-icon-wrapper--default';
     }
   };
 

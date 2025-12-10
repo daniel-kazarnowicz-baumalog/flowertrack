@@ -14,7 +14,7 @@
 .serviceTicketsPage__header h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #333;
+  color: var(--color-text-primary);
   margin: 0;
 }
 
@@ -26,11 +26,11 @@
 
 .serviceTicketsPage__count {
   font-size: 0.875rem;
-  color: #666;
+  color: var(--color-text-secondary);
 }
 
 .serviceTicketsPage__count strong {
-  color: #7c3aed;
+  color: var(--color-primary-500);
   font-size: 1.25rem;
   margin-left: 0.5rem;
 }
@@ -42,19 +42,19 @@
   justify-content: center;
   padding: 3rem;
   gap: 1rem;
-  background: white;
-  border: 1px solid #ef4444;
-  border-radius: 8px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-rose-500);
+  border-radius: var(--radius-lg);
   margin-top: 2rem;
 }
 
 .serviceTicketsPage__error h2 {
-  color: #ef4444;
+  color: var(--color-rose-500);
   margin: 0;
 }
 
 .serviceTicketsPage__error p {
-  color: #666;
+  color: var(--color-text-secondary);
   margin: 0;
 }
 

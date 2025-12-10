@@ -22,3 +22,5 @@ export type { ToastProps, ToastVariant } from './Toast';
 
 export { ThemeSwitcher } from './ThemeSwitcher';
 export type { ThemeSwitcherProps, ThemeSwitcherVariant } from './ThemeSwitcher';
+
+export { ParticlesBackground } from './ParticlesBackground';

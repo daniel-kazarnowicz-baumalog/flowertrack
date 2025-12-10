@@ -4,8 +4,8 @@
 /* Base Styles */
 html {
   font-family: var(--font-sans);
-  line-height: var(--leading-normal);
-  font-weight: var(--font-normal);
+  line-height: 1.5;
+  font-weight: 400;
   font-size: 16px;
 
   font-synthesis: none;
@@ -15,6 +15,7 @@ html {
 
   /* Smooth color transitions for theme changes */
   color-scheme: light dark;
+  scroll-behavior: smooth;
 }
 
 * {
@@ -27,11 +28,11 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: var(--color-bg-primary);
+  background-color: var(--color-bg-app);
   color: var(--color-text-primary);
   transition:
-    background-color var(--transition-slow),
-    color var(--transition-slow);
+    background-color var(--duration-300) var(--ease-in-out),
+    color var(--duration-300) var(--ease-in-out);
 }
 
 #root {
@@ -56,11 +57,11 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-bg-secondary);
+  background: var(--color-bg-subtle);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border-dark);
+  background: var(--color-border-strong);
   border-radius: var(--radius-full);
 }
 
@@ -70,7 +71,7 @@ body {
 
 /* Focus visible for keyboard navigation */
 :focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-primary-500);
   outline-offset: 2px;
 }
 

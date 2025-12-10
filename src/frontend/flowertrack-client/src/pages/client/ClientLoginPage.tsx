@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Button, Input, Loader } from '../../components/ui';
+import { Button, Input } from '../../components/ui';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../hooks/useToast';
 import './ClientLoginPage.css';
@@ -53,65 +53,62 @@ const ClientLoginPage = () => {
   };
 
   return (
-    <div className="client-login">
-      <div className="client-login__container">
-        <div className="client-login__header">
-          <div className="client-login__logo">
-            <svg
-              width="48"
-              height="48"
-              viewBox="0 0 48 48"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect width="48" height="48" rx="8" fill="#10b981" />
-              <path
-                d="M24 14C18.48 14 14 18.48 14 24C14 29.52 18.48 34 24 34C29.52 34 34 29.52 34 24C34 18.48 29.52 14 24 14ZM24 20C25.66 20 27 21.34 27 23C27 24.66 25.66 26 24 26C22.34 26 21 24.66 21 23C21 21.34 22.34 20 24 20ZM24 31.2C21.5 31.2 19.29 29.92 18 27.98C18.03 25.99 22 24.9 24 24.9C25.99 24.9 29.97 25.99 30 27.98C28.71 29.92 26.5 31.2 24 31.2Z"
-                fill="white"
-              />
-            </svg>
+    <div className="login-card-wrapper">
+      <div className="login-content-stack">
+        <Link to="/" className="back-link">
+          ← Wróć
+        </Link>
+
+        <div className="login-card client-card-theme">
+          <div className="login-header">
+            <div className="login-logo">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="24" height="24" rx="4" fill="currentColor" fillOpacity="0.2" />
+                <path d="M12 7C9.24 7 7 9.24 7 12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12C17 9.24 14.76 7 12 7ZM12 10C12.83 10 13.5 10.67 13.5 11.5C13.5 12.33 12.83 13 12 13C11.17 13 10.5 12.33 10.5 11.5C10.5 10.67 11.17 10 12 10ZM12 15.6C10.75 15.6 9.645 14.96 9 13.99C9.015 12.995 11 12.45 12 12.45C13 12.45 14.985 12.995 15 13.99C14.355 14.96 13.25 15.6 12 15.6Z" fill="currentColor" />
+              </svg>
+            </div>
+            <h2 className="login-title">Witaj ponownie</h2>
+            <p className="login-subtitle">Wprowadź swoje dane aby się zalogować</p>
           </div>
-          <h1 className="client-login__title">Portal Klienta</h1>
-          <p className="client-login__subtitle">Zarządzaj swoimi zgłoszeniami i maszynami</p>
-        </div>
 
-        <form className="client-login__form" onSubmit={handleSubmit}>
-          <Input
-            type="email"
-            label="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="twoj.email@example.com"
-            error={errors.email}
-            disabled={isLoading}
-            autoComplete="email"
-            required
-          />
+          <form className="login-form" onSubmit={handleSubmit}>
+            <Input
+              type="email"
+              label="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="twoj.email@example.com"
+              error={errors.email}
+              disabled={isLoading}
+              autoComplete="email"
+              required
+            />
 
-          <Input
-            type="password"
-            label="Hasło"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            error={errors.password}
-            disabled={isLoading}
-            autoComplete="current-password"
-            required
-          />
+            <Input
+              type="password"
+              label="Hasło"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              error={errors.password}
+              disabled={isLoading}
+              autoComplete="current-password"
+              required
+            />
 
-          <Button type="submit" variant="primary" size="lg" disabled={isLoading} fullWidth>
-            {isLoading ? <Loader size="sm" /> : 'Zaloguj się'}
-          </Button>
-        </form>
+            <Button type="submit" variant="primary" size="lg" disabled={isLoading} fullWidth isLoading={isLoading}>
+              Zaloguj się
+            </Button>
+          </form>
 
-        <div className="client-login__footer">
-          <p className="client-login__footer-text">
-            Jesteś pracownikiem serwisu?{' '}
-            <Link to="/service/login" className="client-login__link">
-              Przejdź do portalu serwisowego
-            </Link>
-          </p>
+          <div className="form-footer">
+            <p>
+              Pracownik serwisu?{' '}
+              <Link to="/service/login" className="form-link">
+                Przejdź tutaj
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>
