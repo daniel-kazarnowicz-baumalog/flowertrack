@@ -29,5 +29,10 @@ public sealed class InviteServiceUserCommandValidator : AbstractValidator<Invite
         RuleFor(x => x.Specialization)
             .MaximumLength(100).WithMessage("Specialization cannot exceed 100 characters")
             .When(x => !string.IsNullOrEmpty(x.Specialization));
+
+        RuleFor(x => x.Password)
+            .MinimumLength(8).WithMessage("Password must be at least 8 characters")
+            .MaximumLength(100).WithMessage("Password cannot exceed 100 characters")
+            .When(x => !string.IsNullOrEmpty(x.Password));
     }
 }

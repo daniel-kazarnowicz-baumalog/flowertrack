@@ -14,4 +14,9 @@ public sealed record InviteServiceUserCommand : IRequest<Result<Guid>>
     public string LastName { get; init; } = string.Empty;
     public string? PhoneNumber { get; init; }
     public string? Specialization { get; init; }
+    
+    /// <summary>
+    /// Optional password. If provided, user account will be immediately active.
+    /// </summary>
+    public string? Password { get; init; }
 }

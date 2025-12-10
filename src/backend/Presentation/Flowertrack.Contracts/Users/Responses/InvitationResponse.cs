@@ -8,5 +8,9 @@ public sealed record InvitationResponse
     public Guid UserId { get; init; }
     public string Email { get; init; } = string.Empty;
     public string Message { get; init; } = string.Empty;
-    public DateTimeOffset InvitationValidUntil { get; init; }
+    
+    /// <summary>
+    /// Null when password was set by admin (no invitation needed)
+    /// </summary>
+    public DateTimeOffset? InvitationValidUntil { get; init; }
 }

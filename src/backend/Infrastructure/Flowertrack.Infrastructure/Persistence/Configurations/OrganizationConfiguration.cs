@@ -20,7 +20,7 @@ public class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
             .HasMaxLength(200);
         
         builder.Property(o => o.Email)
-            .IsRequired()
+            .IsRequired(false)
             .HasMaxLength(255);
         
         builder.Property(o => o.Phone)
@@ -62,7 +62,8 @@ public class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
         
         // Indexes
         builder.HasIndex(o => o.Email)
-            .IsUnique();
+            .IsUnique()
+            .HasFilter("\"Email\" IS NOT NULL");
         
         builder.HasIndex(o => o.ServiceStatus);
         

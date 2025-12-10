@@ -81,8 +81,21 @@ export const getTicketById = async (id: string): Promise<TicketDto> => {
  * Create new ticket (client portal)
  */
 export const createTicket = async (data: CreateTicketRequest): Promise<TicketDto> => {
-  const response = await apiClient.post<TicketDto>('/tickets', data);
-  return response.data;
+  // Map priority string to int for backend
+  const priorityToIntMap: Record<string, number> = {
+    Low: 0,
+    Medium: 1,
+    High: 2,
+    Critical: 3,
+  };
+
+  const requestData = {
+    ...data,
+    priority: priorityToIntMap[data.priority] ?? 1, // Default to Medium if unknown
+  };
+
+  const response = await apiClient.post<TicketDto>('/tickets', requestData);
+  return mapTicketEnums(response.data);
 };
 
 /**

@@ -200,6 +200,18 @@ public sealed class ServiceUser : AuditableEntity<Guid>, IAggregateRoot
     }
 
     /// <summary>
+    /// Set the Supabase User ID for authentication linking
+    /// </summary>
+    public void SetSupabaseUserId(Guid supabaseUserId)
+    {
+        if (SupabaseUserId.HasValue)
+            throw new InvalidOperationException("Supabase User ID is already set");
+        
+        SupabaseUserId = supabaseUserId;
+        SetUpdatedAudit(Id);
+    }
+
+    /// <summary>
     /// Links this service user to a Supabase auth user
     /// </summary>
     /// <param name="supabaseUserId">The Supabase auth user ID</param>

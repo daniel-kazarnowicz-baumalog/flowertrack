@@ -69,10 +69,16 @@ export const ServiceLayout = () => {
 
         <div className="serviceLayout__user">
           <div className="serviceLayout__userInfo">
-            <div className="serviceLayout__userAvatar">{user?.name?.charAt(0) || 'S'}</div>
+            <div className="serviceLayout__userAvatar">
+              {(user?.fullName || user?.firstName || user?.email || 'S').charAt(0).toUpperCase()}
+            </div>
             <div className="serviceLayout__userDetails">
-              <span className="serviceLayout__userName">{user?.name || 'Service User'}</span>
-              <span className="serviceLayout__userRole">Technician</span>
+              <span className="serviceLayout__userName">
+                {user?.fullName || `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'Service User'}
+              </span>
+              <span className="serviceLayout__userRole">
+                {user?.isAdmin ? 'Administrator' : 'Technik'}
+              </span>
             </div>
           </div>
           <button onClick={handleLogout} className="serviceLayout__logoutBtn" title="Logout">

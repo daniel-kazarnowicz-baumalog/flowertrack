@@ -55,7 +55,8 @@ public class UsersController : ControllerBase
             FirstName = request.FirstName,
             LastName = request.LastName,
             PhoneNumber = request.PhoneNumber,
-            Specialization = request.Specialization
+            Specialization = request.Specialization,
+            Password = request.Password
         };
 
         var result = await _mediator.Send(command);
@@ -65,12 +66,18 @@ public class UsersController : ControllerBase
             return BadRequest(new ErrorResponse(result.Error!));
         }
 
+        var message = string.IsNullOrWhiteSpace(request.Password)
+            ? "Invitation email sent to service user"
+            : "Service user account created successfully";
+
         return Accepted(new InvitationResponse
         {
             UserId = result.Value,
             Email = request.Email,
-            Message = "Invitation email sent to service user",
-            InvitationValidUntil = DateTimeOffset.UtcNow.AddDays(7)
+            Message = message,
+            InvitationValidUntil = string.IsNullOrWhiteSpace(request.Password) 
+                ? DateTimeOffset.UtcNow.AddDays(7) 
+                : null
         });
     }
 

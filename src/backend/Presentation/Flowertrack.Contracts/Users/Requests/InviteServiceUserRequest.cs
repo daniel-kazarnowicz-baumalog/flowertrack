@@ -24,4 +24,10 @@ public sealed record InviteServiceUserRequest
 
     [StringLength(100, ErrorMessage = "Specialization cannot exceed 100 characters")]
     public string? Specialization { get; init; }
+
+    /// <summary>
+    /// Optional password for the user. If not provided, user will need to set password via invitation link.
+    /// </summary>
+    [StringLength(100, MinimumLength = 8, ErrorMessage = "Password must be between 8 and 100 characters")]
+    public string? Password { get; init; }
 }

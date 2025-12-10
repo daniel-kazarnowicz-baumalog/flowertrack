@@ -16,9 +16,16 @@ public sealed class TicketNumber : ValueObject
     private const int MinSequential = 1;
     private const int MaxSequential = 99999;
 
-    public int Year { get; }
-    public int Sequential { get; }
-    public string Value { get; }
+    public int Year { get; private set; }
+    public int Sequential { get; private set; }
+    public string Value { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// EF Core requires a parameterless constructor for materialization.
+    /// </summary>
+#pragma warning disable CS8618 // Required by EF Core
+    private TicketNumber() { }
+#pragma warning restore CS8618
 
     private TicketNumber(int year, int sequential)
     {

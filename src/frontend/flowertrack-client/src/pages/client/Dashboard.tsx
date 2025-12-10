@@ -120,6 +120,7 @@ const ClientDashboard = () => {
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateTicket}
         machines={machines || []}
+        organizationId={user?.organizationId || ''}
         isFetchingMachines={isFetchingMachines}
       />
     </div>

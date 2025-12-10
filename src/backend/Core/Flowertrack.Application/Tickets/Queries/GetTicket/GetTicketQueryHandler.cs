@@ -16,6 +16,7 @@ public sealed class GetTicketQueryHandler
     private readonly IOrganizationRepository _organizationRepository;
     private readonly IMachineRepository _machineRepository;
     private readonly IOrganizationUserRepository _userRepository;
+    private readonly IServiceUserRepository _serviceUserRepository;
     private readonly ILogger<GetTicketQueryHandler> _logger;
 
     public GetTicketQueryHandler(
@@ -23,12 +24,14 @@ public sealed class GetTicketQueryHandler
         IOrganizationRepository organizationRepository,
         IMachineRepository machineRepository,
         IOrganizationUserRepository userRepository,
+        IServiceUserRepository serviceUserRepository,
         ILogger<GetTicketQueryHandler> logger)
     {
         _ticketRepository = ticketRepository;
         _organizationRepository = organizationRepository;
         _machineRepository = machineRepository;
         _userRepository = userRepository;
+        _serviceUserRepository = serviceUserRepository;
         _logger = logger;
     }
 
@@ -44,25 +47,31 @@ public sealed class GetTicketQueryHandler
             return Result.Failure<TicketDetailDto>("Ticket not found");
         }
 
-        // Get requesting user for authorization
-        var requestingUser = await _userRepository.GetByIdAsync(request.RequestedBy, cancellationToken);
-        if (requestingUser == null)
-        {
-            _logger.LogWarning("Requesting user {UserId} not found", request.RequestedBy);
-            return Result.Failure<TicketDetailDto>("User not found");
-        }
+        // Check if user is a service team member (has access to all tickets)
+        var serviceUser = await _serviceUserRepository.GetByIdAsync(request.RequestedBy, cancellationToken);
+        var isServiceUser = serviceUser != null;
 
-        // Authorization check: User must belong to the same organization
-        // TODO: Add service team member check when service team functionality is implemented
-        if (requestingUser.OrganizationId != ticket.OrganizationId)
+        // If not a service user, check organization user authorization
+        if (!isServiceUser)
         {
-            _logger.LogWarning(
-                "User {UserId} from organization {UserOrgId} attempted to access ticket {TicketId} from organization {TicketOrgId}",
-                request.RequestedBy,
-                requestingUser.OrganizationId,
-                request.TicketId,
-                ticket.OrganizationId);
-            return Result.Failure<TicketDetailDto>("You do not have permission to view this ticket");
+            var requestingUser = await _userRepository.GetByIdAsync(request.RequestedBy, cancellationToken);
+            if (requestingUser == null)
+            {
+                _logger.LogWarning("Requesting user {UserId} not found", request.RequestedBy);
+                return Result.Failure<TicketDetailDto>("User not found");
+            }
+
+            // Authorization check: User must belong to the same organization
+            if (requestingUser.OrganizationId != ticket.OrganizationId)
+            {
+                _logger.LogWarning(
+                    "User {UserId} from organization {UserOrgId} attempted to access ticket {TicketId} from organization {TicketOrgId}",
+                    request.RequestedBy,
+                    requestingUser.OrganizationId,
+                    request.TicketId,
+                    ticket.OrganizationId);
+                return Result.Failure<TicketDetailDto>("You do not have permission to view this ticket");
+            }
         }
 
         // Load related entities
@@ -73,10 +82,19 @@ public sealed class GetTicketQueryHandler
         string? assignedToUserName = null;
         if (ticket.AssignedToUserId.HasValue)
         {
-            var assignedUser = await _userRepository.GetByIdAsync(ticket.AssignedToUserId.Value, cancellationToken);
-            assignedToUserName = assignedUser != null 
-                ? $"{assignedUser.FirstName} {assignedUser.LastName}" 
-                : null;
+            // Try to find assigned user in service users first, then organization users
+            var assignedServiceUser = await _serviceUserRepository.GetByIdAsync(ticket.AssignedToUserId.Value, cancellationToken);
+            if (assignedServiceUser != null)
+            {
+                assignedToUserName = $"{assignedServiceUser.FirstName} {assignedServiceUser.LastName}";
+            }
+            else
+            {
+                var assignedUser = await _userRepository.GetByIdAsync(ticket.AssignedToUserId.Value, cancellationToken);
+                assignedToUserName = assignedUser != null 
+                    ? $"{assignedUser.FirstName} {assignedUser.LastName}" 
+                    : null;
+            }
         }
 
         // Map to DTO

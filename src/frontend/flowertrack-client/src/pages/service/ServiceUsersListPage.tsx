@@ -54,9 +54,10 @@ export const ServiceUsersListPage = () => {
     status: statusFilter,
   });
 
-  const users = data?.items || [];
-  const totalCount = data?.totalCount || 0;
-  const totalPages = data?.totalPages || 1;
+  // API returns array directly, not paginated response
+  const users = data || [];
+  const totalCount = users.length;
+  const totalPages = Math.ceil(totalCount / pageSize) || 1;
 
   // Check if user is the last active admin
   const isLastAdmin = (userId: string) => {

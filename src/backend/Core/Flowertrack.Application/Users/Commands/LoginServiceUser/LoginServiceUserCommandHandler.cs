@@ -84,6 +84,14 @@ public sealed class LoginServiceUserCommandHandler
             authResult.AccessToken = token;
             authResult.ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(60); // Match JWT expiration
 
+            // Set metadata from ServiceUser entity (not from Supabase)
+            var roleNames = serviceUser.GetRoleNames();
+            var primaryRole = roleNames.FirstOrDefault() ?? "ServiceTechnician";
+            authResult.SetMetadata(
+                fullName: $"{serviceUser.FirstName} {serviceUser.LastName}".Trim(),
+                role: primaryRole
+            );
+
             _logger.LogInformation(
                 "Successfully logged in service user: {Email}, ID: {UserId}", 
                 request.Email, 

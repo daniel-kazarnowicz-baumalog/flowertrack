@@ -38,9 +38,24 @@ public class AuthResult
     /// <summary>
     /// User metadata extracted from the user object
     /// </summary>
-    public UserMetadata? Metadata => User?.UserMetadata != null 
+    public UserMetadata? Metadata => _metadata ?? (User?.UserMetadata != null 
         ? UserMetadata.FromDictionary(User.UserMetadata) 
-        : null;
+        : null);
+
+    private UserMetadata? _metadata;
+
+    /// <summary>
+    /// Sets metadata explicitly (overrides Supabase metadata)
+    /// </summary>
+    public void SetMetadata(string fullName, string role, Guid? organizationId = null)
+    {
+        _metadata = new UserMetadata
+        {
+            FullName = fullName,
+            Role = role,
+            OrganizationId = organizationId
+        };
+    }
 
     /// <summary>
     /// Creates a successful auth result

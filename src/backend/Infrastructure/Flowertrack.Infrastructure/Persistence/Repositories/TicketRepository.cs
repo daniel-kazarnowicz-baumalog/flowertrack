@@ -64,8 +64,9 @@ public sealed class TicketRepository : Repository<Ticket>, ITicketRepository
 
     public async Task<bool> TicketNumberExistsAsync(TicketNumber ticketNumber, CancellationToken ct = default)
     {
-   return await DbSet
-   .AnyAsync(t => t.TicketNumber == ticketNumber, ct);
+        // Compare by Value property to avoid EF Core materialization issues with owned entities
+        return await DbSet
+            .AnyAsync(t => t.TicketNumber.Value == ticketNumber.Value, ct);
     }
 
     public async Task<bool> HasActiveTicketsForOrganizationAsync(Guid organizationId, CancellationToken ct = default)

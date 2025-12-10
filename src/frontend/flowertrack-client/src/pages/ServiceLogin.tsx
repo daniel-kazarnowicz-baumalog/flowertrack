@@ -23,14 +23,18 @@ const ServiceLogin = () => {
     try {
       const response = await api.post('/auth/service/login', { email, password });
       const { accessToken, user } = response.data;
+      
+      // Check if user is admin based on role string from backend
+      const isAdmin = user.role === 'ServiceAdministrator' || user.role === 'Admin';
+      
       login(accessToken, {
         id: user.id,
         email: user.email,
         role: 'service',
         firstName: user.firstName,
         lastName: user.lastName,
-        fullName: `${user.firstName} ${user.lastName}`,
-        isAdmin: user.roles?.includes('Admin') ?? false,
+        fullName: user.fullName || `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+        isAdmin,
       });
       navigate('/service/dashboard');
     } catch (err: any) {

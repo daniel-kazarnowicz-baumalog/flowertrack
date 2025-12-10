@@ -369,7 +369,7 @@ export const ServiceTicketDetailPage: React.FC = () => {
         isOpen={isAssignmentModalOpen}
         onClose={() => setIsAssignmentModalOpen(false)}
         currentAssigneeId={ticket.assignedToId}
-        serviceUsers={serviceUsersData?.items || []}
+        serviceUsers={serviceUsersData || []}
         onConfirm={handleAssignment}
         isLoading={assignMutation.isPending}
         isFetchingUsers={isLoadingUsers}

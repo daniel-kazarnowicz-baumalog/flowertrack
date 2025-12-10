@@ -21,6 +21,7 @@ interface CreateTicketModalProps {
   isOpen: boolean;
   onClose: () => void;
   machines: Machine[];
+  organizationId: string;
   onSubmit: (data: CreateTicketRequest, files: File[]) => void;
   isLoading?: boolean;
   isFetchingMachines?: boolean;
@@ -30,11 +31,13 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
   isOpen,
   onClose,
   machines,
+  organizationId,
   onSubmit,
   isLoading = false,
   isFetchingMachines = false,
 }) => {
   const [formData, setFormData] = useState<CreateTicketRequest>({
+    organizationId: organizationId,
     machineId: '',
     title: '',
     description: '',
@@ -85,6 +88,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
 
   const handleClose = () => {
     setFormData({
+      organizationId: organizationId,
       machineId: '',
       title: '',
       description: '',

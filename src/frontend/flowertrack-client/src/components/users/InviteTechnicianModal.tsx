@@ -14,12 +14,14 @@ interface FormData {
   firstName: string;
   lastName: string;
   role: 'Admin' | 'Technician';
+  password: string;
 }
 
 interface FormErrors {
   email?: string;
   firstName?: string;
   lastName?: string;
+  password?: string;
   general?: string;
 }
 
@@ -33,6 +35,7 @@ export const InviteTechnicianModal = ({
     firstName: '',
     lastName: '',
     role: 'Technician',
+    password: '',
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const inviteMutation = useInviteServiceUser();
@@ -43,6 +46,7 @@ export const InviteTechnicianModal = ({
       firstName: '',
       lastName: '',
       role: 'Technician',
+      password: '',
     });
     setErrors({});
   };
@@ -74,6 +78,13 @@ export const InviteTechnicianModal = ({
       newErrors.lastName = 'Last name is required';
     } else if (formData.lastName.length > 100) {
       newErrors.lastName = 'Last name cannot exceed 100 characters';
+    }
+
+    // Password validation (optional but if provided, must be valid)
+    if (formData.password && formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
+    } else if (formData.password && formData.password.length > 100) {
+      newErrors.password = 'Password cannot exceed 100 characters';
     }
 
     setErrors(newErrors);
@@ -168,6 +179,21 @@ export const InviteTechnicianModal = ({
             required
             disabled={inviteMutation.isPending}
           />
+        </div>
+
+        <div className="inviteTechnicianForm__field">
+          <Input
+            type="password"
+            label="Password (optional)"
+            placeholder="Leave empty to send invitation email"
+            value={formData.password}
+            onChange={(e) => handleInputChange('password', e.target.value)}
+            error={errors.password}
+            disabled={inviteMutation.isPending}
+          />
+          <span className="inviteTechnicianForm__hint">
+            If set, user can login immediately. Otherwise, invitation email will be sent.
+          </span>
         </div>
 
         <div className="inviteTechnicianForm__field">

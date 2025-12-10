@@ -1,5 +1,6 @@
 using Flowertrack.Application.Auth.Commands.Login;
 using Flowertrack.Application.Auth.Commands.RefreshToken;
+using Flowertrack.Application.Auth.Commands.SeedAdmin;
 using Flowertrack.Application.Auth.Queries.GetCurrentServiceUser;
 using Flowertrack.Application.Auth.Queries.GetCurrentOrganizationUser;
 using Flowertrack.Application.Common.Models;
@@ -629,6 +630,43 @@ public class AuthController : ControllerBase
 
         // Fall back to RemoteIpAddress
         return HttpContext.Connection.RemoteIpAddress?.ToString();
+    }
+
+    #endregion
+
+    #region Development/Seeding Endpoints
+
+    /// <summary>
+    /// Seed the initial Service Administrator user.
+    /// This endpoint is only available in Development environment.
+    /// </summary>
+    /// <param name="env">Web host environment</param>
+    /// <returns>Seeded admin user information</returns>
+    [HttpPost("seed-admin")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(SeedAdminResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> SeedAdmin([FromServices] IWebHostEnvironment env)
+    {
+        // Only allow in Development environment
+        if (!env.IsDevelopment())
+        {
+            _logger.LogWarning("Attempt to seed admin in non-development environment");
+            return StatusCode(StatusCodes.Status403Forbidden, 
+                new { message = "This endpoint is only available in Development environment" });
+        }
+
+        var command = new Application.Auth.Commands.SeedAdmin.SeedAdminCommand();
+        var result = await _mediator.Send(command);
+
+        if (!result.IsSuccess)
+        {
+            _logger.LogError("Failed to seed admin: {Error}", result.Error);
+            return BadRequest(new { message = result.Error });
+        }
+
+        return Ok(result.Value);
     }
 
     #endregion

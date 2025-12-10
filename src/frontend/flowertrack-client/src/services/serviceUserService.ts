@@ -23,6 +23,7 @@ export interface InviteServiceUserRequest {
   firstName: string;
   lastName: string;
   role: 'Admin' | 'Technician';
+  password?: string;
 }
 
 export interface UpdateServiceUserRoleRequest {
@@ -44,9 +45,10 @@ export interface ServiceUsersFilters {
 export const serviceUserService = {
   /**
    * Get all service users with optional filters
+   * Note: API returns array directly, not paginated response
    */
-  async getServiceUsers(params?: ServiceUsersFilters): Promise<PaginatedResponse<ServiceUser>> {
-    const { data } = await apiClient.get<PaginatedResponse<ServiceUser>>('/admin/users/service', {
+  async getServiceUsers(params?: ServiceUsersFilters): Promise<ServiceUser[]> {
+    const { data } = await apiClient.get<ServiceUser[]>('/admin/users/service', {
       params,
     });
     return data;
@@ -56,7 +58,7 @@ export const serviceUserService = {
    * Invite a new service user
    */
   async inviteServiceUser(request: InviteServiceUserRequest): Promise<ServiceUser> {
-    const { data } = await apiClient.post<ServiceUser>('/service-users/invite', request);
+    const { data } = await apiClient.post<ServiceUser>('/admin/users/service/invite', request);
     return data;
   },
 

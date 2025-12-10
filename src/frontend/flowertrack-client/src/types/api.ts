@@ -147,6 +147,7 @@ export interface TicketDto {
 }
 
 export interface CreateTicketRequest {
+  organizationId: string;
   machineId: string;
   title: string;
   description: string;
