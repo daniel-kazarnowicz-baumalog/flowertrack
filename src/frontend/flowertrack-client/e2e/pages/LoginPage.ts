@@ -41,7 +41,7 @@ export class LoginPage extends BasePage {
    * Navigate to login page
    */
   async goto() {
-    await super.goto('/login');
+    await super.goto('/service');
   }
 
   /**

@@ -1,6 +1,6 @@
-import { test, expect } from '../fixtures/base';
-import { LoginPage } from '../pages/LoginPage';
-import { testUsers, testData } from '../utils/testData';
+import { test, expect } from './fixtures/base';
+import { LoginPage } from './pages/LoginPage';
+import { testUsers, testData } from './utils/testData';
 
 /**
  * Login Page E2E Tests
@@ -16,7 +16,7 @@ test.describe('Login Page', () => {
   });
 
   test('should load login page successfully', async ({ page }) => {
-    await expect(page).toHaveURL(/\/login/);
+    await expect(page).toHaveURL(/\/service/);
   });
 
   test('should display login form elements', async ({ page }) => {
@@ -153,8 +153,8 @@ test.describe('Login Page', () => {
     const currentUrl = page.url();
     const hasError = await loginPage.hasError();
 
-    // Oczekujemy że nie ma błędu i URL zmienił się z /login
+    // Oczekujemy że nie ma błędu i URL zmienił się z /service (login page)
     expect(hasError).toBeFalsy();
-    expect(currentUrl).not.toContain('/login');
+    expect(currentUrl).toContain('/service/dashboard');
   });
 });
