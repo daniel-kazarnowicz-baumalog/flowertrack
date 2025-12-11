@@ -511,7 +511,36 @@ public sealed class MqttLogIngestionService : IMqttLogIngestionService, IDisposa
                 _logger.LogInformation("Attempting to reconnect to MQTT broker...");
                 try
                 {
-                    await StartAsync(_shutdownCts.Token);
+                    // Reconnect using the same client
+                    var options = new MqttClientOptionsBuilder()
+                        .WithTcpServer(_options.Server, _options.Port)
+                        .WithClientId(_options.ClientId ?? $"flowertrack-{Guid.NewGuid():N}")
+                        .WithCleanSession(false)
+                        .WithKeepAlivePeriod(TimeSpan.FromSeconds(_options.KeepAliveSeconds))
+                        .WithTimeout(TimeSpan.FromSeconds(_options.ConnectionTimeoutSeconds));
+
+                    if (!string.IsNullOrWhiteSpace(_options.Username))
+                    {
+                        options = options.WithCredentials(_options.Username, _options.Password);
+                    }
+
+                    if (_options.UseTls)
+                    {
+                        options = options.WithTlsOptions(o => o.UseTls());
+                    }
+
+                    await _mqttClient.ConnectAsync(options.Build(), _shutdownCts.Token);
+                    _logger.LogInformation("Successfully reconnected to MQTT broker");
+
+                    // Resubscribe to topics
+                    var subscribeOptions = new MqttClientSubscribeOptionsBuilder()
+                        .WithTopicFilter(f => f
+                            .WithTopic(_options.TopicPattern)
+                            .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
+                        .Build();
+
+                    await _mqttClient.SubscribeAsync(subscribeOptions, _shutdownCts.Token);
+                    _logger.LogInformation("Resubscribed to topic: {Topic}", _options.TopicPattern);
                 }
                 catch (Exception ex)
                 {

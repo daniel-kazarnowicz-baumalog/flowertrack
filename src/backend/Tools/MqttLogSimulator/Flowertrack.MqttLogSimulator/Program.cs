@@ -451,7 +451,7 @@ class Program
             {
                 var successful = recentLogs.Count(l => l.Success);
                 var failed = recentLogs.Count - successful;
-                var avgDuration = recentLogs.Average(l => l.DurationMs);
+                var avgDuration = recentLogs.Any() ? recentLogs.Average(l => l.DurationMs) : 0;
                 var logsPerMinute = recentLogs.Count;
                 var alarmsCount = recentLogs.Count(l => l.HasNewAlarms);
 
@@ -478,9 +478,14 @@ class Program
         Console.WriteLine("═══════════════════════════════════════════════════════════════");
         Console.WriteLine($"Total Logs Sent:        {allLogs.Count(l => l.Success)}");
         Console.WriteLine($"Total Logs Failed:      {allLogs.Count(l => !l.Success)}");
-        Console.WriteLine($"Average Duration:       {allLogs.Average(l => l.DurationMs):F2} ms");
-        Console.WriteLine($"Min Duration:           {allLogs.Min(l => l.DurationMs):F2} ms");
-        Console.WriteLine($"Max Duration:           {allLogs.Max(l => l.DurationMs):F2} ms");
+        
+        if (allLogs.Count > 0)
+        {
+            Console.WriteLine($"Average Duration:       {allLogs.Average(l => l.DurationMs):F2} ms");
+            Console.WriteLine($"Min Duration:           {allLogs.Min(l => l.DurationMs):F2} ms");
+            Console.WriteLine($"Max Duration:           {allLogs.Max(l => l.DurationMs):F2} ms");
+        }
+        
         Console.WriteLine($"Logs with New Alarms:   {allLogs.Count(l => l.HasNewAlarms)}");
         
         // Machine distribution
