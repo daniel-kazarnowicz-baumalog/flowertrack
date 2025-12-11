@@ -20,6 +20,11 @@ public interface IApplicationDbContext
     DbSet<Machine> Machines { get; }
 
     /// <summary>
+    /// Gets the MachineLogs DbSet.
+    /// </summary>
+    DbSet<MachineLog> MachineLogs { get; }
+
+    /// <summary>
     /// Gets the ServiceUsers DbSet.
     /// </summary>
     DbSet<ServiceUser> ServiceUsers { get; }
