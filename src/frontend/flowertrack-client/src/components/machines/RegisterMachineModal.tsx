@@ -3,6 +3,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
@@ -25,6 +26,7 @@ export const RegisterMachineModal: React.FC<RegisterMachineModalProps> = ({
   onSuccess,
   organizationId: preselectedOrgId,
 }) => {
+  const { t } = useTranslation();
   const { organizations, isLoading: loadingOrgs } = useOrganizations();
   const { createMachine, isCreating } = useMachineMutations();
 
@@ -50,25 +52,25 @@ export const RegisterMachineModal: React.FC<RegisterMachineModalProps> = ({
     const newErrors: Record<string, string> = {};
 
     if (!formData.serialNumber.trim()) {
-      newErrors.serialNumber = 'Serial number is required';
+      newErrors.serialNumber = t('machines.serialNumberRequired');
     } else if (formData.serialNumber.length > 255) {
-      newErrors.serialNumber = 'Serial number cannot exceed 255 characters';
+      newErrors.serialNumber = t('machines.serialNumberTooLong');
     }
 
     if (!formData.organizationId) {
-      newErrors.organizationId = 'Organization is required';
+      newErrors.organizationId = t('machines.organizationRequired');
     }
 
     if (formData.brand && formData.brand.length > 100) {
-      newErrors.brand = 'Brand cannot exceed 100 characters';
+      newErrors.brand = t('machines.brandTooLong');
     }
 
     if (formData.model && formData.model.length > 100) {
-      newErrors.model = 'Model cannot exceed 100 characters';
+      newErrors.model = t('machines.modelTooLong');
     }
 
     if (formData.location && formData.location.length > 255) {
-      newErrors.location = 'Location cannot exceed 255 characters';
+      newErrors.location = t('machines.locationTooLong');
     }
 
     setErrors(newErrors);
@@ -88,7 +90,7 @@ export const RegisterMachineModal: React.FC<RegisterMachineModalProps> = ({
       handleClose();
       onSuccess(machine);
     } catch (error) {
-      setFormError((error as Error).message || 'Failed to register machine');
+      setFormError((error as Error).message || t('machines.registrationFailed'));
     }
   };
 
@@ -111,16 +113,16 @@ export const RegisterMachineModal: React.FC<RegisterMachineModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      title="Register New Machine"
+      title={t('machines.registerNewMachine')}
       size="lg"
       closeOnOverlayClick={false}
       footer={
         <div className="registerMachine__footer">
           <Button variant="ghost" onClick={handleClose} disabled={isCreating}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button onClick={handleSubmit} disabled={isCreating || loadingOrgs}>
-            {isCreating ? 'Registering...' : 'Register Machine'}
+            {isCreating ? t('machines.registering') : t('machines.registerMachine')}
           </Button>
         </div>
       }
@@ -131,33 +133,33 @@ export const RegisterMachineModal: React.FC<RegisterMachineModalProps> = ({
         <div className="registerMachine__grid">
           <div className="registerMachine__field">
             <Input
-              label="Serial Number"
+              label={t('machines.serialNumber')}
               type="text"
               value={formData.serialNumber}
               onChange={(e) => setFormData({ ...formData, serialNumber: e.target.value })}
               error={errors.serialNumber}
               required
               disabled={isCreating}
-              placeholder="e.g., SN-123456"
+              placeholder={t('machines.placeholderSerialNumber')}
             />
           </div>
 
           <div className="registerMachine__field">
             <Input
-              label="Brand"
+              label={t('machines.brand')}
               type="text"
               value={formData.brand || ''}
               onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
               error={errors.brand}
               disabled={isCreating}
-              placeholder="e.g., Baumalog"
+              placeholder={t('machines.placeholderBrand')}
             />
           </div>
         </div>
 
         <div className="registerMachine__field">
           <label className="registerMachine__label">
-            Organization <span className="registerMachine__required">*</span>
+            {t('machines.organization')} <span className="registerMachine__required">*</span>
           </label>
           <select
             value={formData.organizationId}
@@ -166,7 +168,7 @@ export const RegisterMachineModal: React.FC<RegisterMachineModalProps> = ({
             disabled={isCreating || loadingOrgs || !!preselectedOrgId}
             required
           >
-            <option value="">Select an organization</option>
+            <option value="">{t('machines.selectOrganization')}</option>
             {activeOrgs.map((org) => (
               <option key={org.id} value={org.id}>
                 {org.name}
@@ -181,25 +183,25 @@ export const RegisterMachineModal: React.FC<RegisterMachineModalProps> = ({
         <div className="registerMachine__grid">
           <div className="registerMachine__field">
             <Input
-              label="Model"
+              label={t('machines.model')}
               type="text"
               value={formData.model || ''}
               onChange={(e) => setFormData({ ...formData, model: e.target.value })}
               error={errors.model}
               disabled={isCreating}
-              placeholder="e.g., Model X-2000"
+              placeholder={t('machines.placeholderModel')}
             />
           </div>
 
           <div className="registerMachine__field">
             <Input
-              label="Location"
+              label={t('machines.location')}
               type="text"
               value={formData.location || ''}
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
               error={errors.location}
               disabled={isCreating}
-              placeholder="e.g., Building A, Floor 2"
+              placeholder={t('machines.placeholderLocation')}
             />
           </div>
         </div>

@@ -33,11 +33,16 @@ export function PriorityDistributionChart({
   // Helper to translate priority
   const getPriorityLabel = (priority: string) => {
     switch (priority) {
-      case 'Low': return t('tickets.priorityLow', 'Niski');
-      case 'Medium': return t('tickets.priorityMedium', 'Średni');
-      case 'High': return t('tickets.priorityHigh', 'Wysoki');
-      case 'Critical': return t('tickets.priorityCritical', 'Krytyczny');
-      default: return priority;
+      case 'Low':
+        return t('tickets.priorityLow', 'Niski');
+      case 'Medium':
+        return t('tickets.priorityMedium', 'Średni');
+      case 'High':
+        return t('tickets.priorityHigh', 'Wysoki');
+      case 'Critical':
+        return t('tickets.priorityCritical', 'Krytyczny');
+      default:
+        return priority;
     }
   };
 

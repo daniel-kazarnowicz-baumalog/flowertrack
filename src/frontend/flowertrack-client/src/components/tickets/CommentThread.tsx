@@ -288,4 +288,3 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
     </div>
   );
 };
-

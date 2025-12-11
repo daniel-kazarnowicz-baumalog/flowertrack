@@ -44,7 +44,9 @@ export const ServiceTicketDetailPage: React.FC = () => {
   // Edit state
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
-  const [editPriority, setEditPriority] = useState<'Low' | 'Medium' | 'High' | 'Critical'>('Medium');
+  const [editPriority, setEditPriority] = useState<'Low' | 'Medium' | 'High' | 'Critical'>(
+    'Medium'
+  );
 
   const { data: ticket, isLoading: isLoadingTicket } = useTicket(id || '');
   const { data: history, isLoading: isLoadingHistory } = useTicketHistory(id || '');
@@ -166,7 +168,6 @@ export const ServiceTicketDetailPage: React.FC = () => {
 
   return (
     <div className={styles.page}>
-
       {/* --- HEADER --- */}
       <div className={styles.header}>
         <div className={styles.headerTop}>
@@ -180,7 +181,7 @@ export const ServiceTicketDetailPage: React.FC = () => {
                 <input
                   className={styles.input}
                   value={editTitle}
-                  onChange={e => setEditTitle(e.target.value)}
+                  onChange={(e) => setEditTitle(e.target.value)}
                   style={{ fontSize: '1.5rem', fontWeight: 700, width: '100%' }}
                 />
               ) : (
@@ -241,8 +242,12 @@ export const ServiceTicketDetailPage: React.FC = () => {
               </>
             ) : (
               <>
-                <Button variant="ghost" onClick={() => setIsEditing(false)}>Anuluj</Button>
-                <Button variant="primary" onClick={handleSaveEdit}>Zapisz zmiany</Button>
+                <Button variant="ghost" onClick={() => setIsEditing(false)}>
+                  Anuluj
+                </Button>
+                <Button variant="primary" onClick={handleSaveEdit}>
+                  Zapisz zmiany
+                </Button>
               </>
             )}
           </div>
@@ -251,19 +256,19 @@ export const ServiceTicketDetailPage: React.FC = () => {
 
       {/* --- GRID LAYOUT --- */}
       <div className={styles.gridContainer}>
-
         {/* LEFT COLUMN: Main Content */}
         <div className={styles.contentArea}>
-
           {activeTab === 'overview' && (
             <div className={styles.sidebarCard} style={{ padding: 'var(--space-6)' }}>
-              <h3 className={styles.infoLabel} style={{ marginBottom: 'var(--space-4)' }}>Opis Zgłoszenia</h3>
+              <h3 className={styles.infoLabel} style={{ marginBottom: 'var(--space-4)' }}>
+                Opis Zgłoszenia
+              </h3>
               {isEditing ? (
                 <textarea
                   className={styles.textarea}
                   rows={8}
                   value={editDescription}
-                  onChange={e => setEditDescription(e.target.value)}
+                  onChange={(e) => setEditDescription(e.target.value)}
                 />
               ) : (
                 <p style={{ lineHeight: 1.6, color: 'var(--color-text-primary)' }}>
@@ -271,12 +276,25 @@ export const ServiceTicketDetailPage: React.FC = () => {
                 </p>
               )}
 
-              <div style={{ marginTop: 'var(--space-6)', paddingTop: 'var(--space-6)', borderTop: '1px solid var(--color-border-subtle)' }}>
-                <h3 className={styles.infoLabel} style={{ marginBottom: 'var(--space-4)' }}>Najnowsza Aktywność</h3>
+              <div
+                style={{
+                  marginTop: 'var(--space-6)',
+                  paddingTop: 'var(--space-6)',
+                  borderTop: '1px solid var(--color-border-subtle)',
+                }}
+              >
+                <h3 className={styles.infoLabel} style={{ marginBottom: 'var(--space-4)' }}>
+                  Najnowsza Aktywność
+                </h3>
                 {/* Show mini timeline here */}
-                <Timeline events={Array.isArray(history) ? history.slice(0, 3) : []} isLoading={isLoadingHistory} />
+                <Timeline
+                  events={Array.isArray(history) ? history.slice(0, 3) : []}
+                  isLoading={isLoadingHistory}
+                />
                 <div style={{ marginTop: 'var(--space-4)', textAlign: 'center' }}>
-                  <Button variant="ghost" onClick={() => setActiveTab('timeline')}>Zobacz pełną historię</Button>
+                  <Button variant="ghost" onClick={() => setActiveTab('timeline')}>
+                    Zobacz pełną historię
+                  </Button>
                 </div>
               </div>
             </div>
@@ -305,7 +323,6 @@ export const ServiceTicketDetailPage: React.FC = () => {
 
         {/* RIGHT COLUMN: Context Sidebar */}
         <div className={styles.sidebar}>
-
           {/* Assignment Card */}
           <div className={styles.sidebarCard}>
             <div className={styles.sidebarHeader}>
@@ -354,7 +371,10 @@ export const ServiceTicketDetailPage: React.FC = () => {
               <div className={styles.infoItem}>
                 <span className={styles.infoLabel}>Organizacja</span>
                 <span className={styles.infoValue}>
-                  <Link to={`/service/organizations/${ticket.organizationId}`} className={styles.link}>
+                  <Link
+                    to={`/service/organizations/${ticket.organizationId}`}
+                    className={styles.link}
+                  >
                     {ticket.organizationName}
                   </Link>
                 </span>
@@ -386,9 +406,7 @@ export const ServiceTicketDetailPage: React.FC = () => {
               )}
             </div>
           </div>
-
         </div>
-
       </div>
 
       {/* --- MODALS --- */}

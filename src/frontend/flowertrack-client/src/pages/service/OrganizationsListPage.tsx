@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useOrganizations } from '../../hooks/useOrganizations';
 import { OnboardOrganizationModal } from '../../components/organizations';
 import { Loader } from '../../components/ui/Loader';
@@ -12,6 +13,7 @@ import './OrganizationsListPage.css';
  * Shows table with search, filter, sort, and pagination
  */
 export const OrganizationsListPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { organizations, isLoading, error, createOrganizationAsync, isCreating } =
     useOrganizations();
@@ -103,8 +105,8 @@ export const OrganizationsListPage = () => {
     return (
       <div className="organizationsListPage">
         <div className="organizationsListPage__error">
-          <h2>Error Loading Organizations</h2>
-          <p>Failed to load organizations. Please try refreshing the page.</p>
+          <h2>{t('errors.loadingFailed')}</h2>
+          <p>{t('errors.tryRefresh')}</p>
         </div>
       </div>
     );
@@ -115,13 +117,11 @@ export const OrganizationsListPage = () => {
       {/* Header */}
       <div className="organizationsListPage__header">
         <div>
-          <h1 className="organizationsListPage__title">Organizations</h1>
-          <p className="organizationsListPage__subtitle">
-            Manage client organizations and their settings
-          </p>
+          <h1 className="organizationsListPage__title">{t('organizations.title')}</h1>
+          <p className="organizationsListPage__subtitle">{t('organizations.subtitle')}</p>
         </div>
         <Button onClick={() => setIsModalOpen(true)} variant="primary">
-          + Onboard Organization
+          + {t('organizations.onboardOrganization')}
         </Button>
       </div>
 
@@ -129,7 +129,7 @@ export const OrganizationsListPage = () => {
       <div className="organizationsListPage__filters">
         <input
           type="text"
-          placeholder="Search by name or email..."
+          placeholder={t('organizations.searchPlaceholder')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="organizationsListPage__searchInput"
@@ -141,7 +141,7 @@ export const OrganizationsListPage = () => {
               checked={filterAlarms}
               onChange={(e) => setFilterAlarms(e.target.checked)}
             />
-            <span>Has Alarms</span>
+            <span>{t('organizations.hasAlarms')}</span>
           </label>
           <label className="organizationsListPage__filterLabel">
             <input
@@ -149,14 +149,18 @@ export const OrganizationsListPage = () => {
               checked={filterActiveTickets}
               onChange={(e) => setFilterActiveTickets(e.target.checked)}
             />
-            <span>Has Active Tickets</span>
+            {/* Using activeTickets translation which works for "Has Active Tickets" context in PL ("Aktywne zgłoszenia") */}
+            <span>{t('organizations.activeTickets')}</span>
           </label>
         </div>
       </div>
 
       {/* Results count */}
       <div className="organizationsListPage__results">
-        Showing {sortedOrganizations?.length || 0} of {organizations?.length || 0} organizations
+        {t('organizations.showingResults', {
+          count: sortedOrganizations?.length || 0,
+          total: organizations?.length || 0,
+        })}
       </div>
 
       {/* Table */}
@@ -166,34 +170,34 @@ export const OrganizationsListPage = () => {
             <thead>
               <tr>
                 <th onClick={() => handleSort('name')} className="organizationsListPage__sortable">
-                  Organization {getSortIcon('name')}
+                  {t('organizations.name')} {getSortIcon('name')}
                 </th>
                 <th
                   onClick={() => handleSort('contactEmail')}
                   className="organizationsListPage__sortable"
                 >
-                  Contact Email {getSortIcon('contactEmail')}
+                  {t('organizations.contactEmail')} {getSortIcon('contactEmail')}
                 </th>
                 <th
                   onClick={() => handleSort('machinesCount')}
                   className="organizationsListPage__sortable"
                 >
-                  Machines {getSortIcon('machinesCount')}
+                  {t('organizations.machines')} {getSortIcon('machinesCount')}
                 </th>
                 <th
                   onClick={() => handleSort('activeTicketsCount')}
                   className="organizationsListPage__sortable"
                 >
-                  Active Tickets {getSortIcon('activeTicketsCount')}
+                  {t('organizations.activeTickets')} {getSortIcon('activeTicketsCount')}
                 </th>
-                <th>Status</th>
+                <th>{t('common.status')}</th>
                 <th
                   onClick={() => handleSort('createdAt')}
                   className="organizationsListPage__sortable"
                 >
-                  Created {getSortIcon('createdAt')}
+                  {t('common.created')} {getSortIcon('createdAt')}
                 </th>
-                <th>Actions</th>
+                <th>{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -206,7 +210,7 @@ export const OrganizationsListPage = () => {
                   <td>
                     {org.hasAlarmMachines && (
                       <span className="organizationsListPage__badge organizationsListPage__badge--alarm">
-                        ⚠️ Alarm
+                        ⚠️ {t('machines.statusAlarm')}
                       </span>
                     )}
                   </td>
@@ -217,7 +221,7 @@ export const OrganizationsListPage = () => {
                       size="sm"
                       onClick={() => navigate(`/service/organizations/${org.id}`)}
                     >
-                      View Details
+                      {t('common.viewDetails')}
                     </Button>
                   </td>
                 </tr>
@@ -227,7 +231,7 @@ export const OrganizationsListPage = () => {
         </div>
       ) : (
         <div className="organizationsListPage__empty">
-          <p>No organizations found matching your filters.</p>
+          <p>{t('organizations.noOrganizations')}</p>
         </div>
       )}
 

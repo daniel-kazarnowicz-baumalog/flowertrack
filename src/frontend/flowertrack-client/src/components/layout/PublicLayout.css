@@ -1,99 +1,99 @@
 /* Public Layout - Persistent Styles */
 
 .public-layout {
-    position: relative;
-    min-height: 100vh;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow-x: hidden;
-    /* background-color handled by particles/body */
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: hidden;
+  /* background-color handled by particles/body */
 }
 
 /* Persistent Controls - Top Right */
 .public-controls {
-    position: fixed;
-    top: var(--space-6);
-    right: var(--space-8);
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-    z-index: 50;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    padding: var(--space-2) var(--space-4);
-    border-radius: var(--radius-full);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+  position: fixed;
+  top: var(--space-6);
+  right: var(--space-8);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 [data-theme='dark'] .public-controls {
-    background: rgba(15, 23, 42, 0.3);
-    border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.3);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .public-controls:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 /* Content Container for Pages */
 .public-content {
-    width: 100%;
-    max-width: 1400px;
-    position: relative;
-    z-index: 10;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: var(--space-4);
-    background: transparent !important;
+  width: 100%;
+  max-width: 1400px;
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: var(--space-4);
+  background: transparent !important;
 }
 
 /* Wrapper for page transitions - ensures full width/center */
 .page-enter-container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: transparent !important;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent !important;
 }
 
 /* Base animation for pages entering */
 .page-enter {
-    width: 100%;
-    max-width: 100%;
-    display: flex;
-    justify-content: center;
-    animation: pageEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    background: transparent !important;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  animation: pageEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  background: transparent !important;
 }
 
 @keyframes pageEnter {
-    from {
-        opacity: 0;
-        transform: scale(0.95) translateY(10px);
-        filter: blur(10px);
-    }
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+    filter: blur(10px);
+  }
 
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-        filter: blur(0);
-    }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+  }
 }
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-    .public-controls {
-        top: var(--space-4);
-        right: var(--space-4);
-        padding: var(--space-2);
-        gap: var(--space-2);
-    }
+  .public-controls {
+    top: var(--space-4);
+    right: var(--space-4);
+    padding: var(--space-2);
+    gap: var(--space-2);
+  }
 }

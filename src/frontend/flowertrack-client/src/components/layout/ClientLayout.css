@@ -159,8 +159,6 @@
   box-shadow: var(--shadow-sm);
 }
 
-
-
 /* Hide advanced user info when collapsed, show simple logout icon */
 .clientLayout--collapsed .clientLayout__userDetails {
   display: none;

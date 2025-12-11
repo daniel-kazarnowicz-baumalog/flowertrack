@@ -3,6 +3,7 @@
  */
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
@@ -22,6 +23,7 @@ export const OnboardOrganizationModal: React.FC<OnboardOrganizationModalProps> =
   onSubmit,
   isLoading = false,
 }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<OnboardOrganizationRequest>({
     name: '',
     adminEmail: '',
@@ -41,20 +43,20 @@ export const OnboardOrganizationModal: React.FC<OnboardOrganizationModalProps> =
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Organization name is required';
+      newErrors.name = t('organizations.nameRequired');
     } else if (formData.name.length < 3) {
-      newErrors.name = 'Organization name must be at least 3 characters';
+      newErrors.name = t('organizations.nameTooShort');
     }
     if (!formData.adminEmail.trim()) {
-      newErrors.adminEmail = 'Admin email is required';
+      newErrors.adminEmail = t('organizations.adminEmailRequired');
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.adminEmail)) {
-      newErrors.adminEmail = 'Invalid email format';
+      newErrors.adminEmail = t('organizations.invalidEmail');
     }
     if (!formData.adminFirstName.trim()) {
-      newErrors.adminFirstName = 'Admin first name is required';
+      newErrors.adminFirstName = t('organizations.adminFirstNameRequired');
     }
     if (!formData.adminLastName.trim()) {
-      newErrors.adminLastName = 'Admin last name is required';
+      newErrors.adminLastName = t('organizations.adminLastNameRequired');
     }
 
     setErrors(newErrors);
@@ -92,46 +94,46 @@ export const OnboardOrganizationModal: React.FC<OnboardOrganizationModalProps> =
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      title="Onboard New Organization"
+      title={t('organizations.onboardNewOrganization')}
       size="lg"
       closeOnOverlayClick={false}
       footer={
         <div className="onboardOrg__footer">
           <Button variant="ghost" onClick={handleClose} disabled={isLoading}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button onClick={handleSubmit} disabled={isLoading}>
-            {isLoading ? 'Creating...' : 'Onboard Organization'}
+            {isLoading ? t('organizations.creating') : t('organizations.onboardOrganization')}
           </Button>
         </div>
       }
     >
       <form onSubmit={handleSubmit} className="onboardOrg__form">
         <div className="onboardOrg__section">
-          <h3>Organization Details</h3>
+          <h3>{t('organizations.organizationDetails')}</h3>
           <div className="onboardOrg__field">
             <Input
-              label="Organization Name"
+              label={t('organizations.organizationName')}
               type="text"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               error={errors.name}
               required
               disabled={isLoading}
-              placeholder="e.g., Acme Corporation"
+              placeholder={t('organizations.namePlaceholder', 'e.g., Acme Corporation')}
             />
           </div>
         </div>
 
         <div className="onboardOrg__section">
-          <h3>Admin User</h3>
+          <h3>{t('organizations.adminUser')}</h3>
           <p className="onboardOrg__sectionHint">
-            This person will be the organization administrator and receive an activation email.
+            {t('organizations.adminSectionHint')}
           </p>
           <div className="onboardOrg__grid">
             <div className="onboardOrg__field">
               <Input
-                label="First Name"
+                label={t('users.firstName')}
                 type="text"
                 value={formData.adminFirstName}
                 onChange={(e) => setFormData({ ...formData, adminFirstName: e.target.value })}
@@ -142,7 +144,7 @@ export const OnboardOrganizationModal: React.FC<OnboardOrganizationModalProps> =
             </div>
             <div className="onboardOrg__field">
               <Input
-                label="Last Name"
+                label={t('users.lastName')}
                 type="text"
                 value={formData.adminLastName}
                 onChange={(e) => setFormData({ ...formData, adminLastName: e.target.value })}
@@ -154,48 +156,48 @@ export const OnboardOrganizationModal: React.FC<OnboardOrganizationModalProps> =
           </div>
           <div className="onboardOrg__field">
             <Input
-              label="Admin Email"
+              label={t('organizations.adminEmail')}
               type="email"
               value={formData.adminEmail}
               onChange={(e) => setFormData({ ...formData, adminEmail: e.target.value })}
               error={errors.adminEmail}
               required
               disabled={isLoading}
-              placeholder="admin@example.com"
+              placeholder={t('auth.emailPlaceholder')}
             />
           </div>
         </div>
 
         <div className="onboardOrg__section">
-          <h3>Contact Information</h3>
+          <h3>{t('organizations.contactInformation')}</h3>
           <div className="onboardOrg__field">
             <Input
-              label="Phone"
+              label={t('organizations.phone')}
               type="tel"
               value={formData.phone || ''}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               disabled={isLoading}
-              placeholder="+48 123 456 789"
+              placeholder={t('organizations.phonePlaceholder')}
             />
           </div>
         </div>
 
         <div className="onboardOrg__section">
-          <h3>Address</h3>
+          <h3>{t('organizations.address')}</h3>
           <div className="onboardOrg__field">
             <Input
-              label="Street Address"
+              label={t('organizations.streetAddress')}
               type="text"
               value={formData.address || ''}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
               disabled={isLoading}
-              placeholder="123 Main Street"
+              placeholder={t('organizations.addressPlaceholder')}
             />
           </div>
           <div className="onboardOrg__grid">
             <div className="onboardOrg__field">
               <Input
-                label="City"
+                label={t('common.city')}
                 type="text"
                 value={formData.city || ''}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
@@ -204,7 +206,7 @@ export const OnboardOrganizationModal: React.FC<OnboardOrganizationModalProps> =
             </div>
             <div className="onboardOrg__field">
               <Input
-                label="Postal Code"
+                label={t('organizations.zipCode')}
                 type="text"
                 value={formData.postalCode || ''}
                 onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
@@ -214,18 +216,18 @@ export const OnboardOrganizationModal: React.FC<OnboardOrganizationModalProps> =
           </div>
           <div className="onboardOrg__field">
             <Input
-              label="Country"
+              label={t('common.country')}
               type="text"
               value={formData.country || ''}
               onChange={(e) => setFormData({ ...formData, country: e.target.value })}
               disabled={isLoading}
-              placeholder="Poland"
+              placeholder={t('organizations.countryPlaceholder')}
             />
           </div>
         </div>
 
         <div className="onboardOrg__section">
-          <h3>Notes</h3>
+          <h3>{t('common.notes')}</h3>
           <div className="onboardOrg__field">
             <textarea
               className="onboardOrg__textarea"
@@ -233,7 +235,7 @@ export const OnboardOrganizationModal: React.FC<OnboardOrganizationModalProps> =
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               disabled={isLoading}
               rows={3}
-              placeholder="Additional notes about this organization..."
+              placeholder={t('organizations.notesPlaceholder')}
             />
           </div>
         </div>

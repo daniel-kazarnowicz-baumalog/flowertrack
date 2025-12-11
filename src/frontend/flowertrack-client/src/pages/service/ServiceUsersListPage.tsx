@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react';
 import { Navigate } from 'react-router-dom';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, format, isValid, parseISO } from 'date-fns';
+import { useTranslation } from 'react-i18next';
+import { pl, enUS } from 'date-fns/locale';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   useServiceUsers,
@@ -17,6 +19,7 @@ import './ServiceUsersListPage.css';
  * ServiceUsersListPage - Admin-only page for managing service users
  */
 export const ServiceUsersListPage = () => {
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<'All' | 'Admin' | 'Technician'>('All');
@@ -42,6 +45,8 @@ export const ServiceUsersListPage = () => {
     type: null,
     user: null,
   });
+
+  const dateLocale = i18n.language === 'pl' ? pl : enUS;
 
   const updateRoleMutation = useUpdateServiceUserRole();
   const updateStatusMutation = useUpdateServiceUserStatus();
@@ -72,21 +77,21 @@ export const ServiceUsersListPage = () => {
       const oldRole = confirmModal.user.role;
       const newRole = confirmModal.newValue;
       return {
-        title: 'Change User Role?',
-        message: `Change ${confirmModal.user.fullName}'s role from ${oldRole} to ${newRole}? This will update their access permissions.`,
+        title: t('users.changeRoleTitle'),
+        message: t('users.changeRoleMessage', { name: confirmModal.user.fullName, oldRole, newRole }),
       };
     } else if (confirmModal.type === 'status') {
       const isDeactivating = confirmModal.newValue === 'Inactive';
       return {
-        title: isDeactivating ? 'Deactivate User?' : 'Activate User?',
+        title: isDeactivating ? t('users.deactivateTitle') : t('users.activateTitle'),
         message: isDeactivating
-          ? `Deactivate ${confirmModal.user.fullName}? They will lose access to the system but their data will be preserved. You can reactivate them later.`
-          : `Activate ${confirmModal.user.fullName}? They will regain access to the system.`,
+          ? t('users.deactivateMessage', { name: confirmModal.user.fullName })
+          : t('users.activateMessage', { name: confirmModal.user.fullName }),
       };
     }
 
     return { title: '', message: '' };
-  }, [confirmModal]);
+  }, [confirmModal, t]);
 
   // Check service access - must be after all hooks
   if (!user || user.role !== 'service') {
@@ -153,23 +158,24 @@ export const ServiceUsersListPage = () => {
   };
 
   const formatLastActive = (lastActiveAt: string | null) => {
-    if (!lastActiveAt) return 'Never';
+    if (!lastActiveAt) return t('users.never');
     try {
-      return formatDistanceToNow(new Date(lastActiveAt), { addSuffix: true });
+      const date = new Date(lastActiveAt);
+      if (!isValid(date)) return t('users.unknown');
+      return formatDistanceToNow(date, { addSuffix: true, locale: dateLocale });
     } catch {
-      return 'Unknown';
+      return t('users.unknown');
     }
   };
 
   const formatJoinedDate = (joinedAt: string) => {
+    if (!joinedAt) return '—';
     try {
-      return new Date(joinedAt).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      });
+      const date = new Date(joinedAt);
+      if (!isValid(date)) return t('users.unknown');
+      return format(date, 'MMM dd, yyyy', { locale: dateLocale });
     } catch {
-      return 'Unknown';
+      return t('users.unknown');
     }
   };
 
@@ -195,9 +201,9 @@ export const ServiceUsersListPage = () => {
     return (
       <div className="serviceUsersListPage">
         <div className="serviceUsersListPage__error">
-          <h2>Error Loading Service Users</h2>
-          <p>Failed to load service users. Please try again.</p>
-          <Button onClick={() => refetch()}>Retry</Button>
+          <h2>{t('errors.loadingFailed')}</h2>
+          <p>{error.message || t('errors.somethingWentWrong')}</p>
+          <Button onClick={() => refetch()}>{t('common.refresh')}</Button>
         </div>
       </div>
     );
@@ -206,9 +212,9 @@ export const ServiceUsersListPage = () => {
   return (
     <div className="serviceUsersListPage">
       <div className="serviceUsersListPage__header">
-        <h1 className="serviceUsersListPage__title">Service Team</h1>
+        <h1 className="serviceUsersListPage__title">{t('users.serviceTeam')}</h1>
         <Button variant="primary" onClick={() => setIsInviteModalOpen(true)}>
-          Invite Technician
+          {t('users.inviteTechnician')}
         </Button>
       </div>
 
@@ -216,7 +222,7 @@ export const ServiceUsersListPage = () => {
         <div className="serviceUsersListPage__searchWrapper">
           <Input
             type="text"
-            placeholder="Search by name or email..."
+            placeholder={t('organizations.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -226,7 +232,7 @@ export const ServiceUsersListPage = () => {
         </div>
 
         <div className="serviceUsersListPage__filterGroup">
-          <label htmlFor="roleFilter">Role:</label>
+          <label htmlFor="roleFilter">{t('users.role')}:</label>
           <select
             id="roleFilter"
             value={roleFilter}
@@ -236,14 +242,14 @@ export const ServiceUsersListPage = () => {
             }}
             className="serviceUsersListPage__select"
           >
-            <option value="All">All</option>
-            <option value="Admin">Admin</option>
-            <option value="Technician">Technician</option>
+            <option value="All">{t('common.all')}</option>
+            <option value="Admin">{t('users.administrator')}</option>
+            <option value="Technician">{t('users.technician')}</option>
           </select>
         </div>
 
         <div className="serviceUsersListPage__filterGroup">
-          <label htmlFor="statusFilter">Status:</label>
+          <label htmlFor="statusFilter">{t('common.status')}:</label>
           <select
             id="statusFilter"
             value={statusFilter}
@@ -253,16 +259,16 @@ export const ServiceUsersListPage = () => {
             }}
             className="serviceUsersListPage__select"
           >
-            <option value="All">All</option>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
+            <option value="All">{t('common.all')}</option>
+            <option value="Active">{t('users.active')}</option>
+            <option value="Inactive">{t('users.inactive')}</option>
           </select>
         </div>
       </div>
 
       {users.length === 0 ? (
         <div className="serviceUsersListPage__empty">
-          <p>No service users found.</p>
+          <p>{t('users.noUsersFound')}</p>
           {(searchTerm || roleFilter !== 'All' || statusFilter !== 'Active') && (
             <Button
               variant="ghost"
@@ -273,7 +279,7 @@ export const ServiceUsersListPage = () => {
                 setPage(1);
               }}
             >
-              Reset Filters
+              {t('users.resetFilters')}
             </Button>
           )}
         </div>
@@ -283,13 +289,13 @@ export const ServiceUsersListPage = () => {
             <table className="serviceUsersListPage__table">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Role</th>
-                  <th>Status</th>
-                  <th>Last Active</th>
-                  <th>Joined Date</th>
-                  <th>Actions</th>
+                  <th>{t('users.fullName')}</th>
+                  <th>{t('users.email')}</th>
+                  <th>{t('users.role')}</th>
+                  <th>{t('common.status')}</th>
+                  <th>{t('users.lastActive')}</th>
+                  <th>{t('users.joinedDate')}</th>
+                  <th>{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -300,12 +306,12 @@ export const ServiceUsersListPage = () => {
                     <td>
                       <Badge variant={getRoleBadgeVariant(serviceUser.role)}>
                         {serviceUser.role === 'Admin' ? '👑 ' : '🔧 '}
-                        {serviceUser.role}
+                        {serviceUser.role === 'Admin' ? t('users.administrator') : t('users.technician')}
                       </Badge>
                     </td>
                     <td>
                       <Badge variant={getStatusBadgeVariant(serviceUser.status)}>
-                        {serviceUser.status}
+                        {serviceUser.status === 'Active' ? t('users.active') : t('users.inactive')}
                       </Badge>
                     </td>
                     <td>{formatLastActive(serviceUser.lastActiveAt)}</td>
@@ -321,18 +327,18 @@ export const ServiceUsersListPage = () => {
                           className="serviceUsersListPage__roleSelect"
                           aria-label={`Change role for ${serviceUser.fullName}`}
                         >
-                          <option value="Technician">Technician</option>
-                          <option value="Admin">Admin</option>
+                          <option value="Technician">{t('users.technician')}</option>
+                          <option value="Admin">{t('users.administrator')}</option>
                         </select>
 
                         {user.isAdmin && (
                           <button
                             className="serviceUsersListPage__iconButton"
                             onClick={() => handleResetPassword(serviceUser)}
-                            title="Reset Password"
+                            title={t('users.resetPassword')}
                             disabled={serviceUser.status !== 'Active'}
                           >
-                            Key
+                            🔑
                           </button>
                         )}
 
@@ -346,7 +352,7 @@ export const ServiceUsersListPage = () => {
                             (serviceUser.status === 'Active' && isLastAdmin(serviceUser.id))
                           }
                         >
-                          {serviceUser.status === 'Active' ? 'Deactivate' : 'Activate'}
+                          {serviceUser.status === 'Active' ? t('users.deactivate') : t('users.activate')}
                         </Button>
                       </div>
                     </td>
@@ -358,12 +364,15 @@ export const ServiceUsersListPage = () => {
 
           <div className="serviceUsersListPage__pagination">
             <div className="serviceUsersListPage__paginationInfo">
-              Showing {(page - 1) * pageSize + 1} to {Math.min(page * pageSize, totalCount)} of{' '}
-              {totalCount} users
+              {t('machines.showingResults', {
+                from: (page - 1) * pageSize + 1,
+                to: Math.min(page * pageSize, totalCount),
+                total: totalCount,
+              })}
             </div>
 
             <div className="serviceUsersListPage__paginationControls">
-              <label htmlFor="pageSize">Items per page:</label>
+              <label htmlFor="pageSize">{t('common.perPage')}:</label> {/* Check if this makes sense '10 per page' or 'Items per page: 10'. The UI has label 'Items per page:'. 'common.perPage' is 'na stronę' / 'per page'. So '10 na stronę' is OK in select, but label? Providing 'itemsPerPage' key might be better. */}
               <select
                 id="pageSize"
                 value={pageSize}
@@ -385,10 +394,10 @@ export const ServiceUsersListPage = () => {
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
                 >
-                  Previous
+                  {t('common.previous')}
                 </Button>
                 <span className="serviceUsersListPage__pageNumber">
-                  Page {page} of {totalPages}
+                  {i18n.language === 'pl' ? `Strona ${page} z ${totalPages}` : `Page ${page} of ${totalPages}`}
                 </span>
                 <Button
                   variant="outline"
@@ -396,7 +405,7 @@ export const ServiceUsersListPage = () => {
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
                 >
-                  Next
+                  {t('common.next')}
                 </Button>
               </div>
             </div>
@@ -427,10 +436,10 @@ export const ServiceUsersListPage = () => {
         message={getConfirmModalContent.message}
         confirmText={
           confirmModal.type === 'role'
-            ? 'Change Role'
+            ? t('users.changeRole')
             : confirmModal.newValue === 'Inactive'
-              ? 'Deactivate'
-              : 'Activate'
+              ? t('users.deactivate')
+              : t('users.activate')
         }
         variant={
           confirmModal.type === 'status' && confirmModal.newValue === 'Inactive'
@@ -441,3 +450,4 @@ export const ServiceUsersListPage = () => {
     </div>
   );
 };
+

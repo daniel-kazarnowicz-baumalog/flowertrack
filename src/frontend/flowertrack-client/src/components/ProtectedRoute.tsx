@@ -25,7 +25,7 @@ const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
     path: window.location.pathname,
     isAuthenticated,
     userRole: user?.role,
-    requiredRole
+    requiredRole,
   });
 
   if (!isAuthenticated || !user) {

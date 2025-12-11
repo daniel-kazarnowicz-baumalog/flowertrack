@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useMachines } from '../../hooks/useMachines';
 import { RegisterMachineModal } from '../../components/machines';
 import { Badge } from '../../components/ui/Badge';
@@ -15,6 +16,7 @@ import './MachinesListPage.css';
  * Displays all machines across all organizations
  */
 export const MachinesListPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -69,15 +71,32 @@ export const MachinesListPage = () => {
     }
   };
 
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'Active':
+        return t('machines.statusActive');
+      case 'Maintenance':
+        return t('machines.statusMaintenance');
+      case 'Alarm':
+        return t('machines.statusAlarm');
+      case 'Inactive':
+        return t('machines.statusInactive');
+      default:
+        return status;
+    }
+  };
+
   if (error) {
     return (
       <div className="machinesList">
         <div className="machinesList__header">
-          <h1>Machines</h1>
+          <h1>{t('machines.title')}</h1>
         </div>
         <div className="machinesList__error">
-          <p>Failed to load machines: {error.message}</p>
-          <Button onClick={() => window.location.reload()}>Retry</Button>
+          <p>
+            {t('errors.loadingFailed')}: {error.message}
+          </p>
+          <Button onClick={() => window.location.reload()}>{t('common.refresh')}</Button>
         </div>
       </div>
     );
@@ -86,15 +105,17 @@ export const MachinesListPage = () => {
   return (
     <div className="machinesList">
       <div className="machinesList__header">
-        <h1>Machines</h1>
-        <Button onClick={() => setIsRegisterModalOpen(true)}>➕ Register Machine</Button>
+        <h1>{t('machines.title')}</h1>
+        <Button onClick={() => setIsRegisterModalOpen(true)}>
+          ➕ {t('machines.registerMachine')}
+        </Button>
       </div>
 
       {/* Filters */}
       <div className="machinesList__filters">
         <Input
           type="text"
-          placeholder="Search by serial number or model..."
+          placeholder={t('machines.searchPlaceholder')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="machinesList__search"
@@ -105,11 +126,11 @@ export const MachinesListPage = () => {
           onChange={(e) => setStatusFilter(e.target.value)}
           className="machinesList__select"
         >
-          <option value="All">All Statuses</option>
-          <option value="Active">Active</option>
-          <option value="Maintenance">Maintenance</option>
-          <option value="Alarm">Alarm</option>
-          <option value="Inactive">Inactive</option>
+          <option value="All">{t('machines.allStatuses')}</option>
+          <option value="Active">{t('machines.statusActive')}</option>
+          <option value="Maintenance">{t('machines.statusMaintenance')}</option>
+          <option value="Alarm">{t('machines.statusAlarm')}</option>
+          <option value="Inactive">{t('machines.statusInactive')}</option>
         </select>
 
         <select
@@ -120,9 +141,9 @@ export const MachinesListPage = () => {
           }}
           className="machinesList__select"
         >
-          <option value={10}>10 per page</option>
-          <option value={25}>25 per page</option>
-          <option value={50}>50 per page</option>
+          <option value={10}>10 {t('common.perPage')}</option>
+          <option value={25}>25 {t('common.perPage')}</option>
+          <option value={50}>50 {t('common.perPage')}</option>
         </select>
       </div>
 
@@ -130,19 +151,21 @@ export const MachinesListPage = () => {
       {isLoading ? (
         <div className="machinesList__loading">
           <Loader size="lg" />
-          <p>Loading machines...</p>
+          <p>{t('common.loading')}</p>
         </div>
       ) : !data?.items?.length ? (
         <div className="machinesList__empty">
           <div className="machinesList__emptyIcon">🏭</div>
-          <h2>No Machines Found</h2>
+          <h2>{t('machines.notFoundTitle')}</h2>
           <p>
             {search || statusFilter !== 'All'
-              ? "Try adjusting your filters to find what you're looking for."
-              : 'Get started by registering your first machine.'}
+              ? t('machines.notFoundFilterHint')
+              : t('machines.notFoundStartHint')}
           </p>
           {!search && statusFilter === 'All' && (
-            <Button onClick={() => setIsRegisterModalOpen(true)}>Register First Machine</Button>
+            <Button onClick={() => setIsRegisterModalOpen(true)}>
+              {t('machines.registerFirstMachine')}
+            </Button>
           )}
         </div>
       ) : (
@@ -152,20 +175,22 @@ export const MachinesListPage = () => {
               <thead>
                 <tr>
                   <th onClick={() => handleSort('serialNumber')}>
-                    Serial Number {sortBy === 'serialNumber' && (sortDesc ? '↓' : '↑')}
+                    {t('machines.serialNumber')}{' '}
+                    {sortBy === 'serialNumber' && (sortDesc ? '↓' : '↑')}
                   </th>
                   <th onClick={() => handleSort('model')}>
-                    Model {sortBy === 'model' && (sortDesc ? '↓' : '↑')}
+                    {t('machines.model')} {sortBy === 'model' && (sortDesc ? '↓' : '↑')}
                   </th>
                   <th onClick={() => handleSort('status')}>
-                    Status {sortBy === 'status' && (sortDesc ? '↓' : '↑')}
+                    {t('common.status')} {sortBy === 'status' && (sortDesc ? '↓' : '↑')}
                   </th>
                   <th onClick={() => handleSort('organizationName')}>
-                    Organization {sortBy === 'organizationName' && (sortDesc ? '↓' : '↑')}
+                    {t('machines.organization')}{' '}
+                    {sortBy === 'organizationName' && (sortDesc ? '↓' : '↑')}
                   </th>
-                  <th>Location</th>
-                  <th>Active Tickets</th>
-                  <th>Actions</th>
+                  <th>{t('machines.location')}</th>
+                  <th>{t('machines.activeTickets')}</th>
+                  <th>{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -177,7 +202,7 @@ export const MachinesListPage = () => {
                     <td>{machine.model || '—'}</td>
                     <td>
                       <Badge variant={getMachineStatusVariant(machine.status)}>
-                        {machine.status}
+                        {getStatusLabel(machine.status)}
                       </Badge>
                     </td>
                     <td>
@@ -198,8 +223,8 @@ export const MachinesListPage = () => {
                     </td>
                     <td>
                       <Link to={`/service/machines/${machine.id}`}>
-                        <Button size="small" variant="secondary">
-                          View Details
+                        <Button size="sm" variant="secondary">
+                          {t('machines.viewDetails')}
                         </Button>
                       </Link>
                     </td>
@@ -211,8 +236,11 @@ export const MachinesListPage = () => {
 
           <div className="machinesList__footer">
             <div className="machinesList__info">
-              Showing {(page - 1) * pageSize + 1} to {Math.min(page * pageSize, data?.totalCount ?? 0)} of{' '}
-              {data?.totalCount ?? 0} machines
+              {t('machines.showingResults', {
+                from: (page - 1) * pageSize + 1,
+                to: Math.min(page * pageSize, data?.totalCount ?? 0),
+                total: data?.totalCount ?? 0,
+              })}
             </div>
             <Pagination
               currentPage={page}

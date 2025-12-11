@@ -24,17 +24,64 @@ export const machineService = {
     sortBy?: string;
     sortDesc?: boolean;
   }): Promise<PaginatedResponse<MachineDto>> => {
-    const response = await apiClient.get<PaginatedResponse<MachineDto>>('/machines', {
-      params: {
-        page: params?.page || 1,
-        pageSize: params?.pageSize || 10,
-        search: params?.search,
-        status: params?.status,
-        organizationId: params?.organizationId,
-        sortBy: params?.sortBy || 'serialNumber',
-        sortDesc: params?.sortDesc || false,
-      },
-    });
+    const response = await apiClient.get<PaginatedResponse<MachineDto> | MachineDto[]>(
+      '/machines',
+      {
+        params: {
+          page: params?.page || 1,
+          pageSize: params?.pageSize || 10,
+          searchTerm: params?.search || undefined,
+          status: params?.status === 'All' ? undefined : params?.status, // Handle 'All' explicitly if passed
+          organizationId: params?.organizationId,
+          sortBy: params?.sortBy || 'serialNumber',
+          sortDesc: params?.sortDesc || false,
+        },
+      }
+    );
+
+    if (Array.isArray(response.data)) {
+      // Backend returned a flat list, perform client-side pagination and sorting
+      let allItems = [...response.data];
+
+      // Client-side sorting
+      if (params?.sortBy) {
+        allItems.sort((a, b) => {
+          const field = params.sortBy as keyof MachineDto;
+          const valA = a[field];
+          const valB = b[field];
+
+          if (valA === valB) return 0;
+          if (valA === undefined || valA === null) return 1;
+          if (valB === undefined || valB === null) return -1;
+
+          if (typeof valA === 'string' && typeof valB === 'string') {
+            return params.sortDesc ? valB.localeCompare(valA) : valA.localeCompare(valB);
+          }
+
+          if (valA < valB) return params.sortDesc ? 1 : -1;
+          if (valA > valB) return params.sortDesc ? -1 : 1;
+          return 0;
+        });
+      }
+
+      const page = params?.page || 1;
+      const pageSize = params?.pageSize || 10;
+      const totalCount = allItems.length;
+      const totalPages = Math.ceil(totalCount / pageSize);
+
+      const startIndex = (page - 1) * pageSize;
+      const endIndex = Math.min(startIndex + pageSize, totalCount);
+      const paginatedItems = allItems.slice(startIndex, endIndex);
+
+      return {
+        items: paginatedItems,
+        totalCount,
+        page,
+        pageSize,
+        totalPages,
+      };
+    }
+
     return response.data;
   },
 

@@ -13,7 +13,15 @@ import type {
   TicketHistoryEvent,
   AssignTicketRequest,
 } from '../types/api';
-import { getTickets, getTicketById, assignTicket, createTicket, getTicketHistory, updateTicket, changeTicketStatus } from '../services/ticketService';
+import {
+  getTickets,
+  getTicketById,
+  assignTicket,
+  createTicket,
+  getTicketHistory,
+  updateTicket,
+  changeTicketStatus,
+} from '../services/ticketService';
 
 // ============================================================================
 // Query Keys
@@ -122,10 +130,8 @@ export const useUpdateTicket = () => {
 export const useChangeTicketStatus = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (params: {
-      id: string;
-      data: { newStatus: string; justification?: string };
-    }) => changeTicketStatus(params.id, params.data as any),
+    mutationFn: (params: { id: string; data: { newStatus: string; justification?: string } }) =>
+      changeTicketStatus(params.id, params.data as any),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ticketKeys.lists() });
       queryClient.invalidateQueries({ queryKey: ticketKeys.detail(variables.id) });
@@ -155,7 +161,7 @@ export const useAssignTicket = () => {
 export const useBulkAssignTickets = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async () => { },
+    mutationFn: async () => {},
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ticketKeys.lists() });
     },
@@ -168,7 +174,7 @@ export const useBulkAssignTickets = () => {
 export const useBulkChangeStatus = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async () => { },
+    mutationFn: async () => {},
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ticketKeys.lists() });
     },

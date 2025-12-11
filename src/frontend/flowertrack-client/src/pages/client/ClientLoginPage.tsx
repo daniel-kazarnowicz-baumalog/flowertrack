@@ -62,9 +62,18 @@ const ClientLoginPage = () => {
         <div className="login-card client-card-theme">
           <div className="login-header">
             <div className="login-logo">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 <rect width="24" height="24" rx="4" fill="currentColor" fillOpacity="0.2" />
-                <path d="M12 7C9.24 7 7 9.24 7 12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12C17 9.24 14.76 7 12 7ZM12 10C12.83 10 13.5 10.67 13.5 11.5C13.5 12.33 12.83 13 12 13C11.17 13 10.5 12.33 10.5 11.5C10.5 10.67 11.17 10 12 10ZM12 15.6C10.75 15.6 9.645 14.96 9 13.99C9.015 12.995 11 12.45 12 12.45C13 12.45 14.985 12.995 15 13.99C14.355 14.96 13.25 15.6 12 15.6Z" fill="currentColor" />
+                <path
+                  d="M12 7C9.24 7 7 9.24 7 12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12C17 9.24 14.76 7 12 7ZM12 10C12.83 10 13.5 10.67 13.5 11.5C13.5 12.33 12.83 13 12 13C11.17 13 10.5 12.33 10.5 11.5C10.5 10.67 11.17 10 12 10ZM12 15.6C10.75 15.6 9.645 14.96 9 13.99C9.015 12.995 11 12.45 12 12.45C13 12.45 14.985 12.995 15 13.99C14.355 14.96 13.25 15.6 12 15.6Z"
+                  fill="currentColor"
+                />
               </svg>
             </div>
             <h2 className="login-title">Witaj ponownie</h2>
@@ -96,7 +105,14 @@ const ClientLoginPage = () => {
               required
             />
 
-            <Button type="submit" variant="primary" size="lg" disabled={isLoading} fullWidth isLoading={isLoading}>
+            <Button
+              type="submit"
+              variant="primary"
+              size="lg"
+              disabled={isLoading}
+              fullWidth
+              isLoading={isLoading}
+            >
               Zaloguj się
             </Button>
           </form>

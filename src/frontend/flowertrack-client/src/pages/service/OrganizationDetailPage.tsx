@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import {
   useOrganization,
@@ -13,11 +14,14 @@ import { RegisterMachineModal } from '../../components/machines';
 import { Loader } from '../../components/ui/Loader';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
+import { Badge } from '../../components/ui/Badge';
+import { TicketStatusBadge, TicketPriorityBadge } from '../../components/ui/Badge';
 import type {
   MachineDto,
   TicketDto,
   OrganizationUserDto,
   UpdateOrganizationRequest,
+  MachineStatus,
 } from '../../types/api';
 import './OrganizationDetailPage.css';
 
@@ -28,6 +32,7 @@ type TabType = 'overview' | 'machines' | 'team' | 'tickets';
  * Features tabbed interface with Overview, Machines, Team, and Tickets sections
  */
 export const OrganizationDetailPage = () => {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>('overview');
@@ -53,12 +58,7 @@ export const OrganizationDetailPage = () => {
   } = useOrganizations();
 
   const handleRegenerateApiKey = () => {
-    if (
-      id &&
-      window.confirm(
-        'Are you sure you want to regenerate the API key? The old key will stop working.'
-      )
-    ) {
+    if (id && window.confirm(t('organizations.regenerateConfirm'))) {
       regenerateApiKey(id);
     }
   };
@@ -79,12 +79,8 @@ export const OrganizationDetailPage = () => {
 
   const handleDeleteOrganization = () => {
     if (!id) return;
-    
-    if (
-      window.confirm(
-        'Are you sure you want to delete this organization? This action cannot be undone.'
-      )
-    ) {
+
+    if (window.confirm(t('organizations.deleteConfirm'))) {
       deleteOrganization(id, {
         onSuccess: () => {
           navigate('/service/organizations');
@@ -105,6 +101,23 @@ export const OrganizationDetailPage = () => {
     }
   };
 
+  const getMachineStatusVariant = (
+    status: MachineStatus
+  ): 'success' | 'warning' | 'danger' | 'default' => {
+    switch (status) {
+      case 'Active':
+        return 'success';
+      case 'Maintenance':
+        return 'warning';
+      case 'Alarm':
+        return 'danger';
+      case 'Inactive':
+        return 'default';
+      default:
+        return 'default';
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="organizationDetail__loading">
@@ -116,88 +129,254 @@ export const OrganizationDetailPage = () => {
   if (error || !organization) {
     return (
       <div className="organizationDetail__error">
-        <h2>Error Loading Organization</h2>
-        <p>{error?.message || 'Organization not found'}</p>
-        <Button onClick={() => navigate('/service/organizations')}>Back to Organizations</Button>
+        <h2>{t('errors.loadingFailed')}</h2>
+        <p>{error?.message || t('errors.notFound')}</p>
+        <Button onClick={() => navigate('/service/organizations')}>{t('common.back')}</Button>
       </div>
     );
   }
+
+  /* Icons */
+  const EmailIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="organizationDetail__icon"
+    >
+      <rect width="20" height="16" x="2" y="4" rx="2" />
+      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+    </svg>
+  );
+
+  const PhoneIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="organizationDetail__icon"
+    >
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+    </svg>
+  );
+
+  const MapPinIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="organizationDetail__icon"
+    >
+      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  );
+
+  const BuildingIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="organizationDetail__icon"
+    >
+      <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
+      <path d="M9 22v-4h6v4" />
+      <path d="M8 6h.01" />
+      <path d="M16 6h.01" />
+      <path d="M12 6h.01" />
+      <path d="M12 10h.01" />
+      <path d="M12 14h.01" />
+      <path d="M16 10h.01" />
+      <path d="M16 14h.01" />
+      <path d="M8 10h.01" />
+      <path d="M8 14h.01" />
+    </svg>
+  );
+
+  const CalendarIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="organizationDetail__icon"
+    >
+      <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+      <line x1="16" x2="16" y1="2" y2="6" />
+      <line x1="8" x2="8" y1="2" y2="6" />
+      <line x1="3" x2="21" y1="10" y2="10" />
+    </svg>
+  );
+
+  const ChartIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="organizationDetail__icon"
+    >
+      <path d="M3 3v18h18" />
+      <path d="m19 9-5 5-4-4-3 3" />
+    </svg>
+  );
 
   const renderOverviewTab = () => (
     <div className="organizationDetail__overview">
       <div className="organizationDetail__infoGrid">
         <Card>
           <div className="organizationDetail__infoCard">
-            <h3>Contact Information</h3>
-            <div className="organizationDetail__infoRow">
-              <span className="organizationDetail__label">Email:</span>
-              <span className="organizationDetail__value">{organization.contactEmail || '—'}</span>
-            </div>
-            <div className="organizationDetail__infoRow">
-              <span className="organizationDetail__label">Phone:</span>
-              <span className="organizationDetail__value">{organization.contactPhone || '—'}</span>
-            </div>
-            <div className="organizationDetail__infoRow">
-              <span className="organizationDetail__label">Service Status:</span>
-              <span className="organizationDetail__value">
-                <span
-                  className={`organizationDetail__statusBadge organizationDetail__statusBadge--${organization.serviceStatus?.toLowerCase() || 'active'}`}
-                >
-                  {organization.serviceStatus || 'Active'}
+            <h3>
+              <BuildingIcon /> {t('organizations.contactInformation')}
+            </h3>
+            <div className="organizationDetail__fieldGroup">
+              <div className="organizationDetail__field">
+                <span className="organizationDetail__label">
+                  <EmailIcon /> {t('organizations.email')}
                 </span>
-              </span>
+                <span
+                  className={
+                    organization.contactEmail
+                      ? 'organizationDetail__value'
+                      : 'organizationDetail__value organizationDetail__value--empty'
+                  }
+                >
+                  {organization.contactEmail || t('common.notProvided')}
+                </span>
+              </div>
+              <div className="organizationDetail__field">
+                <span className="organizationDetail__label">
+                  <PhoneIcon /> {t('organizations.phone')}
+                </span>
+                <span
+                  className={
+                    organization.contactPhone
+                      ? 'organizationDetail__value'
+                      : 'organizationDetail__value organizationDetail__value--empty'
+                  }
+                >
+                  {organization.contactPhone || t('common.notProvided')}
+                </span>
+              </div>
+              <div className="organizationDetail__field">
+                <span className="organizationDetail__label">
+                  {t('organizations.serviceStatus')}
+                </span>
+                <span className="organizationDetail__value">
+                  <Badge variant={organization.serviceStatus === 'Active' ? 'success' : 'warning'}>
+                    {organization.serviceStatus || t('machines.statusActive')}
+                  </Badge>
+                </span>
+              </div>
+              <div className="organizationDetail__field">
+                <span className="organizationDetail__label">{t('common.created')}</span>
+                <span className="organizationDetail__value">
+                  {format(new Date(organization.createdAt), 'MMM dd, yyyy')}
+                </span>
+              </div>
             </div>
-            <div className="organizationDetail__infoRow">
-              <span className="organizationDetail__label">Created:</span>
+          </div>
+        </Card>
+
+        <Card>
+          <div className="organizationDetail__infoCard">
+            <h3>
+              <MapPinIcon /> {t('organizations.address')}
+            </h3>
+            <div className="organizationDetail__fieldGroup">
+              <div className="organizationDetail__field">
+                <span className="organizationDetail__label">{t('common.street')}</span>
+                <span
+                  className={
+                    organization.address
+                      ? 'organizationDetail__value'
+                      : 'organizationDetail__value organizationDetail__value--empty'
+                  }
+                >
+                  {organization.address || t('common.notProvided')}
+                </span>
+              </div>
+              <div className="organizationDetail__field">
+                <span className="organizationDetail__label">
+                  {t('common.city')} / {t('common.postalCode')}
+                </span>
+                <span
+                  className={
+                    organization.city || organization.postalCode
+                      ? 'organizationDetail__value'
+                      : 'organizationDetail__value organizationDetail__value--empty'
+                  }
+                >
+                  {organization.city || t('common.notProvided')}{' '}
+                  {organization.postalCode ? `, ${organization.postalCode}` : ''}
+                </span>
+              </div>
+              <div className="organizationDetail__field">
+                <span className="organizationDetail__label">{t('common.country')}</span>
+                <span
+                  className={
+                    organization.country
+                      ? 'organizationDetail__value'
+                      : 'organizationDetail__value organizationDetail__value--empty'
+                  }
+                >
+                  {organization.country || t('common.notProvided')}
+                </span>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <Card>
+          <div className="organizationDetail__infoCard">
+            <h3>
+              <ChartIcon /> {t('organizations.statistics')}
+            </h3>
+            <div className="organizationDetail__statsGrid">
+              <div className="organizationDetail__statItem">
+                <span className="organizationDetail__statLabel">
+                  {t('organizations.totalMachines')}
+                </span>
+                <span className="organizationDetail__statValue">{organization.machinesCount}</span>
+              </div>
+              <div className="organizationDetail__statItem">
+                <span className="organizationDetail__statLabel">
+                  {t('organizations.activeTickets')}
+                </span>
+                <span className="organizationDetail__statValue">
+                  {organization.activeTicketsCount}
+                </span>
+              </div>
+            </div>
+            <div className="organizationDetail__field">
+              <span className="organizationDetail__label">{t('organizations.machineStatus')}</span>
               <span className="organizationDetail__value">
-                {format(new Date(organization.createdAt), 'MMM dd, yyyy')}
-              </span>
-            </div>
-          </div>
-        </Card>
-
-        <Card>
-          <div className="organizationDetail__infoCard">
-            <h3>Address</h3>
-            <div className="organizationDetail__infoRow">
-              <span className="organizationDetail__label">Street:</span>
-              <span className="organizationDetail__value">{organization.address || '—'}</span>
-            </div>
-            <div className="organizationDetail__infoRow">
-              <span className="organizationDetail__label">City:</span>
-              <span className="organizationDetail__value">{organization.city || '—'}</span>
-            </div>
-            <div className="organizationDetail__infoRow">
-              <span className="organizationDetail__label">Postal Code:</span>
-              <span className="organizationDetail__value">{organization.postalCode || '—'}</span>
-            </div>
-            <div className="organizationDetail__infoRow">
-              <span className="organizationDetail__label">Country:</span>
-              <span className="organizationDetail__value">{organization.country || '—'}</span>
-            </div>
-          </div>
-        </Card>
-
-        <Card>
-          <div className="organizationDetail__infoCard">
-            <h3>Statistics</h3>
-            <div className="organizationDetail__statRow">
-              <span className="organizationDetail__statLabel">Total Machines</span>
-              <span className="organizationDetail__statValue">{organization.machinesCount}</span>
-            </div>
-            <div className="organizationDetail__statRow">
-              <span className="organizationDetail__statLabel">Active Tickets</span>
-              <span className="organizationDetail__statValue">
-                {organization.activeTicketsCount}
-              </span>
-            </div>
-            <div className="organizationDetail__statRow">
-              <span className="organizationDetail__statLabel">Machine Status</span>
-              <span className="organizationDetail__statValue">
                 {organization.hasAlarmMachines ? (
-                  <span className="organizationDetail__alarmBadge">⚠️ Has Alarms</span>
+                  <Badge variant="danger">⚠️ {t('organizations.hasAlarms')}</Badge>
                 ) : (
-                  <span className="organizationDetail__okBadge">✓ OK</span>
+                  <Badge variant="success">✓ {t('organizations.noAlarms')}</Badge>
                 )}
               </span>
             </div>
@@ -206,22 +385,40 @@ export const OrganizationDetailPage = () => {
 
         <Card>
           <div className="organizationDetail__infoCard">
-            <h3>Contract Information</h3>
-            <div className="organizationDetail__infoRow">
-              <span className="organizationDetail__label">Contract Start:</span>
-              <span className="organizationDetail__value">
-                {organization.contractStartDate
-                  ? format(new Date(organization.contractStartDate), 'MMM dd, yyyy')
-                  : '—'}
-              </span>
-            </div>
-            <div className="organizationDetail__infoRow">
-              <span className="organizationDetail__label">Contract End:</span>
-              <span className="organizationDetail__value">
-                {organization.contractEndDate
-                  ? format(new Date(organization.contractEndDate), 'MMM dd, yyyy')
-                  : '—'}
-              </span>
+            <h3>
+              <CalendarIcon /> {t('organizations.contractStart')} / {t('organizations.contractEnd')}
+            </h3>
+            <div className="organizationDetail__fieldGroup">
+              <div className="organizationDetail__field">
+                <span className="organizationDetail__label">
+                  {t('organizations.contractStart')}
+                </span>
+                <span
+                  className={
+                    organization.contractStartDate
+                      ? 'organizationDetail__value'
+                      : 'organizationDetail__value organizationDetail__value--empty'
+                  }
+                >
+                  {organization.contractStartDate
+                    ? format(new Date(organization.contractStartDate), 'MMM dd, yyyy')
+                    : t('common.notProvided')}
+                </span>
+              </div>
+              <div className="organizationDetail__field">
+                <span className="organizationDetail__label">{t('organizations.contractEnd')}</span>
+                <span
+                  className={
+                    organization.contractEndDate
+                      ? 'organizationDetail__value'
+                      : 'organizationDetail__value organizationDetail__value--empty'
+                  }
+                >
+                  {organization.contractEndDate
+                    ? format(new Date(organization.contractEndDate), 'MMM dd, yyyy')
+                    : t('common.notProvided')}
+                </span>
+              </div>
             </div>
           </div>
         </Card>
@@ -229,58 +426,60 @@ export const OrganizationDetailPage = () => {
 
       {organization.notes && (
         <Card className="organizationDetail__notesCard">
-          <h3>Notes</h3>
+          <h3>{t('common.notes')}</h3>
           <p className="organizationDetail__notes">{organization.notes}</p>
         </Card>
       )}
 
       <div className="organizationDetail__actionsSection">
         <Button variant="secondary" onClick={() => setIsEditModalOpen(true)}>
-          ✏️ Edit Organization
+          ✏️ {t('organizations.editOrganization')}
         </Button>
         <Button
           variant="danger"
           onClick={handleDeleteOrganization}
           disabled={isDeleting || organization.activeTicketsCount > 0}
           title={
-            organization.activeTicketsCount > 0
-              ? 'Cannot delete organization with active tickets'
-              : ''
+            organization.activeTicketsCount > 0 ? t('organizations.cannotDeleteWithTickets') : ''
           }
         >
-          {isDeleting ? 'Deleting...' : '🗑️ Delete Organization'}
+          {isDeleting ? t('common.deleting') : `🗑️ ${t('organizations.deleteOrganization')}`}
         </Button>
       </div>
 
       <Card className="organizationDetail__apiKeyCard">
-        <h3>API Key Management</h3>
+        <h3>{t('organizations.apiKeyManagement')}</h3>
         <p className="organizationDetail__apiKeyDescription">
-          API key allows this organization to integrate with external systems.
+          {t('organizations.apiKeyDescription')}
         </p>
         <div className="organizationDetail__apiKeyRow">
           <div className="organizationDetail__apiKeyInput">
             <input
               type={showApiKey ? 'text' : 'password'}
-              value={organization.apiKey || 'No API key generated'}
+              value={organization.apiKey || t('organizations.noApiKey')}
               readOnly
               className="organizationDetail__apiKeyField"
             />
-            <Button variant="secondary" size="small" onClick={() => setShowApiKey(!showApiKey)}>
-              {showApiKey ? '🙈 Hide' : '👁️ Show'}
+            <Button variant="secondary" size="sm" onClick={() => setShowApiKey(!showApiKey)}>
+              {showApiKey
+                ? `🙈 ${t('organizations.hideApiKey')}`
+                : `👁️ ${t('organizations.showApiKey')}`}
             </Button>
             {organization.apiKey && (
-              <Button variant="secondary" size="small" onClick={copyApiKey}>
-                📋 Copy
+              <Button variant="secondary" size="sm" onClick={copyApiKey}>
+                📋 {t('organizations.copyApiKey')}
               </Button>
             )}
           </div>
           <Button
             variant="danger"
-            size="small"
+            size="sm"
             onClick={handleRegenerateApiKey}
             disabled={isRegeneratingApiKey}
           >
-            {isRegeneratingApiKey ? 'Regenerating...' : '🔄 Regenerate'}
+            {isRegeneratingApiKey
+              ? t('common.loading')
+              : `🔄 ${t('organizations.regenerateApiKey')}`}
           </Button>
         </div>
       </Card>
@@ -290,9 +489,9 @@ export const OrganizationDetailPage = () => {
   const renderMachinesTab = () => (
     <div className="organizationDetail__machines">
       <div className="organizationDetail__tabHeader">
-        <h3>Registered Machines</h3>
+        <h3>{t('machines.registeredMachines')}</h3>
         <Button variant="primary" onClick={() => setIsRegisterMachineModalOpen(true)}>
-          + Register Machine
+          + {t('machines.registerMachine')}
         </Button>
       </div>
       {machinesLoading ? (
@@ -301,9 +500,9 @@ export const OrganizationDetailPage = () => {
         </div>
       ) : machines.length === 0 ? (
         <div className="organizationDetail__empty">
-          <p>No machines registered for this organization.</p>
+          <p>{t('machines.noMachines')}</p>
           <Button variant="primary" onClick={() => setIsRegisterMachineModalOpen(true)}>
-            + Register First Machine
+            + {t('machines.registerFirstMachine')}
           </Button>
         </div>
       ) : (
@@ -311,11 +510,11 @@ export const OrganizationDetailPage = () => {
           <table className="organizationDetail__table">
             <thead>
               <tr>
-                <th>Serial Number</th>
-                <th>Model</th>
-                <th>Status</th>
-                <th>Location</th>
-                <th>Actions</th>
+                <th>{t('machines.serialNumber')}</th>
+                <th>{t('machines.model')}</th>
+                <th>{t('common.status')}</th>
+                <th>{t('machines.location')}</th>
+                <th>{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -324,20 +523,18 @@ export const OrganizationDetailPage = () => {
                   <td className="organizationDetail__machineSerial">{machine.serialNumber}</td>
                   <td>{machine.model}</td>
                   <td>
-                    <span
-                      className={`organizationDetail__statusBadge organizationDetail__statusBadge--${machine.status.toLowerCase()}`}
-                    >
+                    <Badge variant={getMachineStatusVariant(machine.status)}>
                       {machine.status}
-                    </span>
+                    </Badge>
                   </td>
                   <td>{machine.location || '—'}</td>
                   <td>
                     <Button
                       variant="secondary"
-                      size="small"
+                      size="sm"
                       onClick={() => navigate(`/service/machines/${machine.id}`)}
                     >
-                      View Details
+                      {t('common.viewDetails')}
                     </Button>
                   </td>
                 </tr>
@@ -357,17 +554,17 @@ export const OrganizationDetailPage = () => {
         </div>
       ) : users.length === 0 ? (
         <div className="organizationDetail__empty">
-          <p>No team members found.</p>
+          <p>{t('team.noMembers')}</p>
         </div>
       ) : (
         <div className="organizationDetail__tableWrapper">
           <table className="organizationDetail__table">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
+                <th>{t('users.fullName')}</th>
+                <th>{t('users.email')}</th>
+                <th>{t('users.role')}</th>
+                <th>{t('common.status')}</th>
               </tr>
             </thead>
             <tbody>
@@ -376,18 +573,14 @@ export const OrganizationDetailPage = () => {
                   <td className="organizationDetail__userName">{user.fullName}</td>
                   <td>{user.email}</td>
                   <td>
-                    <span
-                      className={`organizationDetail__roleBadge ${user.isAdmin ? 'organizationDetail__roleBadge--admin' : ''}`}
-                    >
-                      {user.isAdmin ? 'Admin' : 'User'}
-                    </span>
+                    <Badge variant={user.isAdmin ? 'primary' : 'default'}>
+                      {user.isAdmin ? t('users.administrator') : t('users.operator')}
+                    </Badge>
                   </td>
                   <td>
-                    <span
-                      className={`organizationDetail__statusBadge organizationDetail__statusBadge--${user.status.toLowerCase()}`}
-                    >
+                    <Badge variant={user.status === 'Active' ? 'success' : 'warning'}>
                       {user.status}
-                    </span>
+                    </Badge>
                   </td>
                 </tr>
               ))}
@@ -406,48 +599,40 @@ export const OrganizationDetailPage = () => {
         </div>
       ) : tickets.length === 0 ? (
         <div className="organizationDetail__empty">
-          <p>No tickets found for this organization.</p>
+          <p>{t('tickets.noTickets') || 'No tickets found.'}</p>
         </div>
       ) : (
         <div className="organizationDetail__tableWrapper">
           <table className="organizationDetail__table">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Status</th>
-                <th>Priority</th>
-                <th>Created</th>
-                <th>Actions</th>
+                <th>{t('tickets.ticketNumber')}</th>
+                <th>{t('tickets.title')}</th>
+                <th>{t('common.status')}</th>
+                <th>{t('common.priority')}</th>
+                <th>{t('common.created')}</th>
+                <th>{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody>
               {tickets.map((ticket: TicketDto) => (
                 <tr key={ticket.id}>
-                  <td className="organizationDetail__ticketId">#{ticket.id.slice(0, 8)}</td>
+                  <td className="organizationDetail__ticketId">#{ticket.ticketNumber}</td>
                   <td className="organizationDetail__ticketTitle">{ticket.title}</td>
                   <td>
-                    <span
-                      className={`organizationDetail__statusBadge organizationDetail__statusBadge--${ticket.status.toLowerCase()}`}
-                    >
-                      {ticket.status}
-                    </span>
+                    <TicketStatusBadge status={ticket.status} />
                   </td>
                   <td>
-                    <span
-                      className={`organizationDetail__priorityBadge organizationDetail__priorityBadge--${ticket.priority.toLowerCase()}`}
-                    >
-                      {ticket.priority}
-                    </span>
+                    <TicketPriorityBadge priority={ticket.priority} />
                   </td>
                   <td>{format(new Date(ticket.createdAt), 'MMM dd, yyyy')}</td>
                   <td>
                     <Button
                       variant="secondary"
-                      size="small"
+                      size="sm"
                       onClick={() => navigate(`/service/tickets/${ticket.id}`)}
                     >
-                      View
+                      {t('common.viewDetails')}
                     </Button>
                   </td>
                 </tr>
@@ -463,7 +648,7 @@ export const OrganizationDetailPage = () => {
     <div className="organizationDetail">
       {/* Breadcrumb Navigation */}
       <div className="organizationDetail__breadcrumb">
-        <Link to="/service/organizations">Organizations</Link>
+        <Link to="/service/organizations">{t('organizations.title')}</Link>
         <span className="organizationDetail__breadcrumbSeparator">/</span>
         <span className="organizationDetail__breadcrumbCurrent">{organization.name}</span>
       </div>
@@ -472,13 +657,11 @@ export const OrganizationDetailPage = () => {
       <div className="organizationDetail__header">
         <div>
           <h1 className="organizationDetail__title">{organization.name}</h1>
-          <p className="organizationDetail__subtitle">
-            Organization ID: {organization.id.slice(0, 8)}
-          </p>
+          <p className="organizationDetail__subtitle">ID: {organization.id.slice(0, 8)}</p>
         </div>
         <div className="organizationDetail__headerActions">
           <Button variant="secondary" onClick={() => navigate('/service/organizations')}>
-            ← Back
+            ← {t('common.back')}
           </Button>
         </div>
       </div>
@@ -489,25 +672,25 @@ export const OrganizationDetailPage = () => {
           className={`organizationDetail__tab ${activeTab === 'overview' ? 'organizationDetail__tab--active' : ''}`}
           onClick={() => setActiveTab('overview')}
         >
-          Overview
+          {t('organizations.overview')}
         </button>
         <button
           className={`organizationDetail__tab ${activeTab === 'machines' ? 'organizationDetail__tab--active' : ''}`}
           onClick={() => setActiveTab('machines')}
         >
-          Machines ({organization.machinesCount})
+          {t('organizations.machines')} ({organization.machinesCount})
         </button>
         <button
           className={`organizationDetail__tab ${activeTab === 'team' ? 'organizationDetail__tab--active' : ''}`}
           onClick={() => setActiveTab('team')}
         >
-          Team ({users.length})
+          {t('organizations.team')} ({users.length})
         </button>
         <button
           className={`organizationDetail__tab ${activeTab === 'tickets' ? 'organizationDetail__tab--active' : ''}`}
           onClick={() => setActiveTab('tickets')}
         >
-          Tickets ({organization.activeTicketsCount})
+          {t('tickets.title')} ({organization.activeTicketsCount})
         </button>
       </div>
 

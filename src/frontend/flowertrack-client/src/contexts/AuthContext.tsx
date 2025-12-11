@@ -37,7 +37,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const storedToken = localStorage.getItem('accessToken');
     const storedUser = localStorage.getItem('user');
 
-    console.log('[AuthContext] Initializing...', { hasToken: !!storedToken, hasUser: !!storedUser });
+    console.log('[AuthContext] Initializing...', {
+      hasToken: !!storedToken,
+      hasUser: !!storedUser,
+    });
 
     if (storedToken && storedUser) {
       setToken(storedToken);

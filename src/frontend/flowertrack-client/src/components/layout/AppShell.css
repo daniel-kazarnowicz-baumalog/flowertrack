@@ -1,16 +1,16 @@
 .appShell {
-    display: flex;
-    min-height: 100vh;
-    background-color: var(--color-bg-app);
-    position: relative;
-    isolation: isolate;
-    /* Create new stacking context */
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--color-bg-app);
+  position: relative;
+  isolation: isolate;
+  /* Create new stacking context */
 }
 
 .appShell__particles {
-    opacity: 0.5;
-    /* Subtle background */
-    z-index: -1;
+  opacity: 0.5;
+  /* Subtle background */
+  z-index: -1;
 }
 
 /* Sidebar needs to be above particles */
@@ -18,112 +18,112 @@
    but we ensure it's structurally consistent here */
 
 .appShell__main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    transition: margin-left var(--duration-300) var(--ease-spring);
-    position: relative;
-    z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  transition: margin-left var(--duration-300) var(--ease-spring);
+  position: relative;
+  z-index: 1;
 }
 
 @media (min-width: 1024px) {
-    .appShell__main {
-        margin-left: 280px;
-    }
+  .appShell__main {
+    margin-left: 280px;
+  }
 
-    .appShell--collapsed .appShell__main {
-        margin-left: 80px;
-    }
+  .appShell--collapsed .appShell__main {
+    margin-left: 80px;
+  }
 }
 
 /* Header */
 .appShell__header {
-    height: 4rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 1.5rem;
-    /* Make header slightly transparent for glass effect */
-    background-color: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--color-border-subtle);
-    position: sticky;
-    top: 0;
-    z-index: 30;
-    transition: background-color var(--duration-200);
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  /* Make header slightly transparent for glass effect */
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-border-subtle);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  transition: background-color var(--duration-200);
 }
 
 [data-theme='dark'] .appShell__header {
-    background-color: rgba(15, 23, 42, 0.8);
+  background-color: rgba(15, 23, 42, 0.8);
 }
 
 .appShell__menuBtn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: var(--color-text-secondary);
-    cursor: pointer;
-    padding: 0.5rem;
-    margin-left: -0.5rem;
-    border-radius: var(--radius-md);
-    transition: color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 0.5rem;
+  margin-left: -0.5rem;
+  border-radius: var(--radius-md);
+  transition: color 0.15s;
 }
 
 .appShell__menuBtn:hover {
-    color: var(--color-text-primary);
-    background-color: var(--color-bg-subtle);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-subtle);
 }
 
 @media (min-width: 1024px) {
-    .appShell__menuBtn {
-        display: none;
-    }
+  .appShell__menuBtn {
+    display: none;
+  }
 }
 
 .appShell__headerRight {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
 }
 
 /* Content */
 .appShell__content {
-    flex: 1;
-    padding: 1.5rem;
-    /* Use transparent background to let particles show through subtly if desired, 
+  flex: 1;
+  padding: 1.5rem;
+  /* Use transparent background to let particles show through subtly if desired, 
        OR keep opaque. User asked for "dynamic background". 
        Let's make it slightly transparent or use cards content validation. */
-    background-color: transparent;
+  background-color: transparent;
 }
 
 .appShell__container {
-    max-width: 1400px;
-    margin: 0 auto;
-    width: 100%;
-    /* Add entry animation */
-    animation: contentFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  /* Add entry animation */
+  animation: contentFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes contentFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 640px) {
-    .appShell__content {
-        padding: 1rem;
-    }
+  .appShell__content {
+    padding: 1rem;
+  }
 }

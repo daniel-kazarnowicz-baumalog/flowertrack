@@ -25,13 +25,20 @@ export function StatusDistributionChart({
   // Helper to translate status
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'New': return t('tickets.statusNew', 'Nowy');
-      case 'Accepted': return t('tickets.statusOpen', 'Otwarty'); // Assuming Accepted maps to Open or add statusAccepted
-      case 'InProgress': return t('tickets.statusInProgress', 'W trakcie');
-      case 'Resolved': return t('tickets.statusResolved', 'Rozwiązany');
-      case 'Closed': return t('tickets.statusClosed', 'Zamknięty');
-      case 'Reopened': return t('tickets.statusReopened', 'Ponownie otwarty'); // Add if needed
-      default: return status;
+      case 'New':
+        return t('tickets.statusNew', 'Nowy');
+      case 'Accepted':
+        return t('tickets.statusOpen', 'Otwarty'); // Assuming Accepted maps to Open or add statusAccepted
+      case 'InProgress':
+        return t('tickets.statusInProgress', 'W trakcie');
+      case 'Resolved':
+        return t('tickets.statusResolved', 'Rozwiązany');
+      case 'Closed':
+        return t('tickets.statusClosed', 'Zamknięty');
+      case 'Reopened':
+        return t('tickets.statusReopened', 'Ponownie otwarty'); // Add if needed
+      default:
+        return status;
     }
   };
 
@@ -79,11 +86,7 @@ export function StatusDistributionChart({
             }}
             itemStyle={{ color: 'var(--color-text-primary)' }}
           />
-          <Legend
-            verticalAlign="bottom"
-            height={36}
-            iconType="circle"
-          />
+          <Legend verticalAlign="bottom" height={36} iconType="circle" />
         </PieChart>
       </ResponsiveContainer>
     </div>

@@ -48,9 +48,7 @@ export function ThemeSwitcher({
             : t('theme.switchToDark', 'Przełącz na ciemny')
         }
       >
-        <span className="themeSwitcher__icon">
-          {resolvedTheme === 'dark' ? '🌙' : '☀️'}
-        </span>
+        <span className="themeSwitcher__icon">{resolvedTheme === 'dark' ? '🌙' : '☀️'}</span>
       </button>
     );
   }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Modal, Button, Input } from '../ui';
 import { useInviteServiceUser } from '../../hooks/useServiceUsers';
 import './InviteTechnicianModal.css';
@@ -30,6 +31,7 @@ export const InviteTechnicianModal = ({
   onClose,
   onSuccess,
 }: InviteTechnicianModalProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<FormData>({
     email: '',
     firstName: '',
@@ -61,30 +63,30 @@ export const InviteTechnicianModal = ({
 
     // Email validation
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = t('users.emailRequired');
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = t('users.invalidEmail');
     }
 
     // First name validation
     if (!formData.firstName.trim()) {
-      newErrors.firstName = 'First name is required';
+      newErrors.firstName = t('users.firstNameRequired');
     } else if (formData.firstName.length > 100) {
-      newErrors.firstName = 'First name cannot exceed 100 characters';
+      newErrors.firstName = t('users.firstNameTooLong');
     }
 
     // Last name validation
     if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
+      newErrors.lastName = t('users.lastNameRequired');
     } else if (formData.lastName.length > 100) {
-      newErrors.lastName = 'Last name cannot exceed 100 characters';
+      newErrors.lastName = t('users.lastNameTooLong');
     }
 
     // Password validation (optional but if provided, must be valid)
     if (formData.password && formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
+      newErrors.password = t('users.passwordTooShort');
     } else if (formData.password && formData.password.length > 100) {
-      newErrors.password = 'Password cannot exceed 100 characters';
+      newErrors.password = t('users.passwordTooLong');
     }
 
     setErrors(newErrors);
@@ -110,12 +112,12 @@ export const InviteTechnicianModal = ({
       };
 
       if (axiosError.response?.status === 409) {
-        setErrors({ email: 'A user with this email already exists' });
+        setErrors({ email: t('users.emailExists') });
       } else if (axiosError.response?.status === 403) {
-        setErrors({ general: "You don't have permission to invite users" });
+        setErrors({ general: t('users.noPermissionInvite') });
       } else {
         setErrors({
-          general: axiosError.response?.data?.message || 'Failed to send invitation',
+          general: axiosError.response?.data?.message || t('users.inviteFailed'),
         });
       }
     }
@@ -138,14 +140,14 @@ export const InviteTechnicianModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Invite New Team Member" size="md">
+    <Modal isOpen={isOpen} onClose={handleClose} title={t('users.inviteNewMember')} size="md">
       <form onSubmit={handleSubmit} className="inviteTechnicianForm">
         {errors.general && <div className="inviteTechnicianForm__error">{errors.general}</div>}
 
         <div className="inviteTechnicianForm__field">
           <Input
             type="email"
-            label="Email"
+            label={t('auth.email')}
             placeholder="technician@example.com"
             value={formData.email}
             onChange={(e) => handleInputChange('email', e.target.value)}
@@ -158,7 +160,7 @@ export const InviteTechnicianModal = ({
         <div className="inviteTechnicianForm__field">
           <Input
             type="text"
-            label="First Name"
+            label={t('users.firstName')}
             placeholder="John"
             value={formData.firstName}
             onChange={(e) => handleInputChange('firstName', e.target.value)}
@@ -171,7 +173,7 @@ export const InviteTechnicianModal = ({
         <div className="inviteTechnicianForm__field">
           <Input
             type="text"
-            label="Last Name"
+            label={t('users.lastName')}
             placeholder="Doe"
             value={formData.lastName}
             onChange={(e) => handleInputChange('lastName', e.target.value)}
@@ -184,21 +186,21 @@ export const InviteTechnicianModal = ({
         <div className="inviteTechnicianForm__field">
           <Input
             type="password"
-            label="Password (optional)"
-            placeholder="Leave empty to send invitation email"
+            label={`${t('auth.password')} (${t('common.optional')})`}
+            placeholder={t('users.leaveEmptyForEmail')}
             value={formData.password}
             onChange={(e) => handleInputChange('password', e.target.value)}
             error={errors.password}
             disabled={inviteMutation.isPending}
           />
           <span className="inviteTechnicianForm__hint">
-            If set, user can login immediately. Otherwise, invitation email will be sent.
+            {t('users.passwordHint')}
           </span>
         </div>
 
         <div className="inviteTechnicianForm__field">
           <label className="inviteTechnicianForm__label">
-            Role <span className="inviteTechnicianForm__required">*</span>
+            {t('users.role')} <span className="inviteTechnicianForm__required">*</span>
           </label>
           <div className="roleSelector">
             <label
@@ -215,9 +217,9 @@ export const InviteTechnicianModal = ({
               />
               <div className="roleCard__content">
                 <div className="roleCard__icon">🔧</div>
-                <div className="roleCard__name">Technician</div>
+                <div className="roleCard__name">{t('users.technician')}</div>
                 <div className="roleCard__description">
-                  Can manage tickets, machines, and organizations
+                  {t('users.inviteDescriptionTechnician')}
                 </div>
               </div>
             </label>
@@ -234,9 +236,9 @@ export const InviteTechnicianModal = ({
               />
               <div className="roleCard__content">
                 <div className="roleCard__icon">👑</div>
-                <div className="roleCard__name">Admin</div>
+                <div className="roleCard__name">{t('users.administrator')}</div>
                 <div className="roleCard__description">
-                  Full system access including user management
+                  {t('users.inviteDescriptionAdmin')}
                 </div>
               </div>
             </label>
@@ -250,10 +252,10 @@ export const InviteTechnicianModal = ({
             onClick={handleClose}
             disabled={inviteMutation.isPending}
           >
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button type="submit" variant="primary" isLoading={inviteMutation.isPending}>
-            Send Invitation
+            {t('users.sendInvitation')}
           </Button>
         </div>
       </form>

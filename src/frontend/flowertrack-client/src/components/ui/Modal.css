@@ -26,10 +26,15 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   max-height: 90vh;
+  /* Reduced to ensure it fits better */
+  width: 100%;
+  /* Ensure width is handled by modifiers */
   display: flex;
   flex-direction: column;
   animation: slideIn var(--duration-200) var(--ease-out);
   border: 1px solid var(--color-border-subtle);
+  margin: 3rem auto;
+  /* Top margin to place it higher, auto horizontal for centering */
 }
 
 .modal--sm {

@@ -97,9 +97,7 @@ export const Timeline: React.FC<TimelineProps> = ({ events, isLoading = false })
             <div className={styles.eventContent}>
               <div className={styles.eventHeader}>
                 <span className={styles.eventType}>{event.description}</span>
-                <span className={styles.eventTime}>
-                  {formatSafeDate(event.createdAt)}
-                </span>
+                <span className={styles.eventTime}>{formatSafeDate(event.createdAt)}</span>
               </div>
               <div className={styles.eventDetails}>
                 <span className={styles.eventPerformer}>{event.performedByUserName}</span>

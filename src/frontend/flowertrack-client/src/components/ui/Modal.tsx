@@ -1,4 +1,5 @@
 import { useEffect, useRef, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from './Button';
 import './Modal.css';
 
@@ -21,6 +22,7 @@ export function Modal({
   size = 'md',
   closeOnOverlayClick = true,
 }: ModalProps) {
+  const { t } = useTranslation();
   const modalRef = useRef<HTMLDivElement>(null);
 
   // Handle ESC key
@@ -66,7 +68,7 @@ export function Modal({
               type="button"
               onClick={onClose}
               className="modal-close"
-              aria-label="Close modal"
+              aria-label={t('common.closeModal')}
             >
               ✕
             </button>
@@ -97,10 +99,12 @@ export function ConfirmModal({
   onConfirm,
   title,
   message,
-  confirmText = 'Confirm',
-  cancelText = 'Cancel',
+  confirmText,
+  cancelText,
   variant = 'primary',
 }: ConfirmModalProps) {
+  const { t } = useTranslation();
+
   const handleConfirm = () => {
     onConfirm();
     onClose();
@@ -115,10 +119,10 @@ export function ConfirmModal({
       footer={
         <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
           <Button variant="ghost" onClick={onClose}>
-            {cancelText}
+            {cancelText || t('common.cancel')}
           </Button>
           <Button variant={variant} onClick={handleConfirm}>
-            {confirmText}
+            {confirmText || t('common.confirm')}
           </Button>
         </div>
       }

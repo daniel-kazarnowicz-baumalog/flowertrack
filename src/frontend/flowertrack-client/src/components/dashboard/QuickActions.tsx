@@ -4,13 +4,7 @@ import './QuickActions.css';
 export const QuickActions = () => {
   return (
     <div className="quickActions">
-      <Link
-        to="/service/tickets?action=new"
-        className="quickActions__btn quickActions__btn--primary"
-      >
-        <span className="quickActions__icon">➕</span>
-        Nowe Zgłoszenie
-      </Link>
+      {/* "New Ticket" button removed as per request - service portal doesn't create tickets generally */}
       <Link to="/service/machines?action=register" className="quickActions__btn">
         <span className="quickActions__icon">🏭</span>
         Rejestruj Maszynę

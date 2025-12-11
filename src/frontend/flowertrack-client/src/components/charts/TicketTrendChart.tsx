@@ -26,7 +26,10 @@ export function TicketTrendChart({
   // Format data for display
   const chartData = data.map((item) => ({
     ...item,
-    date: new Date(item.date).toLocaleDateString(navigator.language, { month: 'short', day: 'numeric' }),
+    date: new Date(item.date).toLocaleDateString(navigator.language, {
+      month: 'short',
+      day: 'numeric',
+    }),
   }));
 
   return (
@@ -48,7 +51,11 @@ export function TicketTrendChart({
               <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-subtle)" vertical={false} />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="var(--color-border-subtle)"
+            vertical={false}
+          />
           <XAxis
             dataKey="date"
             stroke="var(--color-text-tertiary)"
