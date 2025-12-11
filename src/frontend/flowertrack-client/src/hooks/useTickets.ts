@@ -13,7 +13,7 @@ import type {
   TicketHistoryEvent,
   AssignTicketRequest,
 } from '../types/api';
-import { getTickets, getTicketById, assignTicket, createTicket, getTicketHistory } from '../services/ticketService';
+import { getTickets, getTicketById, assignTicket, createTicket, getTicketHistory, updateTicket, changeTicketStatus } from '../services/ticketService';
 
 // ============================================================================
 // Query Keys
@@ -101,12 +101,17 @@ export const useCreateTicket = () => {
 /**
  * Update ticket details (title, description, priority)
  */
+/**
+ * Update ticket details (title, description, priority)
+ */
 export const useUpdateTicket = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (_data: { id: string; data: unknown }) => ({}) as TicketDto,
+    mutationFn: (params: { id: string; data: Partial<TicketDto> }) =>
+      updateTicket(params.id, params.data as any),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ticketKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: ticketKeys.details() });
     },
   });
 };
@@ -117,12 +122,13 @@ export const useUpdateTicket = () => {
 export const useChangeTicketStatus = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (_data: {
+    mutationFn: (params: {
       id: string;
       data: { newStatus: string; justification?: string };
-    }) => { },
-    onSuccess: () => {
+    }) => changeTicketStatus(params.id, params.data as any),
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ticketKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: ticketKeys.detail(variables.id) });
     },
   });
 };

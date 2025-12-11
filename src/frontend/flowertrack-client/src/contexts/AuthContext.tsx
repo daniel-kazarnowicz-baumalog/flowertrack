@@ -76,9 +76,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const loginService = async (email: string, password: string): Promise<void> => {
     try {
       const response = await authService.loginService(email, password);
+      // Backend returns role as 'Admin' or 'Technician' in response.user.role
+      // We map this to isAdmin and set the context role to 'service'
+      const isAdmin = response.user.role === 'Admin';
+
       login(response.accessToken, {
         ...response.user,
         role: 'service',
+        isAdmin,
       } as User);
     } catch (error) {
       // Re-throw to let the component handle it

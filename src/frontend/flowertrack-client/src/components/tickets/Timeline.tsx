@@ -59,7 +59,7 @@ export const Timeline: React.FC<TimelineProps> = ({ events, isLoading = false })
     );
   }
 
-  if (!events || events.length === 0) {
+  if (!Array.isArray(events) || events.length === 0) {
     return (
       <div className={styles.timeline}>
         <div className={styles.empty}>
@@ -68,6 +68,20 @@ export const Timeline: React.FC<TimelineProps> = ({ events, isLoading = false })
       </div>
     );
   }
+
+  const formatSafeDate = (dateString: string) => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return '';
+      return formatDistanceToNow(date, {
+        addSuffix: true,
+        locale: pl,
+      });
+    } catch {
+      return '';
+    }
+  };
 
   return (
     <div className={styles.timeline}>
@@ -84,10 +98,7 @@ export const Timeline: React.FC<TimelineProps> = ({ events, isLoading = false })
               <div className={styles.eventHeader}>
                 <span className={styles.eventType}>{event.description}</span>
                 <span className={styles.eventTime}>
-                  {formatDistanceToNow(new Date(event.createdAt), {
-                    addSuffix: true,
-                    locale: pl,
-                  })}
+                  {formatSafeDate(event.createdAt)}
                 </span>
               </div>
               <div className={styles.eventDetails}>

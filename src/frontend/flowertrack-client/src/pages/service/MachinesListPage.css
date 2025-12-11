@@ -16,7 +16,7 @@
 .machinesList__header h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--color-text-primary);
   margin: 0;
 }
 
@@ -34,34 +34,38 @@
 
 .machinesList__select {
   padding: 0.75rem 1rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-border-default);
   border-radius: 8px;
   font-size: 0.875rem;
-  color: #374151;
-  background-color: white;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-subtle);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .machinesList__select:hover {
-  border-color: #9ca3af;
+  border-color: var(--color-border-strong);
 }
 
 .machinesList__select:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px var(--color-primary-200);
+  background-color: var(--color-bg-app);
+}
+
+[data-theme='dark'] .machinesList__select:focus {
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
 /* Table */
 .machinesList__tableWrapper {
   overflow-x: auto;
-  background: white;
+  background: var(--color-bg-card);
   border-radius: 12px;
-  box-shadow:
-    0 1px 3px 0 rgba(0, 0, 0, 0.1),
-    0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm);
   margin-bottom: 1.5rem;
+  border: 1px solid var(--color-border-subtle);
 }
 
 .machinesList__table {
@@ -71,15 +75,15 @@
 }
 
 .machinesList__table thead {
-  background-color: #f9fafb;
-  border-bottom: 2px solid #e5e7eb;
+  background-color: var(--color-bg-subtle);
+  border-bottom: 2px solid var(--color-border-default);
 }
 
 .machinesList__table th {
   padding: 1rem;
   text-align: left;
   font-weight: 600;
-  color: #374151;
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.05em;
@@ -89,16 +93,17 @@
 }
 
 .machinesList__table th:hover {
-  background-color: #f3f4f6;
+  background-color: var(--color-border-subtle);
+  color: var(--color-text-primary);
 }
 
 .machinesList__table tbody tr {
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--color-border-subtle);
   transition: background-color 0.15s;
 }
 
 .machinesList__table tbody tr:hover {
-  background-color: #f9fafb;
+  background-color: var(--color-bg-subtle);
 }
 
 .machinesList__table tbody tr:last-child {
@@ -107,24 +112,24 @@
 
 .machinesList__table td {
   padding: 1rem;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   vertical-align: middle;
 }
 
 .machinesList__table td strong {
-  color: #1f2937;
+  color: var(--color-text-primary);
   font-weight: 600;
 }
 
 .machinesList__orgLink {
-  color: #3b82f6;
+  color: var(--color-primary-600);
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s;
 }
 
 .machinesList__orgLink:hover {
-  color: #2563eb;
+  color: var(--color-primary-700);
   text-decoration: underline;
 }
 
@@ -134,16 +139,15 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background: white;
+  background: var(--color-bg-card);
   border-radius: 12px;
-  box-shadow:
-    0 1px 3px 0 rgba(0, 0, 0, 0.1),
-    0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-subtle);
 }
 
 .machinesList__info {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-text-secondary);
 }
 
 /* Loading State */
@@ -153,16 +157,15 @@
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
-  background: white;
+  background: var(--color-bg-card);
   border-radius: 12px;
-  box-shadow:
-    0 1px 3px 0 rgba(0, 0, 0, 0.1),
-    0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-subtle);
 }
 
 .machinesList__loading p {
   margin-top: 1rem;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   font-size: 0.875rem;
 }
 
@@ -173,12 +176,11 @@
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
-  background: white;
+  background: var(--color-bg-card);
   border-radius: 12px;
-  box-shadow:
-    0 1px 3px 0 rgba(0, 0, 0, 0.1),
-    0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm);
   text-align: center;
+  border: 1px solid var(--color-border-subtle);
 }
 
 .machinesList__emptyIcon {
@@ -190,12 +192,12 @@
 .machinesList__empty h2 {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text-primary);
   margin-bottom: 0.5rem;
 }
 
 .machinesList__empty p {
-  color: #6b7280;
+  color: var(--color-text-secondary);
   margin-bottom: 1.5rem;
   max-width: 400px;
 }
@@ -207,16 +209,15 @@
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
-  background: white;
+  background: var(--color-bg-card);
   border-radius: 12px;
-  box-shadow:
-    0 1px 3px 0 rgba(0, 0, 0, 0.1),
-    0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm);
   text-align: center;
+  border: 1px solid var(--color-rose-500);
 }
 
 .machinesList__error p {
-  color: #dc2626;
+  color: var(--color-status-error-text);
   margin-bottom: 1.5rem;
   font-weight: 500;
 }

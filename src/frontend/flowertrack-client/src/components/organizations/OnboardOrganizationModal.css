@@ -15,10 +15,16 @@
 .onboardOrg__section h3 {
   font-size: 1rem;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text-primary);
   margin: 0;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.onboardOrg__sectionHint {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin-top: -0.5rem;
 }
 
 .onboardOrg__field {
@@ -36,13 +42,14 @@
   display: flex;
   gap: 0.75rem;
   justify-content: flex-end;
+  margin-top: 1rem;
 }
 
 .onboardOrg__label {
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151;
+  color: var(--color-text-secondary);
   margin-bottom: 0.5rem;
 }
 
@@ -50,20 +57,29 @@
   width: 100%;
   padding: 0.75rem;
   font-size: 0.875rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-border-default);
   border-radius: 0.375rem;
   resize: vertical;
   font-family: inherit;
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text-primary);
+  transition: all 0.2s;
 }
 
 .onboardOrg__textarea:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 2px var(--color-primary-200);
+  background-color: var(--color-bg-app);
+}
+
+[data-theme='dark'] .onboardOrg__textarea:focus {
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
 }
 
 .onboardOrg__textarea:disabled {
-  background-color: #f3f4f6;
+  background-color: var(--color-bg-subtle);
+  opacity: 0.7;
   cursor: not-allowed;
 }
 

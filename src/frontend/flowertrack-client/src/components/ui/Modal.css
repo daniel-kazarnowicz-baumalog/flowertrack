@@ -6,23 +6,30 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--color-bg-overlay);
+  /* Use a consistent dark overlay for both modes for focus, or map it */
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Semi-transparent black */
+  backdrop-filter: blur(4px);
+  /* Optional: Adds a modern blur effect */
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--space-4);
-  z-index: var(--z-modal-backdrop);
+  z-index: 1000;
+  /* Ensure it is above other content */
   animation: fadeIn var(--duration-200) var(--ease-out);
 }
 
 .modal {
-  background-color: var(--color-bg-elevated);
-  border-radius: var(--modal-border-radius);
-  box-shadow: var(--modal-shadow);
+  /* Use card background which flips correctly in dark mode */
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
   max-height: 90vh;
   display: flex;
   flex-direction: column;
   animation: slideIn var(--duration-200) var(--ease-out);
+  border: 1px solid var(--color-border-subtle);
 }
 
 .modal--sm {
@@ -50,12 +57,17 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--space-5);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
+  background-color: var(--color-bg-subtle);
+  /* Slight diff from body to separate header */
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-lg);
 }
 
 .modal-title {
-  font-size: var(--text-xl);
-  font-weight: var(--font-semibold);
+  font-size: 1.25rem;
+  /* text-xl replacement if var missing or direct value */
+  font-weight: 600;
   color: var(--color-text-primary);
   margin: 0;
 }
@@ -63,37 +75,45 @@
 .modal-close {
   background: none;
   border: none;
-  font-size: var(--text-2xl);
+  font-size: 1.5rem;
   color: var(--color-text-secondary);
   cursor: pointer;
-  padding: var(--space-1);
+  padding: var(--space-2);
   line-height: 1;
-  transition: var(--transition-colors);
+  transition: all 0.2s;
   border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .modal-close:hover {
   color: var(--color-text-primary);
-  background-color: var(--color-bg-hover);
+  background-color: var(--color-bg-subtle);
 }
 
 .modal-body {
-  padding: var(--modal-padding);
+  padding: var(--space-6);
   overflow-y: auto;
   flex: 1;
   color: var(--color-text-primary);
+  /* Ensure backgrounds in body don't conflict */
+  background-color: var(--color-bg-card);
 }
 
 .modal-footer {
   padding: var(--space-4) var(--space-5);
-  border-top: 1px solid var(--color-border);
-  background-color: var(--color-bg-secondary);
+  border-top: 1px solid var(--color-border-subtle);
+  background-color: var(--color-bg-subtle);
+  border-bottom-left-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -104,6 +124,7 @@
     transform: translateY(-20px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;

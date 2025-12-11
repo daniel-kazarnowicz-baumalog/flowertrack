@@ -1,3 +1,5 @@
+/* Modern Timeline Styles */
+
 .timeline {
   width: 100%;
 }
@@ -5,11 +7,12 @@
 .events {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-6);
   position: relative;
   padding-left: 2rem;
 }
 
+/* Vertical Line */
 .events::before {
   content: '';
   position: absolute;
@@ -17,164 +20,157 @@
   top: 0.5rem;
   bottom: 0.5rem;
   width: 2px;
-  background: var(--color-border);
+  background: var(--color-border-subtle);
+  border-radius: 2px;
 }
 
 .event {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-4);
   position: relative;
 }
 
+/* Dot Icon */
 .eventIcon {
   position: absolute;
   left: -2rem;
   width: 1.75rem;
   height: 1.75rem;
   border-radius: 50%;
+  border: 2px solid var(--color-bg-app);
+  /* Mask line behind it */
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.875rem;
-  background: var(--color-bg-primary);
-  border: 2px solid var(--color-border);
-  z-index: 1;
+  font-size: 0.85rem;
+  background: var(--color-bg-card);
+  box-shadow: 0 0 0 1px var(--color-border-subtle);
+  z-index: 2;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.event.eventCreated .eventIcon {
-  background: var(--color-success-bg);
-  border-color: var(--color-success);
+.event:hover .eventIcon {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 2px var(--color-primary-200);
 }
 
-.event.eventResolved .eventIcon {
-  background: var(--color-success-bg);
-  border-color: var(--color-success);
-}
-
-.event.eventStatusChange .eventIcon {
-  background: var(--color-info-bg);
-  border-color: var(--color-info);
-}
-
-.event.eventPriorityChange .eventIcon {
-  background: var(--color-warning-bg);
-  border-color: var(--color-warning);
-}
-
-.event.eventAssignment .eventIcon {
-  background: var(--color-primary-bg);
-  border-color: var(--color-primary);
-}
-
-.event.eventComment .eventIcon {
-  background: var(--color-secondary-bg);
-  border-color: var(--color-secondary);
-}
-
-.event.eventAttachment .eventIcon {
-  background: var(--color-secondary-bg);
-  border-color: var(--color-secondary);
-}
-
-.event.eventReopened .eventIcon {
-  background: var(--color-warning-bg);
-  border-color: var(--color-warning);
-}
-
-.event.eventDefault .eventIcon {
-  background: var(--color-bg-secondary);
-  border-color: var(--color-border);
-}
-
+/* Event Content Card */
 .eventContent {
   flex: 1;
-  padding: 0.75rem 1rem;
-  background: var(--color-bg-secondary);
-  border-radius: var(--border-radius);
-  border: 1px solid var(--color-border);
+  padding: var(--space-4);
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-subtle);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+}
+
+.event:hover .eventContent {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border-default);
 }
 
 .eventHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 0.5rem;
+  gap: var(--space-4);
+  margin-bottom: var(--space-2);
 }
 
 .eventType {
   font-weight: 600;
   color: var(--color-text-primary);
-  font-size: 0.875rem;
+  font-size: 0.95rem;
 }
 
 .eventTime {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--color-text-tertiary);
-  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .eventDetails {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-2);
 }
 
-.eventUser {
-  font-size: 0.813rem;
+.eventPerformer {
+  font-size: 0.85rem;
   color: var(--color-text-secondary);
+  font-weight: 500;
 }
 
-.eventDetailsText {
-  font-size: 0.813rem;
+.eventMetadata {
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border-subtle);
+  font-size: 0.85rem;
   color: var(--color-text-tertiary);
-  font-style: italic;
 }
 
-.empty {
-  padding: 2rem;
-  text-align: center;
-  color: var(--color-text-tertiary);
-  font-size: 0.875rem;
+.metadataItem {
+  display: flex;
+  gap: var(--space-2);
 }
 
+/* Specific Event Types Colors */
+.eventCreated .eventIcon {
+  color: var(--color-emerald-500);
+  border-color: var(--color-emerald-200);
+}
+
+.eventResolved .eventIcon {
+  color: var(--color-emerald-600);
+  background: var(--color-emerald-50);
+}
+
+.eventClosed .eventIcon {
+  color: var(--color-slate-600);
+  background: var(--color-slate-100);
+}
+
+.eventStatusChange .eventIcon {
+  color: var(--color-primary-500);
+  background: var(--color-primary-50);
+}
+
+.eventPriorityChange .eventIcon {
+  color: var(--color-amber-500);
+  background: var(--color-amber-50);
+}
+
+.eventAssignment .eventIcon {
+  color: var(--color-sky-500);
+  background: var(--color-sky-50);
+}
+
+/* Loading State */
 .loading {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-4);
   padding-left: 2rem;
 }
 
 .skeleton {
-  height: 60px;
-  background: linear-gradient(
-    90deg,
-    var(--color-bg-secondary) 25%,
-    var(--color-bg-tertiary) 50%,
-    var(--color-bg-secondary) 75%
-  );
-  background-size: 200% 100%;
-  animation: loading 1.5s ease-in-out infinite;
-  border-radius: var(--border-radius);
+  height: 80px;
+  background: var(--color-bg-subtle);
+  border-radius: var(--radius-md);
+  animation: pulse 1.5s infinite;
 }
 
-@keyframes loading {
+@keyframes pulse {
   0% {
-    background-position: 200% 0;
+    opacity: 0.6;
   }
+
+  50% {
+    opacity: 0.8;
+  }
+
   100% {
-    background-position: -200% 0;
-  }
-}
-
-@media (max-width: 768px) {
-  .eventHeader {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.25rem;
-  }
-
-  .eventTime {
-    white-space: normal;
+    opacity: 0.6;
   }
 }

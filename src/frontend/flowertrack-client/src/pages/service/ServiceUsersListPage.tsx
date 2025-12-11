@@ -88,8 +88,8 @@ export const ServiceUsersListPage = () => {
     return { title: '', message: '' };
   }, [confirmModal]);
 
-  // Check admin access - must be after all hooks
-  if (!user || user.role !== 'service' || !user.isAdmin) {
+  // Check service access - must be after all hooks
+  if (!user || user.role !== 'service') {
     return <Navigate to="/service/dashboard" replace />;
   }
 
@@ -97,7 +97,7 @@ export const ServiceUsersListPage = () => {
   const isCurrentUser = (userId: string) => userId === user.id;
 
   const handleRoleChange = (serviceUser: ServiceUser, newRole: 'Admin' | 'Technician') => {
-    if (isCurrentUser(serviceUser.id)) {
+    if (isCurrentUser(serviceUser.id) || !user.isAdmin) {
       return; // Should be disabled in UI
     }
 
@@ -110,7 +110,7 @@ export const ServiceUsersListPage = () => {
   };
 
   const handleStatusToggle = (serviceUser: ServiceUser) => {
-    if (isCurrentUser(serviceUser.id)) {
+    if (isCurrentUser(serviceUser.id) || !user.isAdmin) {
       return; // Should be disabled in UI
     }
 
@@ -317,7 +317,7 @@ export const ServiceUsersListPage = () => {
                           onChange={(e) =>
                             handleRoleChange(serviceUser, e.target.value as 'Admin' | 'Technician')
                           }
-                          disabled={isCurrentUser(serviceUser.id)}
+                          disabled={!user.isAdmin || isCurrentUser(serviceUser.id)}
                           className="serviceUsersListPage__roleSelect"
                           aria-label={`Change role for ${serviceUser.fullName}`}
                         >
@@ -325,20 +325,23 @@ export const ServiceUsersListPage = () => {
                           <option value="Admin">Admin</option>
                         </select>
 
-                        <button
-                          className="serviceUsersListPage__iconButton"
-                          onClick={() => handleResetPassword(serviceUser)}
-                          title="Reset Password"
-                          disabled={serviceUser.status !== 'Active'}
-                        >
-                          Key
-                        </button>
+                        {user.isAdmin && (
+                          <button
+                            className="serviceUsersListPage__iconButton"
+                            onClick={() => handleResetPassword(serviceUser)}
+                            title="Reset Password"
+                            disabled={serviceUser.status !== 'Active'}
+                          >
+                            Key
+                          </button>
+                        )}
 
                         <Button
                           variant={serviceUser.status === 'Active' ? 'danger' : 'primary'}
                           size="sm"
                           onClick={() => handleStatusToggle(serviceUser)}
                           disabled={
+                            !user.isAdmin ||
                             isCurrentUser(serviceUser.id) ||
                             (serviceUser.status === 'Active' && isLastAdmin(serviceUser.id))
                           }

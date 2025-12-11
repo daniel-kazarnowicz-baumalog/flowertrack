@@ -149,7 +149,9 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
     );
   }
 
-  const visibleComments = comments?.filter((comment) => !comment.isInternal || isServiceUser) || [];
+  const visibleComments = Array.isArray(comments)
+    ? comments.filter((comment) => !comment.isInternal || isServiceUser)
+    : [];
 
   return (
     <div className={styles.commentThread}>

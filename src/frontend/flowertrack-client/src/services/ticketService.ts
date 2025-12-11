@@ -113,7 +113,7 @@ export const changeTicketStatus = async (
   id: string,
   data: ChangeTicketStatusRequest
 ): Promise<void> => {
-  await apiClient.post(`/tickets/${id}/status`, data);
+  await apiClient.patch(`/tickets/${id}/status`, data);
 };
 
 /**

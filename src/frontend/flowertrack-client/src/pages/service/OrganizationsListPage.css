@@ -14,40 +14,49 @@
 .organizationsListPage__title {
   font-size: 2rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--color-text-primary);
   margin-bottom: 0.5rem;
 }
 
 .organizationsListPage__subtitle {
-  color: #6b7280;
+  color: var(--color-text-secondary);
   font-size: 1rem;
 }
 
 .organizationsListPage__filters {
-  background: white;
+  background: var(--color-bg-card);
   border-radius: 8px;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
   margin-bottom: 1.5rem;
   display: flex;
   gap: 1.5rem;
   align-items: center;
   flex-wrap: wrap;
+  border: 1px solid var(--color-border-subtle);
 }
 
 .organizationsListPage__searchInput {
   flex: 1;
   min-width: 250px;
   padding: 0.75rem 1rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-border-default);
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text-primary);
   border-radius: 6px;
   font-size: 1rem;
+  transition: all 0.2s;
 }
 
 .organizationsListPage__searchInput:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px var(--color-primary-200);
+  background-color: var(--color-bg-app);
+}
+
+[data-theme='dark'] .organizationsListPage__searchInput:focus {
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
 .organizationsListPage__filterGroup {
@@ -61,24 +70,26 @@
   gap: 0.5rem;
   cursor: pointer;
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-text-secondary);
 }
 
 .organizationsListPage__filterLabel input[type='checkbox'] {
   cursor: pointer;
+  accent-color: var(--color-primary-600);
 }
 
 .organizationsListPage__results {
-  color: #6b7280;
+  color: var(--color-text-secondary);
   font-size: 0.875rem;
   margin-bottom: 1rem;
 }
 
 .organizationsListPage__tableWrapper {
-  background: white;
+  background: var(--color-bg-card);
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
+  border: 1px solid var(--color-border-subtle);
 }
 
 .organizationsListPage__table {
@@ -87,8 +98,8 @@
 }
 
 .organizationsListPage__table thead {
-  background: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--color-bg-subtle);
+  border-bottom: 1px solid var(--color-border-default);
 }
 
 .organizationsListPage__table th {
@@ -96,7 +107,7 @@
   text-align: left;
   font-weight: 600;
   font-size: 0.875rem;
-  color: #374151;
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -108,23 +119,24 @@
 }
 
 .organizationsListPage__sortable:hover {
-  background-color: #f3f4f6;
+  background-color: var(--color-border-subtle);
+  color: var(--color-text-primary);
 }
 
 .organizationsListPage__table td {
   padding: 1rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-border-subtle);
   font-size: 0.875rem;
-  color: #1a1a1a;
+  color: var(--color-text-primary);
 }
 
 .organizationsListPage__row:hover {
-  background-color: #f9fafb;
+  background-color: var(--color-bg-subtle);
 }
 
 .organizationsListPage__orgName {
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--color-text-primary);
 }
 
 .organizationsListPage__centered {
@@ -140,8 +152,8 @@
 }
 
 .organizationsListPage__badge--alarm {
-  background: #fee2e2;
-  color: #dc2626;
+  background: var(--color-status-error-bg);
+  color: var(--color-status-error-text);
 }
 
 .organizationsListPage__loading {
@@ -152,8 +164,8 @@
 }
 
 .organizationsListPage__error {
-  background-color: #fee2e2;
-  border: 1px solid #ef4444;
+  background-color: var(--color-status-error-bg);
+  border: 1px solid var(--color-rose-500);
   border-radius: 8px;
   padding: 2rem;
   text-align: center;
@@ -161,21 +173,26 @@
 }
 
 .organizationsListPage__error h2 {
-  color: #dc2626;
+  color: var(--color-status-error-text);
   margin-bottom: 0.5rem;
 }
 
 .organizationsListPage__error p {
-  color: #991b1b;
+  color: var(--color-rose-900);
+}
+
+[data-theme='dark'] .organizationsListPage__error p {
+  color: var(--color-rose-200);
 }
 
 .organizationsListPage__empty {
   text-align: center;
   padding: 4rem 2rem;
-  color: #9ca3af;
-  background: white;
+  color: var(--color-text-tertiary);
+  background: var(--color-bg-card);
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-subtle);
 }
 
 @media (max-width: 768px) {

@@ -137,6 +137,20 @@ export const AttachmentGallery: React.FC<AttachmentGalleryProps> = ({ ticketId }
     );
   }
 
+  const formatSafeDate = (dateString: string) => {
+    if (!dateString) return 'nieznana data';
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return 'nieprawidłowa data';
+      return formatDistanceToNow(date, {
+        addSuffix: true,
+        locale: pl,
+      });
+    } catch {
+      return 'błąd daty';
+    }
+  };
+
   return (
     <div className={styles.attachmentGallery}>
       {/* Upload Area */}
@@ -169,8 +183,8 @@ export const AttachmentGallery: React.FC<AttachmentGalleryProps> = ({ ticketId }
       </div>
 
       {/* Attachments List */}
-      <div className={styles.attachmentsList}>
-        {!attachments || attachments.length === 0 ? (
+      <div className="attachmentsList">
+        {!Array.isArray(attachments) || attachments.length === 0 ? (
           <div className={styles.empty}>
             <p>Brak załączników</p>
           </div>
@@ -188,10 +202,7 @@ export const AttachmentGallery: React.FC<AttachmentGalleryProps> = ({ ticketId }
                   <span className={styles.attachmentUploader}>{attachment.uploadedByUserName}</span>
                   <span className={styles.attachmentSeparator}>•</span>
                   <span className={styles.attachmentTime}>
-                    {formatDistanceToNow(new Date(attachment.createdAt), {
-                      addSuffix: true,
-                      locale: pl,
-                    })}
+                    {formatSafeDate(attachment.createdAt)}
                   </span>
                 </div>
               </div>

@@ -6,10 +6,10 @@
 
 .inviteTechnicianForm__error {
   padding: 0.75rem 1rem;
-  background-color: #fef2f2;
-  border: 1px solid #fca5a5;
+  background-color: var(--color-status-error-bg);
+  border: 1px solid var(--color-rose-300);
   border-radius: 0.375rem;
-  color: #dc2626;
+  color: var(--color-status-error-text);
   font-size: 0.875rem;
 }
 
@@ -22,11 +22,11 @@
 .inviteTechnicianForm__label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151;
+  color: var(--color-text-secondary);
 }
 
 .inviteTechnicianForm__required {
-  color: #dc2626;
+  color: var(--color-rose-600);
 }
 
 .inviteTechnicianForm__footer {
@@ -35,7 +35,7 @@
   justify-content: flex-end;
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 /* Role Selector Styles */
@@ -50,21 +50,21 @@
   display: flex;
   flex-direction: column;
   padding: 1rem;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--color-border-default);
   border-radius: 0.5rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  background-color: #ffffff;
+  background-color: var(--color-bg-subtle);
 }
 
 .roleCard:hover {
-  border-color: #3b82f6;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+  border-color: var(--color-primary-500);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
 }
 
 .roleCard--selected {
-  border-color: #3b82f6;
-  background-color: #eff6ff;
+  border-color: var(--color-primary-500);
+  background-color: rgba(99, 102, 241, 0.05);
 }
 
 .roleCard__input {
@@ -89,26 +89,26 @@
 .roleCard__name {
   font-size: 1rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text-primary);
 }
 
 .roleCard__description {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   line-height: 1.4;
 }
 
 .roleCard--selected .roleCard__name {
-  color: #3b82f6;
+  color: var(--color-primary-600);
 }
 
 .roleCard--selected .roleCard__description {
-  color: #2563eb;
+  color: var(--color-primary-700);
 }
 
 .inviteTechnicianForm__hint {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--color-text-tertiary);
   margin-top: 0.25rem;
 }
 

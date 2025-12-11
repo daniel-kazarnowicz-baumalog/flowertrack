@@ -885,10 +885,7 @@ public class TicketsController : ControllerBase
             return BadRequest(new ErrorResponse(result.Error ?? "Failed to add comment"));
         }
 
-        return CreatedAtAction(
-            nameof(GetHistory),
-            new { id },
-            result.Value);
+        return Ok(result.Value);
     }
 
     /// <summary>
@@ -939,10 +936,7 @@ public class TicketsController : ControllerBase
             return BadRequest(new ErrorResponse(result.Error ?? "Failed to add note"));
         }
 
-        return CreatedAtAction(
-            nameof(GetHistory),
-            new { id },
-            result.Value);
+        return Ok(result.Value);
     }
 
     #region Bulk Operations

@@ -1,6 +1,6 @@
 /**
- * ServiceTicketDetailPage - Detailed view of a ticket for service users
- * Includes tabs for Overview, Timeline, Comments, and Attachments
+ * ServiceTicketDetailPage - Modern Redesign
+ * A premium, grid-based layout with glassmorphism headers and contextual sidebars.
  */
 
 import React, { useState } from 'react';
@@ -25,7 +25,6 @@ import {
 } from '../../components/tickets';
 import { Button } from '../../components/ui/Button';
 import { Badge, getStatusColor, getPriorityColor } from '../../components/ui/Badge';
-import { Card } from '../../components/ui/Card';
 import { Loader } from '../../components/ui/Loader';
 import type { TicketStatus } from '../../types/api';
 import styles from './ServiceTicketDetailPage.module.css';
@@ -41,31 +40,59 @@ export const ServiceTicketDetailPage: React.FC = () => {
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+
+  // Edit state
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
-  const [editPriority, setEditPriority] = useState<'Low' | 'Medium' | 'High' | 'Critical'>(
-    'Medium'
-  );
+  const [editPriority, setEditPriority] = useState<'Low' | 'Medium' | 'High' | 'Critical'>('Medium');
 
   const { data: ticket, isLoading: isLoadingTicket } = useTicket(id || '');
   const { data: history, isLoading: isLoadingHistory } = useTicketHistory(id || '');
   const { data: serviceUsersData, isLoading: isLoadingUsers } = useServiceUsers();
+
   const updateMutation = useUpdateTicket();
   const changeStatusMutation = useChangeTicketStatus();
   const assignMutation = useAssignTicket();
 
+  // Smart Action Logic
+  const getSmartAction = (status: TicketStatus) => {
+    switch (status) {
+      case 'New':
+        return { label: 'Przyjmij zgłoszenie', nextStatus: 'Accepted', icon: '📥' };
+      case 'Accepted':
+        return { label: 'Rozpocznij pracę', nextStatus: 'InProgress', icon: '▶️' };
+      case 'InProgress':
+        return { label: 'Rozwiąż zgłoszenie', nextStatus: 'Resolved', icon: '✅' };
+      case 'Resolved':
+        return { label: 'Zamknij zgłoszenie', nextStatus: 'Closed', icon: '🔒' };
+      case 'Closed':
+        return { label: 'Otwórz ponownie', nextStatus: 'Reopened', icon: '🔓' };
+      default:
+        return { label: 'Zmień status', nextStatus: null, icon: '🔄' };
+    }
+  };
+
+  const handleSmartAction = () => {
+    if (!ticket) return;
+    const action = getSmartAction(ticket.status);
+
+    // If it requires justification (Resolved/Closed) or manual selection, open modal
+    if (action.nextStatus === 'Resolved' || action.nextStatus === 'Closed' || !action.nextStatus) {
+      setIsStatusModalOpen(true);
+    } else {
+      // Direct update for simple transitions
+      handleStatusChange(action.nextStatus as TicketStatus);
+    }
+  };
+
   const handleStatusChange = async (newStatus: TicketStatus, justification?: string) => {
     if (!id) return;
-
     try {
       await changeStatusMutation.mutateAsync({
         id,
-        data: {
-          newStatus: newStatus as string,
-          justification,
-        },
+        data: { newStatus, justification },
       });
-      showToast('Status zmieniony', 'success');
+      showToast(`Status zmieniony na ${newStatus}`, 'success');
       setIsStatusModalOpen(false);
     } catch {
       showToast('Nie udało się zmienić statusu', 'error');
@@ -74,18 +101,29 @@ export const ServiceTicketDetailPage: React.FC = () => {
 
   const handleAssignment = async (userId?: string) => {
     if (!id || !userId) return;
-
     try {
       await assignMutation.mutateAsync({
         id,
-        data: {
-          assignedToUserId: userId,
-        },
+        data: { assignedToUserId: userId },
       });
-      showToast('Zgłoszenie przypisane', 'success');
+      showToast('Technik przypisany', 'success');
       setIsAssignmentModalOpen(false);
     } catch {
-      showToast('Nie udało się przypisać zgłoszenia', 'error');
+      showToast('Błąd przypisywania', 'error');
+    }
+  };
+
+  const handleSaveEdit = async () => {
+    if (!id || !editTitle.trim() || !editDescription.trim()) return;
+    try {
+      await updateMutation.mutateAsync({
+        id,
+        data: { title: editTitle, description: editDescription, priority: editPriority },
+      });
+      showToast('Zgłoszenie zaktualizowane', 'success');
+      setIsEditing(false);
+    } catch {
+      showToast('Błąd aktualizacji', 'error');
     }
   };
 
@@ -97,31 +135,12 @@ export const ServiceTicketDetailPage: React.FC = () => {
     setIsEditing(true);
   };
 
-  const handleCancelEdit = () => {
-    setIsEditing(false);
-    setEditTitle('');
-    setEditDescription('');
-  };
-
-  const handleSaveEdit = async () => {
-    if (!id || !editTitle.trim() || !editDescription.trim()) {
-      showToast('Tytuł i opis nie mogą być puste', 'error');
-      return;
-    }
-
+  const formatSafeDate = (dateString?: string) => {
+    if (!dateString) return 'Nieznana data';
     try {
-      await updateMutation.mutateAsync({
-        id,
-        data: {
-          title: editTitle,
-          description: editDescription,
-          priority: editPriority,
-        },
-      });
-      showToast('Zgłoszenie zaktualizowane', 'success');
-      setIsEditing(false);
+      return formatDistanceToNow(new Date(dateString), { addSuffix: true, locale: pl });
     } catch {
-      showToast('Nie udało się zaktualizować zgłoszenia', 'error');
+      return 'Błąd daty';
     }
   };
 
@@ -129,7 +148,7 @@ export const ServiceTicketDetailPage: React.FC = () => {
     return (
       <div className={styles.loadingContainer}>
         <Loader size="lg" />
-        <p>Ładowanie zgłoszenia...</p>
+        <p>Szukam zgłoszenia...</p>
       </div>
     );
   }
@@ -138,225 +157,241 @@ export const ServiceTicketDetailPage: React.FC = () => {
     return (
       <div className={styles.errorContainer}>
         <h2>Nie znaleziono zgłoszenia</h2>
-        <Button onClick={() => navigate('/service/tickets')}>Powrót do listy zgłoszeń</Button>
+        <Button onClick={() => navigate('/service/tickets')}>Wróć do listy</Button>
       </div>
     );
   }
 
+  const smartAction = getSmartAction(ticket.status);
+
   return (
     <div className={styles.page}>
-      {/* Header */}
+
+      {/* --- HEADER --- */}
       <div className={styles.header}>
         <div className={styles.headerTop}>
           <div className={styles.headerLeft}>
             <button onClick={() => navigate('/service/tickets')} className={styles.backButton}>
-              ← Powrót
+              ← Powrót do listy
             </button>
-            <h1 className={styles.title}>
-              {ticket.ticketNumber} - {ticket.title}
-            </h1>
-          </div>
-          <div className={styles.headerRight}>
-            <Badge variant={getStatusColor(ticket.status)}>{ticket.status}</Badge>
-            <Badge variant={getPriorityColor(ticket.priority)}>{ticket.priority}</Badge>
-          </div>
-        </div>
-
-        <div className={styles.headerActions}>
-          {!isEditing ? (
-            <>
-              <Button variant="secondary" onClick={handleStartEdit}>
-                ✏️ Edytuj
-              </Button>
-              <Button variant="secondary" onClick={() => setIsStatusModalOpen(true)}>
-                🔄 Zmień status
-              </Button>
-              <Button variant="primary" onClick={() => setIsAssignmentModalOpen(true)}>
-                👤 Przypisz technika
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button variant="secondary" onClick={handleCancelEdit}>
-                Anuluj
-              </Button>
-              <Button
-                variant="primary"
-                onClick={handleSaveEdit}
-                disabled={updateMutation.isPending}
-              >
-                {updateMutation.isPending ? 'Zapisywanie...' : 'Zapisz zmiany'}
-              </Button>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className={styles.tabs}>
-        <button
-          className={`${styles.tab} ${activeTab === 'overview' ? styles.activeTab : ''}`}
-          onClick={() => setActiveTab('overview')}
-        >
-          📋 Przegląd
-        </button>
-        <button
-          className={`${styles.tab} ${activeTab === 'timeline' ? styles.activeTab : ''}`}
-          onClick={() => setActiveTab('timeline')}
-        >
-          📅 Historia
-        </button>
-        <button
-          className={`${styles.tab} ${activeTab === 'comments' ? styles.activeTab : ''}`}
-          onClick={() => setActiveTab('comments')}
-        >
-          💬 Komentarze
-        </button>
-        <button
-          className={`${styles.tab} ${activeTab === 'attachments' ? styles.activeTab : ''}`}
-          onClick={() => setActiveTab('attachments')}
-        >
-          📎 Załączniki
-        </button>
-      </div>
-
-      {/* Tab Content */}
-      <div className={styles.content}>
-        {activeTab === 'overview' && (
-          <div className={styles.overview}>
-            <div className={styles.mainInfo}>
-              <Card>
-                <h2 className={styles.sectionTitle}>Szczegóły zgłoszenia</h2>
-                {isEditing ? (
-                  <div className={styles.editForm}>
-                    <div className={styles.formField}>
-                      <label>Tytuł</label>
-                      <input
-                        type="text"
-                        value={editTitle}
-                        onChange={(e) => setEditTitle(e.target.value)}
-                        className={styles.input}
-                      />
-                    </div>
-                    <div className={styles.formField}>
-                      <label>Opis</label>
-                      <textarea
-                        value={editDescription}
-                        onChange={(e) => setEditDescription(e.target.value)}
-                        rows={6}
-                        className={styles.textarea}
-                      />
-                    </div>
-                    <div className={styles.formField}>
-                      <label>Priorytet</label>
-                      <select
-                        value={editPriority}
-                        onChange={(e) => setEditPriority(e.target.value as typeof editPriority)}
-                        className={styles.select}
-                      >
-                        <option value="Low">Niski</option>
-                        <option value="Medium">Średni</option>
-                        <option value="High">Wysoki</option>
-                        <option value="Critical">Krytyczny</option>
-                      </select>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <div className={styles.infoRow}>
-                      <span className={styles.label}>Opis:</span>
-                      <span className={styles.value}>{ticket.description}</span>
-                    </div>
-                    <div className={styles.infoRow}>
-                      <span className={styles.label}>Organizacja:</span>
-                      <span className={styles.value}>
-                        <Link
-                          to={`/service/organizations/${ticket.organizationId}`}
-                          className={styles.link}
-                        >
-                          {ticket.organizationName}
-                        </Link>
-                      </span>
-                    </div>
-                    <div className={styles.infoRow}>
-                      <span className={styles.label}>Maszyna:</span>
-                      <span className={styles.value}>
-                        <Link to={`/service/machines/${ticket.machineId}`} className={styles.link}>
-                          {ticket.machineModel} (S/N: {ticket.machineSerialNumber})
-                        </Link>
-                      </span>
-                    </div>
-                    <div className={styles.infoRow}>
-                      <span className={styles.label}>Utworzone przez:</span>
-                      <span className={styles.value}>{ticket.createdByName}</span>
-                    </div>
-                    <div className={styles.infoRow}>
-                      <span className={styles.label}>Utworzone:</span>
-                      <span className={styles.value}>
-                        {formatDistanceToNow(new Date(ticket.createdAt), {
-                          addSuffix: true,
-                          locale: pl,
-                        })}
-                      </span>
-                    </div>
-                    {ticket.assignedToName && (
-                      <div className={styles.infoRow}>
-                        <span className={styles.label}>Przypisane do:</span>
-                        <span className={styles.value}>{ticket.assignedToName}</span>
-                      </div>
-                    )}
-                    {ticket.resolvedAt && (
-                      <div className={styles.infoRow}>
-                        <span className={styles.label}>Rozwiązane:</span>
-                        <span className={styles.value}>
-                          {formatDistanceToNow(new Date(ticket.resolvedAt), {
-                            addSuffix: true,
-                            locale: pl,
-                          })}
-                        </span>
-                      </div>
-                    )}
-                    {ticket.closedAt && (
-                      <div className={styles.infoRow}>
-                        <span className={styles.label}>Zamknięte:</span>
-                        <span className={styles.value}>
-                          {formatDistanceToNow(new Date(ticket.closedAt), {
-                            addSuffix: true,
-                            locale: pl,
-                          })}
-                        </span>
-                      </div>
-                    )}
-                  </>
-                )}
-              </Card>
+            <div className={styles.titleWrapper}>
+              <span className={styles.ticketNumber}>{ticket.ticketNumber}</span>
+              {isEditing ? (
+                <input
+                  className={styles.input}
+                  value={editTitle}
+                  onChange={e => setEditTitle(e.target.value)}
+                  style={{ fontSize: '1.5rem', fontWeight: 700, width: '100%' }}
+                />
+              ) : (
+                <h1 className={styles.title}>{ticket.title}</h1>
+              )}
+            </div>
+            <div className={styles.headerMeta}>
+              <Badge variant={getStatusColor(ticket.status)}>{ticket.status}</Badge>
+              <Badge variant={getPriorityColor(ticket.priority)}>{ticket.priority}</Badge>
+              <span style={{ color: 'var(--color-text-tertiary)', fontSize: '0.9rem' }}>
+                Utworzono {formatSafeDate(ticket.createdAt)} przez {ticket.createdByName}
+              </span>
             </div>
           </div>
-        )}
+        </div>
 
-        {activeTab === 'timeline' && (
-          <Card>
-            <h2 className={styles.sectionTitle}>Historia zmian</h2>
-            <Timeline events={history || []} isLoading={isLoadingHistory} />
-          </Card>
-        )}
+        <div className={styles.actionBar}>
+          <div className={styles.tabs}>
+            <button
+              className={`${styles.tab} ${activeTab === 'overview' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('overview')}
+            >
+              Przegląd
+            </button>
+            <button
+              className={`${styles.tab} ${activeTab === 'timeline' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('timeline')}
+            >
+              Historia
+            </button>
+            <button
+              className={`${styles.tab} ${activeTab === 'comments' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('comments')}
+            >
+              Komentarze
+            </button>
+            <button
+              className={`${styles.tab} ${activeTab === 'attachments' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('attachments')}
+            >
+              Załączniki
+            </button>
+          </div>
 
-        {activeTab === 'comments' && (
-          <Card>
-            <h2 className={styles.sectionTitle}>Komentarze i notatki</h2>
-            <CommentThread ticketId={ticket.id} isServiceUser={true} />
-          </Card>
-        )}
-
-        {activeTab === 'attachments' && (
-          <Card>
-            <h2 className={styles.sectionTitle}>Załączniki</h2>
-            <AttachmentGallery ticketId={ticket.id} />
-          </Card>
-        )}
+          <div className={styles.headerActions}>
+            {!isEditing ? (
+              <>
+                <Button variant="ghost" onClick={handleStartEdit}>
+                  Edytuj
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={handleSmartAction}
+                  className={styles.statusButton}
+                >
+                  {smartAction.icon} {smartAction.label}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" onClick={() => setIsEditing(false)}>Anuluj</Button>
+                <Button variant="primary" onClick={handleSaveEdit}>Zapisz zmiany</Button>
+              </>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* Modals */}
+      {/* --- GRID LAYOUT --- */}
+      <div className={styles.gridContainer}>
+
+        {/* LEFT COLUMN: Main Content */}
+        <div className={styles.contentArea}>
+
+          {activeTab === 'overview' && (
+            <div className={styles.sidebarCard} style={{ padding: 'var(--space-6)' }}>
+              <h3 className={styles.infoLabel} style={{ marginBottom: 'var(--space-4)' }}>Opis Zgłoszenia</h3>
+              {isEditing ? (
+                <textarea
+                  className={styles.textarea}
+                  rows={8}
+                  value={editDescription}
+                  onChange={e => setEditDescription(e.target.value)}
+                />
+              ) : (
+                <p style={{ lineHeight: 1.6, color: 'var(--color-text-primary)' }}>
+                  {ticket.description}
+                </p>
+              )}
+
+              <div style={{ marginTop: 'var(--space-6)', paddingTop: 'var(--space-6)', borderTop: '1px solid var(--color-border-subtle)' }}>
+                <h3 className={styles.infoLabel} style={{ marginBottom: 'var(--space-4)' }}>Najnowsza Aktywność</h3>
+                {/* Show mini timeline here */}
+                <Timeline events={Array.isArray(history) ? history.slice(0, 3) : []} isLoading={isLoadingHistory} />
+                <div style={{ marginTop: 'var(--space-4)', textAlign: 'center' }}>
+                  <Button variant="ghost" onClick={() => setActiveTab('timeline')}>Zobacz pełną historię</Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'timeline' && (
+            <div className={styles.sidebarCard} style={{ padding: 'var(--space-0)' }}>
+              <div style={{ padding: 'var(--space-6)' }}>
+                <Timeline events={history || []} isLoading={isLoadingHistory} />
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'comments' && (
+            <div className={styles.sidebarCard} style={{ padding: 'var(--space-6)' }}>
+              <CommentThread ticketId={ticket.id} isServiceUser={true} />
+            </div>
+          )}
+
+          {activeTab === 'attachments' && (
+            <div className={styles.sidebarCard} style={{ padding: 'var(--space-6)' }}>
+              <AttachmentGallery ticketId={ticket.id} />
+            </div>
+          )}
+        </div>
+
+        {/* RIGHT COLUMN: Context Sidebar */}
+        <div className={styles.sidebar}>
+
+          {/* Assignment Card */}
+          <div className={styles.sidebarCard}>
+            <div className={styles.sidebarHeader}>
+              <span>👤 Przypisanie</span>
+            </div>
+            <div className={styles.sidebarContent}>
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Technik</span>
+                <div className={styles.infoValue} style={{ justifyContent: 'space-between' }}>
+                  <span>{ticket.assignedToName || 'Nieprzypisane'}</span>
+                  <Button size="sm" variant="ghost" onClick={() => setIsAssignmentModalOpen(true)}>
+                    {ticket.assignedToName ? 'Zmień' : 'Przypisz'}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Machine Card */}
+          <div className={styles.sidebarCard}>
+            <div className={styles.sidebarHeader}>
+              <span>🏭 Maszyna</span>
+            </div>
+            <div className={styles.sidebarContent}>
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Model</span>
+                <span className={styles.infoValue}>
+                  <Link to={`/service/machines/${ticket.machineId}`} className={styles.link}>
+                    {ticket.machineModel}
+                  </Link>
+                </span>
+              </div>
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Numer Seryjny</span>
+                <span className={styles.infoValue}>{ticket.machineSerialNumber}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Organization Card */}
+          <div className={styles.sidebarCard}>
+            <div className={styles.sidebarHeader}>
+              <span>🏢 Klient</span>
+            </div>
+            <div className={styles.sidebarContent}>
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Organizacja</span>
+                <span className={styles.infoValue}>
+                  <Link to={`/service/organizations/${ticket.organizationId}`} className={styles.link}>
+                    {ticket.organizationName}
+                  </Link>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Dates Card */}
+          <div className={styles.sidebarCard}>
+            <div className={styles.sidebarHeader}>
+              <span>📅 Daty</span>
+            </div>
+            <div className={styles.sidebarContent}>
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Utworzono</span>
+                <span className={styles.infoValue}>{formatSafeDate(ticket.createdAt)}</span>
+              </div>
+              {ticket.updatedAt && (
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>Ostatnia zmiana</span>
+                  <span className={styles.infoValue}>{formatSafeDate(ticket.updatedAt)}</span>
+                </div>
+              )}
+              {ticket.resolvedAt && (
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>Rozwiązano</span>
+                  <span className={styles.infoValue}>{formatSafeDate(ticket.resolvedAt)}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* --- MODALS --- */}
       <StatusChangeModal
         isOpen={isStatusModalOpen}
         onClose={() => setIsStatusModalOpen(false)}
