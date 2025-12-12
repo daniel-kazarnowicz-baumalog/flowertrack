@@ -1,0 +1,125 @@
+# =============================================================================
+# FLOWerTRACK Frontend - CI/CD Pipeline
+# =============================================================================
+# Deploys React frontend to GitHub Pages on push to develop branch
+# Domyślna domena: https://daniel-kazarnowicz-baumalog.github.io/flowertrack/
+# =============================================================================
+
+name: Deploy Frontend to GitHub Pages
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'src/frontend/flowertrack-client/**'
+      - '.github/workflows/deploy-frontend.yml'
+  
+  # Pozwala na ręczne uruchomienie workflow z zakładki Actions
+  workflow_dispatch:
+
+# Uprawnienia wymagane do deploy na GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Zapobiega równoległemu deployowi - anuluje poprzednie jeśli nowy push
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+  WORKING_DIRECTORY: 'src/frontend/flowertrack-client'
+
+jobs:
+  # =============================================================================
+  # Job 1: Build & Test
+  # =============================================================================
+  build:
+    name: 🔨 Build & Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ env.WORKING_DIRECTORY }}/package-lock.json
+
+      - name: 📚 Install dependencies
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: npm ci
+
+      - name: 🔍 Run ESLint
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: npm run lint
+
+      - name: 🎨 Check Prettier formatting
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: npm run format:check
+
+      - name: 🔧 TypeScript type check
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: npx tsc --noEmit
+
+      - name: 🏗️ Build application
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        env:
+          # Zmienne środowiskowe dla produkcji
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || 'https://api.flowertrack.example.com/api' }}
+          VITE_APP_ENV: 'production'
+        run: npm run build
+
+      - name: 📤 Upload build artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ env.WORKING_DIRECTORY }}/dist
+
+  # =============================================================================
+  # Job 2: Deploy to GitHub Pages
+  # =============================================================================
+  deploy:
+    name: 🚀 Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: 🌐 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  # =============================================================================
+  # Job 3: Post-deploy verification
+  # =============================================================================
+  verify:
+    name: ✅ Verify Deployment
+    needs: deploy
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🔗 Check deployment URL
+        run: |
+          echo "🎉 Frontend deployed successfully!"
+          echo "📍 URL: https://daniel-kazarnowicz-baumalog.github.io/flowertrack/"
+          
+          # Poczekaj na propagację
+          sleep 10
+          
+          # Sprawdź czy strona jest dostępna
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://daniel-kazarnowicz-baumalog.github.io/flowertrack/")
+          
+          if [ "$HTTP_STATUS" -eq 200 ] || [ "$HTTP_STATUS" -eq 304 ]; then
+            echo "✅ Deployment verified - HTTP $HTTP_STATUS"
+          else
+            echo "⚠️ Deployment may need more time to propagate - HTTP $HTTP_STATUS"
+          fi

@@ -127,9 +127,7 @@ export const OnboardOrganizationModal: React.FC<OnboardOrganizationModalProps> =
 
         <div className="onboardOrg__section">
           <h3>{t('organizations.adminUser')}</h3>
-          <p className="onboardOrg__sectionHint">
-            {t('organizations.adminSectionHint')}
-          </p>
+          <p className="onboardOrg__sectionHint">{t('organizations.adminSectionHint')}</p>
           <div className="onboardOrg__grid">
             <div className="onboardOrg__field">
               <Input

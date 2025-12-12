@@ -193,9 +193,7 @@ export const InviteTechnicianModal = ({
             error={errors.password}
             disabled={inviteMutation.isPending}
           />
-          <span className="inviteTechnicianForm__hint">
-            {t('users.passwordHint')}
-          </span>
+          <span className="inviteTechnicianForm__hint">{t('users.passwordHint')}</span>
         </div>
 
         <div className="inviteTechnicianForm__field">
@@ -237,9 +235,7 @@ export const InviteTechnicianModal = ({
               <div className="roleCard__content">
                 <div className="roleCard__icon">👑</div>
                 <div className="roleCard__name">{t('users.administrator')}</div>
-                <div className="roleCard__description">
-                  {t('users.inviteDescriptionAdmin')}
-                </div>
+                <div className="roleCard__description">{t('users.inviteDescriptionAdmin')}</div>
               </div>
             </label>
           </div>

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Navigate } from 'react-router-dom';
-import { formatDistanceToNow, format, isValid, parseISO } from 'date-fns';
+import { formatDistanceToNow, format, isValid } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { pl, enUS } from 'date-fns/locale';
 import { useAuth } from '../../contexts/AuthContext';
@@ -78,7 +78,11 @@ export const ServiceUsersListPage = () => {
       const newRole = confirmModal.newValue;
       return {
         title: t('users.changeRoleTitle'),
-        message: t('users.changeRoleMessage', { name: confirmModal.user.fullName, oldRole, newRole }),
+        message: t('users.changeRoleMessage', {
+          name: confirmModal.user.fullName,
+          oldRole,
+          newRole,
+        }),
       };
     } else if (confirmModal.type === 'status') {
       const isDeactivating = confirmModal.newValue === 'Inactive';
@@ -306,7 +310,9 @@ export const ServiceUsersListPage = () => {
                     <td>
                       <Badge variant={getRoleBadgeVariant(serviceUser.role)}>
                         {serviceUser.role === 'Admin' ? '👑 ' : '🔧 '}
-                        {serviceUser.role === 'Admin' ? t('users.administrator') : t('users.technician')}
+                        {serviceUser.role === 'Admin'
+                          ? t('users.administrator')
+                          : t('users.technician')}
                       </Badge>
                     </td>
                     <td>
@@ -352,7 +358,9 @@ export const ServiceUsersListPage = () => {
                             (serviceUser.status === 'Active' && isLastAdmin(serviceUser.id))
                           }
                         >
-                          {serviceUser.status === 'Active' ? t('users.deactivate') : t('users.activate')}
+                          {serviceUser.status === 'Active'
+                            ? t('users.deactivate')
+                            : t('users.activate')}
                         </Button>
                       </div>
                     </td>
@@ -372,7 +380,8 @@ export const ServiceUsersListPage = () => {
             </div>
 
             <div className="serviceUsersListPage__paginationControls">
-              <label htmlFor="pageSize">{t('common.perPage')}:</label> {/* Check if this makes sense '10 per page' or 'Items per page: 10'. The UI has label 'Items per page:'. 'common.perPage' is 'na stronę' / 'per page'. So '10 na stronę' is OK in select, but label? Providing 'itemsPerPage' key might be better. */}
+              <label htmlFor="pageSize">{t('common.perPage')}:</label>{' '}
+              {/* Check if this makes sense '10 per page' or 'Items per page: 10'. The UI has label 'Items per page:'. 'common.perPage' is 'na stronę' / 'per page'. So '10 na stronę' is OK in select, but label? Providing 'itemsPerPage' key might be better. */}
               <select
                 id="pageSize"
                 value={pageSize}
@@ -386,7 +395,6 @@ export const ServiceUsersListPage = () => {
                 <option value={25}>25</option>
                 <option value={50}>50</option>
               </select>
-
               <div className="serviceUsersListPage__pageButtons">
                 <Button
                   variant="outline"
@@ -397,7 +405,9 @@ export const ServiceUsersListPage = () => {
                   {t('common.previous')}
                 </Button>
                 <span className="serviceUsersListPage__pageNumber">
-                  {i18n.language === 'pl' ? `Strona ${page} z ${totalPages}` : `Page ${page} of ${totalPages}`}
+                  {i18n.language === 'pl'
+                    ? `Strona ${page} z ${totalPages}`
+                    : `Page ${page} of ${totalPages}`}
                 </span>
                 <Button
                   variant="outline"
@@ -450,4 +460,3 @@ export const ServiceUsersListPage = () => {
     </div>
   );
 };
-
