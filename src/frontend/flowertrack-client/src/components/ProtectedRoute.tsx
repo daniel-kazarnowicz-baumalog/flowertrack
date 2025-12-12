@@ -21,12 +21,16 @@ const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
     );
   }
 
-  console.log('[ProtectedRoute] Check:', {
-    path: window.location.pathname,
-    isAuthenticated,
-    userRole: user?.role,
-    requiredRole,
-  });
+  // Development-only logging for route protection debugging
+  if (import.meta.env.DEV) {
+    // eslint-disable-next-line no-console
+    console.log('[ProtectedRoute] Check:', {
+      path: window.location.pathname,
+      isAuthenticated,
+      userRole: user?.role,
+      requiredRole,
+    });
+  }
 
   if (!isAuthenticated || !user) {
     console.warn('[ProtectedRoute] Not authenticated. Redirecting to Gateway.');

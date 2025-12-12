@@ -5,8 +5,9 @@ import { test as base, expect } from '@playwright/test';
  * Extend this file with custom fixtures as needed
  */
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 type BaseFixtures = {
-  // Add custom fixtures here
+  // Add custom fixtures here - empty for now, will be extended later
 };
 
 /**

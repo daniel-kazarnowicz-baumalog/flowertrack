@@ -41,7 +41,7 @@ export const machineService = {
 
     if (Array.isArray(response.data)) {
       // Backend returned a flat list, perform client-side pagination and sorting
-      let allItems = [...response.data];
+      const allItems = [...response.data];
 
       // Client-side sorting
       if (params?.sortBy) {

@@ -37,7 +37,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
   isFetchingMachines = false,
 }) => {
   const [formData, setFormData] = useState<CreateTicketRequest>({
-    organizationId: organizationId,
+    organizationId,
     machineId: '',
     title: '',
     description: '',
@@ -88,7 +88,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
 
   const handleClose = () => {
     setFormData({
-      organizationId: organizationId,
+      organizationId,
       machineId: '',
       title: '',
       description: '',
