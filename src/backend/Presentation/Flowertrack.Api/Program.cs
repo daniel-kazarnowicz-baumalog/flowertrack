@@ -423,9 +423,10 @@ try
         });
     }
 
-    // Apply database migrations (always run in all environments)
-    using (var scope = app.Services.CreateScope())
+    // Apply database migrations (only in Development - production uses pre-applied migrations)
+    if (app.Environment.IsDevelopment())
     {
+        using var scope = app.Services.CreateScope();
         var services = scope.ServiceProvider;
         var logger = services.GetRequiredService<ILogger<Program>>();
 
@@ -439,11 +440,6 @@ try
         catch (Exception ex)
         {
             logger.LogError(ex, "An error occurred while applying database migrations.");
-            // In production, we might want to fail fast if migrations fail
-            if (!app.Environment.IsDevelopment())
-            {
-                throw;
-            }
         }
     }
 
