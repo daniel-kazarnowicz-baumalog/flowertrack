@@ -28,8 +28,11 @@ import { OrganizationTeamPage } from './pages/client/OrganizationTeamPage';
 import { ClientActivatePage } from './pages/client/ClientActivatePage';
 
 function App() {
+  // Use basename for GitHub Pages deployment
+  const basename = import.meta.env.BASE_URL.replace(/\/$/, '');
+
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <Routes>
         {/* Public Routes with Persistent Layout */}
         <Route element={<PublicLayout />}>
