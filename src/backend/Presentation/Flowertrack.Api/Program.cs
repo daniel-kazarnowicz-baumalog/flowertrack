@@ -327,13 +327,15 @@ try
         };
     });
 
+    // Swagger UI - enable in all environments for API documentation
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "FLOWerTRACK API v1");
+    });
+
     if (app.Environment.IsDevelopment())
     {
-        app.UseSwagger();
-        app.UseSwaggerUI(c =>
-        {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "FLOWerTRACK API v1");
-        });
         app.MapOpenApi();
     }
 
