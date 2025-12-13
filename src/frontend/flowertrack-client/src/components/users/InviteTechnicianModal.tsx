@@ -168,11 +168,7 @@ export const InviteTechnicianModal = ({
       size="md"
       footer={footerContent}
     >
-      <form
-        id="invite-technician-form"
-        onSubmit={handleSubmit}
-        className="inviteTechnicianForm"
-      >
+      <form id="invite-technician-form" onSubmit={handleSubmit} className="inviteTechnicianForm">
         {errors.general && <div className="inviteTechnicianForm__error">{errors.general}</div>}
 
         <div className="inviteTechnicianForm__field">
