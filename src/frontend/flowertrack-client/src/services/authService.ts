@@ -25,10 +25,11 @@ export interface AuthServiceType {
 export const authService: AuthServiceType = {
   /**
    * Login as service user (technician/admin)
+   * Uses unified login endpoint with local BCrypt verification
    */
   loginService: async (email: string, password: string): Promise<LoginResponse> => {
     try {
-      const response = await apiClient.post<LoginResponse>('/auth/service/login', {
+      const response = await apiClient.post<LoginResponse>('/auth/login', {
         email,
         password,
       });
