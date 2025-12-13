@@ -139,9 +139,40 @@ export const InviteTechnicianModal = ({
     setFormData((prev) => ({ ...prev, role }));
   };
 
+  const footerContent = (
+    <div className="inviteTechnicianForm__footer">
+      <Button
+        type="button"
+        variant="ghost"
+        onClick={handleClose}
+        disabled={inviteMutation.isPending}
+      >
+        {t('common.cancel')}
+      </Button>
+      <Button
+        type="submit"
+        form="invite-technician-form"
+        variant="primary"
+        isLoading={inviteMutation.isPending}
+      >
+        {t('users.sendInvitation')}
+      </Button>
+    </div>
+  );
+
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title={t('users.inviteNewMember')} size="md">
-      <form onSubmit={handleSubmit} className="inviteTechnicianForm">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={t('users.inviteNewMember')}
+      size="md"
+      footer={footerContent}
+    >
+      <form
+        id="invite-technician-form"
+        onSubmit={handleSubmit}
+        className="inviteTechnicianForm"
+      >
         {errors.general && <div className="inviteTechnicianForm__error">{errors.general}</div>}
 
         <div className="inviteTechnicianForm__field">
@@ -239,20 +270,6 @@ export const InviteTechnicianModal = ({
               </div>
             </label>
           </div>
-        </div>
-
-        <div className="inviteTechnicianForm__footer">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={handleClose}
-            disabled={inviteMutation.isPending}
-          >
-            {t('common.cancel')}
-          </Button>
-          <Button type="submit" variant="primary" isLoading={inviteMutation.isPending}>
-            {t('users.sendInvitation')}
-          </Button>
         </div>
       </form>
     </Modal>

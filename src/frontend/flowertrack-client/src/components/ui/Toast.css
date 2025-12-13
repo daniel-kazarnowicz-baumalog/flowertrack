@@ -1,5 +1,5 @@
 .toast {
-  position: fixed;
+  position: relative;
   min-width: 300px;
   max-width: 500px;
   padding: var(--space-4) var(--space-5);
@@ -16,9 +16,10 @@
 
 @keyframes toastSlideIn {
   from {
-    transform: translateY(-100%);
+    transform: translateY(100%);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;

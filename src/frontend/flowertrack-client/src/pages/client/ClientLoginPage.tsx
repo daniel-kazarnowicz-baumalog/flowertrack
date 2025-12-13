@@ -120,7 +120,7 @@ const ClientLoginPage = () => {
           <div className="form-footer">
             <p>
               Pracownik serwisu?{' '}
-              <Link to="/service/login" className="form-link">
+              <Link to="/service" className="form-link">
                 Przejdź tutaj
               </Link>
             </p>

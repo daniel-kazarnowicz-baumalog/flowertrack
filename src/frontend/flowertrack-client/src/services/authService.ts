@@ -1,5 +1,5 @@
-import axios from 'axios';
-import { apiClient } from '../lib/apiClient';
+
+import { apiClient, getApiErrorMessage } from '../lib/apiClient';
 
 export interface LoginResponse {
   accessToken: string;
@@ -36,10 +36,7 @@ export const authService: AuthServiceType = {
       console.log('[AuthService] Login response:', response.data);
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(error.response?.data?.message || 'Nieprawidłowy email lub hasło');
-      }
-      throw error;
+      throw new Error(getApiErrorMessage(error));
     }
   },
 
@@ -54,10 +51,7 @@ export const authService: AuthServiceType = {
       });
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(error.response?.data?.message || 'Nieprawidłowy email lub hasło');
-      }
-      throw error;
+      throw new Error(getApiErrorMessage(error));
     }
   },
 

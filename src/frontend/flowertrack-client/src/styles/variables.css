@@ -8,274 +8,277 @@
    ======================================== */
 
 :root {
-  /* ---------- PRIMARY BRAND (Refined Indigo) ---------- */
-  --color-primary-50: #eef2ff;
-  --color-primary-100: #e0e7ff;
-  --color-primary-200: #c7d2fe;
-  --color-primary-300: #a5b4fc;
-  --color-primary-400: #818cf8;
-  --color-primary-500: #6366f1;
-  --color-primary-600: #4f46e5;
-  --color-primary-700: #4338ca;
-  --color-primary-800: #3730a3;
-  --color-primary-900: #312e81;
-  --color-primary-950: #1e1b4b;
+   /* ---------- PRIMARY BRAND (Refined Indigo) ---------- */
+   --color-primary-50: #eef2ff;
+   --color-primary-100: #e0e7ff;
+   --color-primary-200: #c7d2fe;
+   --color-primary-300: #a5b4fc;
+   --color-primary-400: #818cf8;
+   --color-primary-500: #6366f1;
+   --color-primary-600: #4f46e5;
+   --color-primary-700: #4338ca;
+   --color-primary-800: #3730a3;
+   --color-primary-900: #312e81;
+   --color-primary-950: #1e1b4b;
 
-  /* ---------- NEUTRAL SCALE (Slate - Modern Blue-Grey) ---------- */
-  --color-slate-50: #f8fafc;
-  --color-slate-100: #f1f5f9;
-  --color-slate-200: #e2e8f0;
-  --color-slate-300: #cbd5e1;
-  --color-slate-400: #94a3b8;
-  --color-slate-500: #64748b;
-  --color-slate-600: #475569;
-  --color-slate-700: #334155;
-  --color-slate-800: #1e293b;
-  --color-slate-900: #0f172a;
-  --color-slate-950: #020617;
+   /* ---------- NEUTRAL SCALE (Slate - Modern Blue-Grey) ---------- */
+   --color-slate-50: #f8fafc;
+   --color-slate-100: #f1f5f9;
+   --color-slate-200: #e2e8f0;
+   --color-slate-300: #cbd5e1;
+   --color-slate-400: #94a3b8;
+   --color-slate-500: #64748b;
+   --color-slate-600: #475569;
+   --color-slate-700: #334155;
+   --color-slate-800: #1e293b;
+   --color-slate-900: #0f172a;
+   --color-slate-950: #020617;
 
-  /* ---------- SEMANTIC PALETTES ---------- */
-  /* Success (Emerald) */
-  --color-emerald-50: #ecfdf5;
-  --color-emerald-500: #10b981;
-  --color-emerald-600: #059669;
-  --color-emerald-900: #064e3b;
+   /* ---------- SEMANTIC PALETTES ---------- */
+   /* Success (Emerald) */
+   --color-emerald-50: #ecfdf5;
+   --color-emerald-500: #10b981;
+   --color-emerald-600: #059669;
+   --color-emerald-900: #064e3b;
 
-  /* Warning (Amber) */
-  --color-amber-50: #fffbeb;
-  --color-amber-500: #f59e0b;
-  --color-amber-600: #d97706;
-  --color-amber-900: #78350f;
+   /* Warning (Amber) */
+   --color-amber-50: #fffbeb;
+   --color-amber-500: #f59e0b;
+   --color-amber-600: #d97706;
+   --color-amber-900: #78350f;
 
-  /* Error (Rose) */
-  --color-rose-50: #fff1f2;
-  --color-rose-500: #f43f5e;
-  --color-rose-600: #e11d48;
-  --color-rose-900: #881337;
+   /* Error (Rose) */
+   --color-rose-50: #fff1f2;
+   --color-rose-500: #f43f5e;
+   --color-rose-600: #e11d48;
+   --color-rose-900: #881337;
 
-  /* Info (Sky) */
-  --color-sky-50: #f0f9ff;
-  --color-sky-500: #0ea5e9;
-  --color-sky-600: #0284c7;
-  --color-sky-900: #0c4a6e;
+   /* Info (Sky) */
+   --color-sky-50: #f0f9ff;
+   --color-sky-500: #0ea5e9;
+   --color-sky-600: #0284c7;
+   --color-sky-900: #0c4a6e;
 
-  /* ========================================
+   /* ========================================
      TOKEN MAPPINGS - LIGHT MODE (Default)
      ======================================== */
 
-  /* ---------- Backgrounds ---------- */
-  --color-bg-app: #ffffff;
-  /* Main app background */
-  --color-bg-subtle: var(--color-slate-50);
-  /* Secondary background */
-  --color-bg-card: #ffffff;
-  /* Card/Panel background */
-  --color-bg-popover: #ffffff;
-  /* Dropdown/Modal background */
+   /* ---------- Backgrounds ---------- */
+   --color-bg-app: #ffffff;
+   /* Main app background */
+   --color-bg-subtle: var(--color-slate-50);
+   /* Secondary background */
+   --color-bg-card: #ffffff;
+   /* Card/Panel background */
+   --color-bg-popover: #ffffff;
+   /* Dropdown/Modal background */
 
-  /* ---------- Text ---------- */
-  --color-text-primary: var(--color-slate-900);
-  --color-text-secondary: var(--color-slate-600);
-  --color-text-tertiary: var(--color-slate-400);
-  --color-text-inverse: #ffffff;
+   /* ---------- Text ---------- */
+   --color-text-primary: var(--color-slate-900);
+   --color-text-secondary: var(--color-slate-600);
+   --color-text-tertiary: var(--color-slate-400);
+   --color-text-inverse: #ffffff;
 
-  /* ---------- Borders ---------- */
-  --color-border-subtle: var(--color-slate-100);
-  --color-border-default: var(--color-slate-200);
-  --color-border-strong: var(--color-slate-300);
+   /* ---------- Borders ---------- */
+   --color-border-subtle: var(--color-slate-100);
+   --color-border-default: var(--color-slate-200);
+   --color-border-strong: var(--color-slate-300);
 
-  /* ---------- Actions (Primary) ---------- */
-  --color-action-primary: var(--color-primary-600);
-  --color-action-primary-hover: var(--color-primary-700);
-  --color-action-primary-text: #ffffff;
+   /* ---------- Actions (Primary) ---------- */
+   --color-action-primary: var(--color-primary-600);
+   --color-action-primary-hover: var(--color-primary-700);
+   --color-action-primary-text: #ffffff;
 
-  /* ---------- Functional Colors ---------- */
-  --color-portal-service: #3b82f6;
-  /* Blue */
-  --color-portal-client: #8b5cf6;
-  /* Violet */
+   /* ---------- Functional Colors ---------- */
+   --color-portal-service: #3b82f6;
+   /* Blue */
+   --color-portal-client: #8b5cf6;
+   /* Violet */
 
-  /* ---------- Status Indicators ---------- */
-  --color-status-success-bg: var(--color-emerald-50);
-  --color-status-success-text: var(--color-emerald-900);
-  --color-status-warning-bg: var(--color-amber-50);
-  --color-status-warning-text: var(--color-amber-900);
-  --color-status-error-bg: var(--color-rose-50);
-  --color-status-error-text: var(--color-rose-900);
-  --color-status-info-bg: var(--color-sky-50);
-  --color-status-info-text: var(--color-sky-900);
+   /* ---------- Status Indicators ---------- */
+   --color-status-success-bg: var(--color-emerald-50);
+   --color-status-success-text: var(--color-emerald-900);
+   --color-status-warning-bg: var(--color-amber-50);
+   --color-status-warning-text: var(--color-amber-900);
+   --color-status-error-bg: var(--color-rose-50);
+   --color-status-error-text: var(--color-rose-900);
+   --color-status-info-bg: var(--color-sky-50);
+   --color-status-info-text: var(--color-sky-900);
 
-  /* ========================================
+   /* ========================================
      SHADOWS (Refined Layering)
      ======================================== */
-  --shadow-color: 220 3% 15%;
-  --shadow-strength: 1%;
+   --shadow-color: 220 3% 15%;
+   --shadow-strength: 1%;
 
-  --shadow-xs: 0 1px 2px -1px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 9%));
-  --shadow-sm:
-    0 3px 5px -2px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 3%)),
-    0 7px 14px -5px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 5%));
-  --shadow-md:
-    0 -1px 3px 0 hsl(var(--shadow-color) / calc(var(--shadow-strength) + 2%)),
-    0 1px 2px -5px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 2%)),
-    0 2px 5px -5px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 4%)),
-    0 4px 12px -5px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 5%)),
-    0 12px 15px -5px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 7%));
-  --shadow-lg:
-    0 -2px 5px 0 hsl(var(--shadow-color) / calc(var(--shadow-strength) + 2%)),
-    0 1px 1px -2px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 3%)),
-    0 2px 2px -2px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 3%)),
-    0 5px 5px -2px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 4%)),
-    0 9px 9px -2px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 5%)),
-    0 16px 16px -2px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 6%));
+   --shadow-xs: 0 1px 2px -1px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 9%));
+   --shadow-sm:
+      0 3px 5px -2px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 3%)),
+      0 7px 14px -5px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 5%));
+   --shadow-md:
+      0 -1px 3px 0 hsl(var(--shadow-color) / calc(var(--shadow-strength) + 2%)),
+      0 1px 2px -5px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 2%)),
+      0 2px 5px -5px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 4%)),
+      0 4px 12px -5px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 5%)),
+      0 12px 15px -5px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 7%));
+   --shadow-lg:
+      0 -2px 5px 0 hsl(var(--shadow-color) / calc(var(--shadow-strength) + 2%)),
+      0 1px 1px -2px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 3%)),
+      0 2px 2px -2px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 3%)),
+      0 5px 5px -2px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 4%)),
+      0 9px 9px -2px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 5%)),
+      0 16px 16px -2px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 6%));
 
-  --shadow-colored-primary: 0 10px 30px -10px rgba(79, 70, 229, 0.4);
+   --shadow-colored-primary: 0 10px 30px -10px rgba(79, 70, 229, 0.4);
 
-  /* ========================================
+   /* ========================================
      TYPOGRAPHY & SPACING
      ======================================== */
-  --font-sans: 'Inter', -apple-system, system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+   --font-sans: 'Inter', -apple-system, system-ui, sans-serif;
+   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Spacing Scale */
-  --space-0-5: 0.125rem;
-  /* 2px */
-  --space-1: 0.25rem;
-  /* 4px */
-  --space-1-5: 0.375rem;
-  /* 6px */
-  --space-2: 0.5rem;
-  /* 8px */
-  --space-2-5: 0.625rem;
-  /* 10px */
-  --space-3: 0.75rem;
-  /* 12px */
-  --space-4: 1rem;
-  /* 16px */
-  --space-5: 1.25rem;
-  /* 20px */
-  --space-6: 1.5rem;
-  /* 24px */
-  --space-8: 2rem;
-  /* 32px */
-  --space-10: 2.5rem;
-  /* 40px */
-  --space-12: 3rem;
-  /* 48px */
-  --space-16: 4rem;
-  /* 64px */
-  --space-20: 5rem;
-  /* 80px */
-  --space-24: 6rem;
-  /* 96px */
+   /* Spacing Scale */
+   --space-0-5: 0.125rem;
+   /* 2px */
+   --space-1: 0.25rem;
+   /* 4px */
+   --space-1-5: 0.375rem;
+   /* 6px */
+   --space-2: 0.5rem;
+   /* 8px */
+   --space-2-5: 0.625rem;
+   /* 10px */
+   --space-3: 0.75rem;
+   /* 12px */
+   --space-4: 1rem;
+   /* 16px */
+   --space-5: 1.25rem;
+   /* 20px */
+   --space-6: 1.5rem;
+   /* 24px */
+   --space-8: 2rem;
+   /* 32px */
+   --space-10: 2.5rem;
+   /* 40px */
+   --space-12: 3rem;
+   /* 48px */
+   --space-16: 4rem;
+   /* 64px */
+   --space-20: 5rem;
+   /* 80px */
+   --space-24: 6rem;
+   /* 96px */
 
-  --radius-sm: 0.375rem;
-  /* 6px */
-  --radius-md: 0.5rem;
-  /* 8px - Standard */
-  --radius-lg: 0.75rem;
-  /* 12px - Cards */
-  --radius-xl: 1rem;
-  /* 16px */
-  --radius-2xl: 1.5rem;
-  /* 24px */
-  --radius-full: 9999px;
+   --radius-sm: 0.375rem;
+   /* 6px */
+   --radius-md: 0.5rem;
+   /* 8px - Standard */
+   --radius-lg: 0.75rem;
+   /* 12px - Cards */
+   --radius-xl: 1rem;
+   /* 16px */
+   --radius-2xl: 1.5rem;
+   /* 24px */
+   --radius-full: 9999px;
 
-  /* ========================================
+   /* Z-Index Scale */
+   --z-toast: 9999;
+
+   /* ========================================
      COMPONENTS
      ======================================== */
-  --input-height-md: 3.5rem;
-  --input-padding-x: 1rem;
+   --input-height-md: 3.5rem;
+   --input-padding-x: 1rem;
 
-  --btn-height-sm: 2rem;
-  --btn-height-md: 3.5rem;
-  --btn-height-lg: 3.25rem;
-  --btn-padding-x-sm: 0.75rem;
-  --btn-padding-x-md: 1.25rem;
-  --btn-padding-x-lg: 2rem;
+   --btn-height-sm: 2rem;
+   --btn-height-md: 3.5rem;
+   --btn-height-lg: 3.25rem;
+   --btn-padding-x-sm: 0.75rem;
+   --btn-padding-x-md: 1.25rem;
+   --btn-padding-x-lg: 2rem;
 
-  /* ========================================
+   /* ========================================
      ANIMATIONS
      ======================================== */
-  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+   --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+   --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 
-  --duration-150: 150ms;
-  --duration-200: 200ms;
-  --duration-300: 300ms;
-  --duration-500: 500ms;
+   --duration-150: 150ms;
+   --duration-200: 200ms;
+   --duration-300: 300ms;
+   --duration-500: 500ms;
 }
 
 /* ========================================
    DARK MODE OVERRIDES
    ======================================== */
 [data-theme='dark'] {
-  /* Darken shadows for dark mode */
-  --shadow-strength: 25%;
-  --shadow-color: 220 40% 2%;
+   /* Darken shadows for dark mode */
+   --shadow-strength: 25%;
+   --shadow-color: 220 40% 2%;
 
-  /* Backgrounds */
-  --color-bg-app: var(--color-slate-950);
-  --color-bg-subtle: var(--color-slate-900);
-  --color-bg-card: var(--color-slate-900);
-  --color-bg-popover: var(--color-slate-800);
+   /* Backgrounds */
+   --color-bg-app: var(--color-slate-950);
+   --color-bg-subtle: var(--color-slate-900);
+   --color-bg-card: var(--color-slate-900);
+   --color-bg-popover: var(--color-slate-800);
 
-  /* Text */
-  --color-text-primary: var(--color-slate-50);
-  --color-text-secondary: var(--color-slate-400);
-  --color-text-tertiary: var(--color-slate-500);
-  --color-text-inverse: var(--color-slate-950);
+   /* Text */
+   --color-text-primary: var(--color-slate-50);
+   --color-text-secondary: var(--color-slate-400);
+   --color-text-tertiary: var(--color-slate-500);
+   --color-text-inverse: var(--color-slate-950);
 
-  /* Borders */
-  --color-border-subtle: var(--color-slate-800);
-  --color-border-default: var(--color-slate-700);
-  --color-border-strong: var(--color-slate-600);
+   /* Borders */
+   --color-border-subtle: var(--color-slate-800);
+   --color-border-default: var(--color-slate-700);
+   --color-border-strong: var(--color-slate-600);
 
-  /* Actions */
-  --color-action-primary: var(--color-primary-500);
-  --color-action-primary-hover: var(--color-primary-400);
+   /* Actions */
+   --color-action-primary: var(--color-primary-500);
+   --color-action-primary-hover: var(--color-primary-400);
 
-  /* Status (Subtle backgrounds for dark mode) */
-  --color-status-success-bg: rgba(16, 185, 129, 0.1);
-  --color-status-success-text: var(--color-emerald-500);
-  --color-status-warning-bg: rgba(245, 158, 11, 0.1);
-  --color-status-warning-text: var(--color-amber-500);
-  --color-status-error-bg: rgba(244, 63, 94, 0.1);
-  --color-status-error-text: var(--color-rose-500);
-  --color-status-info-bg: rgba(14, 165, 233, 0.1);
-  --color-status-info-text: var(--color-sky-500);
+   /* Status (Subtle backgrounds for dark mode) */
+   --color-status-success-bg: rgba(16, 185, 129, 0.1);
+   --color-status-success-text: var(--color-emerald-500);
+   --color-status-warning-bg: rgba(245, 158, 11, 0.1);
+   --color-status-warning-text: var(--color-amber-500);
+   --color-status-error-bg: rgba(244, 63, 94, 0.1);
+   --color-status-error-text: var(--color-rose-500);
+   --color-status-info-bg: rgba(14, 165, 233, 0.1);
+   --color-status-info-text: var(--color-sky-500);
 }
 
 /* ========================================
    SYSTEM OVERRIDES
    ======================================== */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    /* Auto-apply dark mode variables if no manual override */
-    --shadow-strength: 25%;
-    --shadow-color: 220 40% 2%;
-    --color-bg-app: var(--color-slate-950);
-    --color-bg-subtle: var(--color-slate-900);
-    --color-bg-card: var(--color-slate-900);
-    --color-bg-popover: var(--color-slate-800);
-    --color-text-primary: var(--color-slate-50);
-    --color-text-secondary: var(--color-slate-400);
-    --color-text-tertiary: var(--color-slate-500);
-    --color-text-inverse: var(--color-slate-950);
-    --color-border-subtle: var(--color-slate-800);
-    --color-border-default: var(--color-slate-700);
-    --color-border-strong: var(--color-slate-600);
-    --color-action-primary: var(--color-primary-500);
-    --color-action-primary-hover: var(--color-primary-400);
-    --color-status-success-bg: rgba(16, 185, 129, 0.1);
-    --color-status-success-text: var(--color-emerald-500);
-    --color-status-warning-bg: rgba(245, 158, 11, 0.1);
-    --color-status-warning-text: var(--color-amber-500);
-    --color-status-error-bg: rgba(244, 63, 94, 0.1);
-    --color-status-error-text: var(--color-rose-500);
-    --color-status-info-bg: rgba(14, 165, 233, 0.1);
-    --color-status-info-text: var(--color-sky-500);
-  }
+   :root:not([data-theme='light']) {
+      /* Auto-apply dark mode variables if no manual override */
+      --shadow-strength: 25%;
+      --shadow-color: 220 40% 2%;
+      --color-bg-app: var(--color-slate-950);
+      --color-bg-subtle: var(--color-slate-900);
+      --color-bg-card: var(--color-slate-900);
+      --color-bg-popover: var(--color-slate-800);
+      --color-text-primary: var(--color-slate-50);
+      --color-text-secondary: var(--color-slate-400);
+      --color-text-tertiary: var(--color-slate-500);
+      --color-text-inverse: var(--color-slate-950);
+      --color-border-subtle: var(--color-slate-800);
+      --color-border-default: var(--color-slate-700);
+      --color-border-strong: var(--color-slate-600);
+      --color-action-primary: var(--color-primary-500);
+      --color-action-primary-hover: var(--color-primary-400);
+      --color-status-success-bg: rgba(16, 185, 129, 0.1);
+      --color-status-success-text: var(--color-emerald-500);
+      --color-status-warning-bg: rgba(245, 158, 11, 0.1);
+      --color-status-warning-text: var(--color-amber-500);
+      --color-status-error-bg: rgba(244, 63, 94, 0.1);
+      --color-status-error-text: var(--color-rose-500);
+      --color-status-info-bg: rgba(14, 165, 233, 0.1);
+      --color-status-info-text: var(--color-sky-500);
+   }
 }

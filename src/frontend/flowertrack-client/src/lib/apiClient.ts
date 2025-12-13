@@ -40,17 +40,29 @@ class ApiClient {
       (response) => response,
       async (error: AxiosError) => {
         if (error.response) {
-          const { status } = error.response;
+          const { status, config } = error.response;
 
           // Handle 401 Unauthorized - token expired or invalid
           if (status === 401) {
-            console.error('[ApiClient] 401 Unauthorized. Redirecting to login.');
-            this.clearAuth();
-            // Redirect to login if not already there
-            const currentPath = window.location.pathname;
-            if (!currentPath.includes('/login') && !currentPath.includes('/activate')) {
-              const isServicePortal = currentPath.startsWith('/service');
-              window.location.href = isServicePortal ? '/service/login' : '/client/login';
+            const isLoginRequest = config.url?.includes('/login');
+
+            // Don't redirect if it's a failed login attempt - let the form handle the error
+            if (!isLoginRequest) {
+              console.error('[ApiClient] 401 Unauthorized. Redirecting to login.');
+              this.clearAuth();
+
+              // Redirect to login if not already there
+              const currentPath = window.location.pathname;
+              const isLoginPage =
+                currentPath === '/service' ||
+                currentPath === '/client' ||
+                currentPath.includes('/login');
+
+              if (!isLoginPage && !currentPath.includes('/activate')) {
+                const isServicePortal = currentPath.startsWith('/service');
+                // The login routes are /service and /client
+                window.location.href = isServicePortal ? '/service' : '/client';
+              }
             }
           }
 
