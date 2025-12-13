@@ -38,11 +38,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <button ref={ref} className={classes} disabled={disabled || isLoading} {...props}>
-        {isLoading && (
-          <span className="btn__spinner" aria-hidden="true">
-            ⟳
-          </span>
-        )}
+        {isLoading && <span className="btn__spinner" aria-hidden="true" />}
         <span className={isLoading ? 'btn__text--hidden' : ''}>{children}</span>
       </button>
     );
