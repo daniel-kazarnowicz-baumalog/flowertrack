@@ -29,7 +29,7 @@ import { ClientActivatePage } from './pages/client/ClientActivatePage';
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/flowertrack">
       <Routes>
         {/* Public Routes with Persistent Layout */}
         <Route element={<PublicLayout />}>
