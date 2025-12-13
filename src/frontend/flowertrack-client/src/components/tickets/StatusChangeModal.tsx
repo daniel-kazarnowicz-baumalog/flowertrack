@@ -3,10 +3,9 @@
  * Requires justification for Resolved/Closed statuses
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
 import type { TicketStatus } from '../../types/api';
 import styles from './StatusChangeModal.module.css';
 
@@ -36,6 +35,24 @@ const STATUS_LABELS: Record<TicketStatus, string> = {
   Reopened: 'Ponownie otwarte',
 };
 
+const STATUS_ICONS: Record<TicketStatus, string> = {
+  New: '📋',
+  Accepted: '📥',
+  InProgress: '🔧',
+  Resolved: '✅',
+  Closed: '🔒',
+  Reopened: '🔓',
+};
+
+const STATUS_COLORS: Record<TicketStatus, string> = {
+  New: 'new',
+  Accepted: 'accepted',
+  InProgress: 'inprogress',
+  Resolved: 'resolved',
+  Closed: 'closed',
+  Reopened: 'reopened',
+};
+
 export const StatusChangeModal: React.FC<StatusChangeModalProps> = ({
   isOpen,
   onClose,
@@ -45,6 +62,16 @@ export const StatusChangeModal: React.FC<StatusChangeModalProps> = ({
 }) => {
   const [newStatus, setNewStatus] = useState<TicketStatus>(currentStatus);
   const [justification, setJustification] = useState('');
+
+  // Reset state when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      // Set to first available status that's not current
+      const firstAvailable = STATUS_OPTIONS.find((s) => s !== currentStatus);
+      setNewStatus(firstAvailable || currentStatus);
+      setJustification('');
+    }
+  }, [isOpen, currentStatus]);
 
   const requiresJustification = newStatus === 'Resolved' || newStatus === 'Closed';
 
@@ -64,26 +91,35 @@ export const StatusChangeModal: React.FC<StatusChangeModalProps> = ({
     onClose();
   };
 
+  const availableStatuses = STATUS_OPTIONS.filter((status) => status !== currentStatus);
+
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Zmień status zgłoszenia">
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.field}>
-          <label htmlFor="status" className={styles.label}>
-            Nowy status
-          </label>
-          <select
-            id="status"
-            value={newStatus}
-            onChange={(e) => setNewStatus(e.target.value as TicketStatus)}
-            className={styles.select}
-            disabled={isLoading}
-          >
-            {STATUS_OPTIONS.filter((status) => status !== currentStatus).map((status) => (
-              <option key={status} value={status}>
-                {STATUS_LABELS[status]}
-              </option>
+          <label className={styles.label}>Nowy status</label>
+          <div className={styles.statusGrid}>
+            {availableStatuses.map((status) => (
+              <label
+                key={status}
+                className={`${styles.statusOption} ${styles[`status--${STATUS_COLORS[status]}`]} ${
+                  newStatus === status ? styles.statusOptionSelected : ''
+                } ${isLoading ? styles.statusOptionDisabled : ''}`}
+              >
+                <input
+                  type="radio"
+                  name="status"
+                  value={status}
+                  checked={newStatus === status}
+                  onChange={() => setNewStatus(status)}
+                  disabled={isLoading}
+                  className={styles.radioInput}
+                />
+                <span className={styles.statusIcon}>{STATUS_ICONS[status]}</span>
+                <span className={styles.statusLabel}>{STATUS_LABELS[status]}</span>
+              </label>
             ))}
-          </select>
+          </div>
         </div>
 
         {requiresJustification && (
@@ -91,16 +127,18 @@ export const StatusChangeModal: React.FC<StatusChangeModalProps> = ({
             <label htmlFor="justification" className={styles.label}>
               Uzasadnienie <span className={styles.required}>*</span>
             </label>
-            <Input
+            <textarea
               id="justification"
               value={justification}
               onChange={(e) => setJustification(e.target.value)}
-              placeholder="Uzasadnienie zmiany statusu (wymagane dla Rozwiązane/Zamknięte)..."
+              placeholder="Opisz powód zmiany statusu..."
               disabled={isLoading}
+              className={styles.textarea}
+              rows={3}
             />
             {!justification.trim() && (
               <span className={styles.hint}>
-                Uzasadnienie jest wymagane dla statusu "Rozwiązane" i "Zamknięte"
+                Uzasadnienie jest wymagane dla statusu „Rozwiązane" i „Zamknięte"
               </span>
             )}
           </div>

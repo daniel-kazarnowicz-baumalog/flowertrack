@@ -107,13 +107,30 @@ export const updateTicket = async (id: string, data: UpdateTicketRequest): Promi
 };
 
 /**
+ * Map frontend status string to backend integer
+ */
+const statusToInt: Record<string, number> = {
+  New: 0,
+  Accepted: 1,
+  InProgress: 2,
+  Resolved: 3,
+  Closed: 4,
+  Reopened: 5,
+};
+
+/**
  * Change ticket status with optional justification
  */
 export const changeTicketStatus = async (
   id: string,
   data: ChangeTicketStatusRequest
 ): Promise<void> => {
-  await apiClient.patch(`/tickets/${id}/status`, data);
+  // Convert frontend string status to backend integer
+  const backendData = {
+    status: statusToInt[data.newStatus] ?? 0,
+    reason: data.justification,
+  };
+  await apiClient.patch(`/tickets/${id}/status`, backendData);
 };
 
 /**

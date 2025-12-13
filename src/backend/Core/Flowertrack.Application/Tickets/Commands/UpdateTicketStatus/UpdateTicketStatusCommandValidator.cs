@@ -11,13 +11,16 @@ public sealed class UpdateTicketStatusCommandValidator : AbstractValidator<Updat
 {
     private readonly ITicketRepository _ticketRepository;
     private readonly IOrganizationUserRepository _organizationUserRepository;
+    private readonly IServiceUserRepository _serviceUserRepository;
 
     public UpdateTicketStatusCommandValidator(
         ITicketRepository ticketRepository,
-        IOrganizationUserRepository organizationUserRepository)
+        IOrganizationUserRepository organizationUserRepository,
+        IServiceUserRepository serviceUserRepository)
     {
         _ticketRepository = ticketRepository;
         _organizationUserRepository = organizationUserRepository;
+        _serviceUserRepository = serviceUserRepository;
 
         RuleFor(x => x.TicketId)
             .NotEmpty()
@@ -49,10 +52,18 @@ public sealed class UpdateTicketStatusCommandValidator : AbstractValidator<Updat
             .When(x => !string.IsNullOrEmpty(x.Reason))
             .WithMessage("Reason cannot exceed 1000 characters");
 
-        // User must be member of the organization
+        // User must be a service user OR a member of the organization
         RuleFor(x => x)
             .MustAsync(async (command, cancellationToken) =>
             {
+                // First check if user is a service user (technician)
+                var serviceUser = await _serviceUserRepository.GetByIdAsync(command.ChangedBy, cancellationToken);
+                if (serviceUser != null)
+                {
+                    return true; // Service users can update ticket status
+                }
+
+                // If not a service user, check if user is member of the ticket's organization
                 var ticket = await _ticketRepository.GetByIdAsync(command.TicketId, cancellationToken);
                 if (ticket == null) return true; // Will be caught by TicketExists validation
 
@@ -62,7 +73,7 @@ public sealed class UpdateTicketStatusCommandValidator : AbstractValidator<Updat
 
                 return organizationUsers.Any(ou => ou.Id == command.ChangedBy);
             })
-            .WithMessage("User is not a member of the ticket's organization")
+            .WithMessage("User is not authorized to update this ticket's status")
             .WithName("ChangedBy");
 
         // State transition validation

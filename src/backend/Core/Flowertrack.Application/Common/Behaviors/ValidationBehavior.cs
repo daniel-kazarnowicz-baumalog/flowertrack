@@ -1,5 +1,6 @@
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Flowertrack.Application.Common.Behaviors;
 
@@ -10,10 +11,14 @@ public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
     where TRequest : IRequest<TResponse>
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
+    private readonly ILogger<ValidationBehavior<TRequest, TResponse>> _logger;
 
-    public ValidationBehavior(IEnumerable<IValidator<TRequest>> validators)
+    public ValidationBehavior(
+        IEnumerable<IValidator<TRequest>> validators,
+        ILogger<ValidationBehavior<TRequest, TResponse>> logger)
     {
         _validators = validators;
+        _logger = logger;
     }
 
     public async Task<TResponse> Handle(
@@ -38,6 +43,15 @@ public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
 
         if (failures.Any())
         {
+            foreach (var failure in failures)
+            {
+                _logger.LogWarning(
+                    "Validation failed for {RequestType}: Property '{PropertyName}' - {ErrorMessage}",
+                    typeof(TRequest).Name,
+                    failure.PropertyName,
+                    failure.ErrorMessage);
+            }
+
             throw new Exceptions.ValidationException(failures);
         }
 
