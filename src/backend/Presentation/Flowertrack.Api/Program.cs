@@ -423,10 +423,9 @@ try
         });
     }
 
-    // Seed database in development environment
-    if (app.Environment.IsDevelopment())
+    // Apply database migrations (always run in all environments)
+    using (var scope = app.Services.CreateScope())
     {
-        using var scope = app.Services.CreateScope();
         var services = scope.ServiceProvider;
         var logger = services.GetRequiredService<ILogger<Program>>();
 
@@ -435,14 +434,35 @@ try
             logger.LogInformation("Applying database migrations...");
             var context = services.GetRequiredService<ApplicationDbContext>();
             await context.Database.MigrateAsync();
+            logger.LogInformation("Database migrations applied successfully.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while applying database migrations.");
+            // In production, we might want to fail fast if migrations fail
+            if (!app.Environment.IsDevelopment())
+            {
+                throw;
+            }
+        }
+    }
 
+    // Seed database in development environment only
+    if (app.Environment.IsDevelopment())
+    {
+        using var scope = app.Services.CreateScope();
+        var services = scope.ServiceProvider;
+        var logger = services.GetRequiredService<ILogger<Program>>();
+
+        try
+        {
             logger.LogInformation("Seeding database...");
             await DatabaseSeeder.SeedAsync(services);
             logger.LogInformation("Database seeding completed successfully.");
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+            logger.LogError(ex, "An error occurred while seeding the database.");
         }
     }
 
