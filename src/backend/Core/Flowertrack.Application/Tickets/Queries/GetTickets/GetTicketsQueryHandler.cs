@@ -150,7 +150,7 @@ public sealed class GetTicketsQueryHandler : IRequestHandler<GetTicketsQuery, Re
                 .Take(pageSize)
                 .ToList();
 
-            // Load related data
+            // Load related data sequentially (DbContext is not thread-safe)
             var organizationIds = tickets.Select(t => t.OrganizationId).Distinct().ToList();
             var machineIds = tickets.Select(t => t.MachineId).Distinct().ToList();
             var userIds = tickets
@@ -160,19 +160,38 @@ public sealed class GetTicketsQueryHandler : IRequestHandler<GetTicketsQuery, Re
                 .Distinct()
                 .ToList();
 
-            var organizations = await Task.WhenAll(
-                organizationIds.Select(id => _organizationRepository.GetByIdAsync(id, cancellationToken)));
+            // Load organizations sequentially
+            var orgDict = new Dictionary<Guid, Domain.Entities.Organization>();
+            foreach (var id in organizationIds)
+            {
+                var org = await _organizationRepository.GetByIdAsync(id, cancellationToken);
+                if (org != null)
+                {
+                    orgDict[org.Id] = org;
+                }
+            }
 
-            var machines = await Task.WhenAll(
-                machineIds.Select(id => _machineRepository.GetByIdAsync(id, cancellationToken)));
+            // Load machines sequentially
+            var machineDict = new Dictionary<Guid, Domain.Entities.Machine>();
+            foreach (var id in machineIds)
+            {
+                var machine = await _machineRepository.GetByIdAsync(id, cancellationToken);
+                if (machine != null)
+                {
+                    machineDict[machine.Id] = machine;
+                }
+            }
 
-            var users = await Task.WhenAll(
-                userIds.Select(id => _organizationUserRepository.GetByIdAsync(id, cancellationToken)));
-
-            // Create dictionaries for fast lookup
-            var orgDict = organizations.Where(o => o != null).ToDictionary(o => o!.Id, o => o);
-            var machineDict = machines.Where(m => m != null).ToDictionary(m => m!.Id, m => m);
-            var userDict = users.Where(u => u != null).ToDictionary(u => u!.Id, u => u);
+            // Load users sequentially
+            var userDict = new Dictionary<Guid, Domain.Entities.OrganizationUser>();
+            foreach (var id in userIds)
+            {
+                var user = await _organizationUserRepository.GetByIdAsync(id, cancellationToken);
+                if (user != null)
+                {
+                    userDict[user.Id] = user;
+                }
+            }
 
             // Map to DTOs
             var items = tickets.Select(ticket =>

@@ -1,5 +1,5 @@
-import { test, expect } from '../fixtures/base';
-import { LandingPage } from '../pages/LandingPage';
+import { test, expect } from './fixtures/base';
+import { LandingPage } from './pages/LandingPage';
 
 /**
  * Landing Page E2E Tests

@@ -9,9 +9,13 @@ export class BasePage {
 
   /**
    * Navigate to a specific path
+   * Path should be relative without leading slash (e.g., 'service', 'client')
+   * baseURL in playwright.config already includes /flowertrack/
    */
-  async goto(path: string = '/') {
-    await this.page.goto(path);
+  async goto(path: string = '') {
+    // Remove leading slash if present to avoid double slashes with baseURL
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+    await this.page.goto(cleanPath);
   }
 
   /**

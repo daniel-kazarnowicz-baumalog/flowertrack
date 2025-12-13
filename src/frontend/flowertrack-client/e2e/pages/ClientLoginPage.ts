@@ -2,38 +2,35 @@ import type { Page, Locator } from '@playwright/test';
 import { BasePage } from './BasePage';
 
 /**
- * Login Page Object
- * Represents the login/authentication page for service portal
+ * Client Login Page Object
+ * Represents the client portal login/authentication page
  */
-export class LoginPage extends BasePage {
-  // Selectors - based on actual page structure
+export class ClientLoginPage extends BasePage {
+  // Selectors
   readonly emailInput: Locator;
   readonly passwordInput: Locator;
   readonly submitButton: Locator;
   readonly errorMessage: Locator;
-  readonly successMessage: Locator;
-  readonly forgotPasswordLink: Locator;
   readonly backLink: Locator;
+  readonly activateLink: Locator;
 
   constructor(page: Page) {
     super(page);
-    // Selectors based on actual page snapshot - using exact label text with asterisk
     this.emailInput = page.getByRole('textbox', { name: /email/i });
     this.passwordInput = page.getByRole('textbox', { name: /hasło|password/i });
     this.submitButton = page.getByRole('button', { name: /zaloguj/i });
     this.errorMessage = page
       .locator('.input-message--error, [role="alert"], .toast--error')
       .first();
-    this.successMessage = page.locator('.success, .alert-success, .toast--success').first();
-    this.forgotPasswordLink = page.getByRole('link', { name: /zapomniałeś|forgot/i });
     this.backLink = page.getByRole('link', { name: /wróć|back/i });
+    this.activateLink = page.getByRole('link', { name: /aktyw|activate/i });
   }
 
   /**
-   * Navigate to service login page
+   * Navigate to client login page
    */
   async goto() {
-    await super.goto('service');
+    await super.goto('client');
     await this.page.waitForLoadState('domcontentloaded');
   }
 
@@ -79,17 +76,14 @@ export class LoginPage extends BasePage {
   }
 
   /**
-   * Get error message text
-   */
-  async getErrorMessage(): Promise<string> {
-    return (await this.errorMessage.textContent()) || '';
-  }
-
-  /**
-   * Check if logged in successfully (redirected away from login page)
+   * Check if logged in successfully (redirected to client dashboard)
    */
   async isLoggedIn(): Promise<boolean> {
-    await this.page.waitForURL(/\/(dashboard|home|tickets)/, { timeout: 5000 });
-    return !this.page.url().includes('/login');
+    try {
+      await this.page.waitForURL(/\/client\/(dashboard|tickets)/, { timeout: 5000 });
+      return true;
+    } catch {
+      return false;
+    }
   }
 }

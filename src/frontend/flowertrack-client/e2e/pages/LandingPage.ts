@@ -14,26 +14,20 @@ export class LandingPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.heroSection = page
-      .locator('[data-testid="hero-section"]')
-      .or(page.locator('header'))
-      .first();
-    this.logo = page
-      .locator('[data-testid="logo"]')
-      .or(page.getByRole('img', { name: /logo/i }))
-      .first();
-    this.navigationBar = page.locator('[data-testid="navigation"]').or(page.locator('nav')).first();
-    this.ctaButton = page
-      .locator('[data-testid="cta-button"]')
-      .or(page.getByRole('button', { name: /get started|start/i }))
-      .first();
+    // Strona główna ma nagłówek h1 z nazwą aplikacji i karty portali
+    this.heroSection = page.getByRole('heading', { name: /FLOW.*TRACK/i }).first();
+    this.logo = page.locator('text="🌸"').first();
+    // Linki do portalów zamiast nav
+    this.navigationBar = page.getByRole('link', { name: /portal/i }).first();
+    this.ctaButton = page.getByRole('link', { name: /portal serwisu|service/i }).first();
   }
 
   /**
-   * Navigate to landing page
+   * Navigate to landing page (gateway)
    */
   async goto() {
-    await super.goto('/');
+    await super.goto('');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   /**

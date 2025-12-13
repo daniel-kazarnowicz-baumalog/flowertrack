@@ -104,9 +104,26 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
     setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const footerContent = (
+    <div className={styles.actions}>
+      <Button type="button" variant="ghost" onClick={handleClose} disabled={isLoading}>
+        Anuluj
+      </Button>
+      <Button type="submit" form="create-ticket-form" disabled={isLoading || isFetchingMachines}>
+        {isLoading ? 'Tworzenie...' : 'Utwórz zgłoszenie'}
+      </Button>
+    </div>
+  );
+
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Nowe zgłoszenie">
-      <form onSubmit={handleSubmit} className={styles.form}>
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title="Nowe zgłoszenie"
+      size="md"
+      footer={footerContent}
+    >
+      <form id="create-ticket-form" onSubmit={handleSubmit} className={styles.form}>
         {/* Machine Selection */}
         <div className={styles.field}>
           <label htmlFor="machine" className={styles.label}>
@@ -185,8 +202,8 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             placeholder="Szczegółowy opis problemu, objawów, okoliczności wystąpienia..."
-            className={`${styles.select} ${errors.description ? styles.error : ''}`} // Reuse select styles for basic textarea
-            style={{ minHeight: '120px', fontFamily: 'inherit' }}
+            className={`${styles.select} ${errors.description ? styles.error : ''}`}
+            style={{ minHeight: '100px', fontFamily: 'inherit', resize: 'vertical' }}
             disabled={isLoading}
           />
           {errors.description && <span className={styles.errorMessage}>{errors.description}</span>}
@@ -230,16 +247,6 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
             error={errors.consent}
             disabled={isLoading}
           />
-        </div>
-
-        {/* Actions */}
-        <div className={styles.actions}>
-          <Button type="button" variant="secondary" onClick={handleClose} disabled={isLoading}>
-            Anuluj
-          </Button>
-          <Button type="submit" disabled={isLoading || isFetchingMachines}>
-            {isLoading ? 'Tworzenie...' : 'Utwórz zgłoszenie'}
-          </Button>
         </div>
       </form>
     </Modal>
