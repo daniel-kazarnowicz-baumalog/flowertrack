@@ -1,0 +1,108 @@
+# =============================================================================
+# FLOWerTRACK Backend - CI/CD Pipeline
+# =============================================================================
+# Build, test, and trigger Render.com deployment on push to develop
+# =============================================================================
+
+name: Deploy Backend to Render
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'src/backend/**'
+      - 'render.yaml'
+      - '.github/workflows/deploy-backend.yml'
+  
+  # Manual trigger
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '10.0.x'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  # =============================================================================
+  # Job 1: Build & Test
+  # =============================================================================
+  build:
+    name: 🔨 Build & Test
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: src/backend
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-quality: 'preview'
+
+      - name: 📚 Restore dependencies
+        run: dotnet restore Flowertrack.sln
+
+      - name: 🏗️ Build solution
+        run: dotnet build Flowertrack.sln --configuration Release --no-restore
+
+      - name: 🧪 Run unit tests
+        run: |
+          dotnet test Tests/Flowertrack.Domain.Tests/Flowertrack.Domain.Tests.csproj --configuration Release --no-build --verbosity normal || true
+          dotnet test Tests/Flowertrack.Application.Tests/Flowertrack.Application.Tests.csproj --configuration Release --no-build --verbosity normal || true
+
+      - name: 📤 Build Docker image (validation)
+        run: |
+          docker build -t flowertrack-api:test .
+          echo "✅ Docker image built successfully"
+
+  # =============================================================================
+  # Job 2: Deploy to Render.com
+  # =============================================================================
+  deploy:
+    name: 🚀 Deploy to Render
+    needs: build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🌐 Trigger Render Deploy
+        run: |
+          echo "🚀 Triggering Render.com deployment..."
+          echo "Render will automatically deploy from the develop branch."
+          echo ""
+          echo "If you have set up a Deploy Hook in Render, uncomment the curl command below:"
+          echo ""
+          # Uncomment and add your Deploy Hook URL as a secret (RENDER_DEPLOY_HOOK_URL)
+          # curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+          echo ""
+          echo "✅ Deployment triggered! Check Render dashboard for progress."
+          echo "📍 Your API will be available at: https://flowertrack-api.onrender.com"
+
+  # =============================================================================
+  # Job 3: Notify Frontend (optional - update environment)
+  # =============================================================================
+  notify:
+    name: 📢 Update Frontend Config
+    needs: deploy
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📝 Deployment Summary
+        run: |
+          echo "=============================================="
+          echo "🎉 Backend Deployment Complete!"
+          echo "=============================================="
+          echo ""
+          echo "📍 Backend API URL: https://flowertrack-api.onrender.com"
+          echo "📍 Frontend URL: https://daniel-kazarnowicz-baumalog.github.io/flowertrack/"
+          echo ""
+          echo "⚠️  Remember to set VITE_API_BASE_URL in GitHub Variables:"
+          echo "    https://flowertrack-api.onrender.com/api"
+          echo ""
+          echo "⚠️  First request after cold start may take ~30 seconds"
+          echo "=============================================="

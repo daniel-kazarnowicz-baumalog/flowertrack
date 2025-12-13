@@ -1,0 +1,56 @@
+# =============================================================================
+# Docker Ignore - FLOWerTRACK Backend
+# =============================================================================
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vs
+.vscode
+.idea
+*.user
+*.suo
+
+# Build outputs
+**/bin/
+**/obj/
+**/out/
+
+# Test results
+**/TestResults/
+**/coverage/
+
+# Logs
+logs/
+*.log
+
+# Local development
+**/appsettings.Development.json
+**/*.local.json
+
+# Documentation
+*.md
+!README.md
+
+# Scripts (not needed in container)
+scripts/*.ps1
+scripts/*.sh
+
+# Supabase local
+supabase/
+
+# Node modules (if any frontend tooling)
+node_modules/
+
+# Temp files
+*.tmp
+*.temp
+*.swp
+*~
+
+# OS files
+.DS_Store
+Thumbs.db

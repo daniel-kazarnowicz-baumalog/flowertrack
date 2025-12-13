@@ -275,11 +275,27 @@ try
 
     // Configure CORS
     var frontendUrl = builder.Configuration["Frontend:Url"] ?? "http://localhost:5173";
+    
+    // Build list of allowed origins
+    var allowedOrigins = new List<string>
+    {
+        frontendUrl,
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "https://daniel-kazarnowicz-baumalog.github.io"  // GitHub Pages
+    };
+    
+    // Remove duplicates and empty strings
+    var uniqueOrigins = allowedOrigins
+        .Where(o => !string.IsNullOrWhiteSpace(o))
+        .Distinct()
+        .ToArray();
+    
     builder.Services.AddCors(options =>
     {
         options.AddDefaultPolicy(policy =>
         {
-            policy.WithOrigins(frontendUrl, "http://localhost:5173", "http://localhost:3000")
+            policy.WithOrigins(uniqueOrigins)
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();
