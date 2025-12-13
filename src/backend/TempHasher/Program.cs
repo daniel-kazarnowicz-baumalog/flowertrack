@@ -1,0 +1,1 @@
+var stored = "$2a$11$mm3upzfsnHzxMiPO/IkOpezXG6KXqQmtZl/OtkfM5218Z/I4QqUJG"; Console.WriteLine("Testing verification..."); Console.WriteLine($"Verify with Admin123!: {BCrypt.Net.BCrypt.Verify("Admin123!", stored)}");
