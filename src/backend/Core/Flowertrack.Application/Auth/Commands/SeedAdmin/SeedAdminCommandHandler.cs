@@ -40,19 +40,26 @@ public sealed class SeedAdminCommandHandler : IRequestHandler<SeedAdminCommand, 
         try
         {
             // Check if admin already exists
-            var existingUser = await _serviceUserRepository.GetByEmailAsync(request.Email, cancellationToken);
-            if (existingUser != null)
+            var serviceUser = await _serviceUserRepository.GetByEmailAsync(request.Email, cancellationToken);
+            bool isNewUser = serviceUser == null;
+
+            if (!isNewUser && serviceUser!.SupabaseUserId != null)
             {
-                _logger.LogInformation("Admin user already exists: {Email}", request.Email);
+                _logger.LogInformation("Admin user already exists and is linked: {Email}", request.Email);
                 return Result.Success(new SeedAdminResponse(
-                    existingUser.Id,
-                    existingUser.SupabaseUserId,
+                    serviceUser.Id,
+                    serviceUser.SupabaseUserId,
                     request.Email,
-                    existingUser.FullName,
+                    serviceUser.FullName,
                     "Admin user already exists"));
             }
 
-            // Try to create user in Supabase
+            if (!isNewUser)
+            {
+                _logger.LogWarning("Admin user exists but is not linked to Supabase: {Email}. Attempting to repair.", request.Email);
+            }
+
+            // Try to create/get user in Supabase
             Guid? supabaseUserId = null;
             try
             {
@@ -78,35 +85,45 @@ public sealed class SeedAdminCommandHandler : IRequestHandler<SeedAdminCommand, 
                 _logger.LogWarning(ex, "Failed to create/get Supabase user. Continuing with local user only.");
             }
 
-            // Create ServiceUser in application database
-            var serviceUser = ServiceUser.Create(
-                Guid.NewGuid(),
-                request.FirstName,
-                request.LastName,
-                request.Email,
-                phoneNumber: null,
-                specialization: "System Administration");
+            if (isNewUser)
+            {
+                // Create ServiceUser in application database
+                serviceUser = ServiceUser.Create(
+                    Guid.NewGuid(),
+                    request.FirstName,
+                    request.LastName,
+                    request.Email,
+                    phoneNumber: null,
+                    specialization: "System Administration");
+            }
 
             // Link to Supabase if available
             if (supabaseUserId.HasValue)
             {
-                serviceUser.LinkToSupabaseUser(supabaseUserId.Value);
+                serviceUser!.LinkToSupabaseUser(supabaseUserId.Value);
             }
 
             // Set password hash for local authentication
             var passwordHash = _passwordHasher.HashPassword(request.Password);
-            serviceUser.SetPasswordHash(passwordHash);
+            serviceUser!.SetPasswordHash(passwordHash);
 
             // Activate the user
-            serviceUser.Activate();
+            if (serviceUser.Status != Domain.Enums.UserStatus.Active)
+            {
+                serviceUser.Activate();
+            }
 
-            // Assign ServiceAdministrator role (id = 1)
-            serviceUser.AssignRole(1);
+            if (isNewUser)
+            {
+                // Assign ServiceAdministrator role (id = 1)
+                serviceUser.AssignRole(1);
+                await _serviceUserRepository.AddAsync(serviceUser, cancellationToken);
+            }
 
-            await _serviceUserRepository.AddAsync(serviceUser, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            _logger.LogInformation("Admin user seeded successfully: {UserId}, Email: {Email}", 
+            _logger.LogInformation("Admin user {Action} successfully: {UserId}, Email: {Email}", 
+                isNewUser ? "seeded" : "repaired",
                 serviceUser.Id, request.Email);
 
             return Result.Success(new SeedAdminResponse(
@@ -114,7 +131,7 @@ public sealed class SeedAdminCommandHandler : IRequestHandler<SeedAdminCommand, 
                 supabaseUserId,
                 request.Email,
                 serviceUser.FullName,
-                "Admin user created successfully"));
+                $"Admin user {(isNewUser ? "created" : "repaired")} successfully"));
         }
         catch (Exception ex)
         {
