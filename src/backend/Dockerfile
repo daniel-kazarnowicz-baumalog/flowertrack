@@ -31,14 +31,15 @@ RUN dotnet publish "Flowertrack.Api.csproj" -c Release -o /app/publish /p:UseApp
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-preview AS runtime
 WORKDIR /app
 
-# Create non-root user for security
-RUN adduser --disabled-password --gecos '' appuser
+# Create non-root user for security (using useradd for Debian-based images)
+RUN groupadd --gid 1000 appgroup && \
+    useradd --uid 1000 --gid appgroup --shell /bin/bash --create-home appuser
 
 # Copy published app
 COPY --from=build /app/publish .
 
-# Create logs directory
-RUN mkdir -p /app/logs && chown -R appuser:appuser /app
+# Create logs directory and set ownership
+RUN mkdir -p /app/logs && chown -R appuser:appgroup /app
 
 # Switch to non-root user
 USER appuser
