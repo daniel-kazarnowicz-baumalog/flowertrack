@@ -33,9 +33,6 @@
   display: flex;
   gap: 0.75rem;
   justify-content: flex-end;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-border-subtle);
 }
 
 /* Role Selector Styles */
@@ -116,5 +113,21 @@
 @media (max-width: 640px) {
   .roleSelector {
     grid-template-columns: 1fr;
+  }
+
+  .roleCard {
+    padding: 0.75rem;
+  }
+
+  .roleCard__icon {
+    font-size: 1.5rem;
+  }
+
+  .roleCard__name {
+    font-size: 0.875rem;
+  }
+
+  .roleCard__description {
+    font-size: 0.6875rem;
   }
 }

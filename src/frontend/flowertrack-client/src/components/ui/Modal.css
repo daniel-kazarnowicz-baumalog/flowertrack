@@ -2,75 +2,60 @@
 
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  /* Use a consistent dark overlay for both modes for focus, or map it */
-  background-color: rgba(0, 0, 0, 0.5);
-  /* Semi-transparent black */
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
-  /* Optional: Adds a modern blur effect */
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--space-4);
   z-index: 1000;
-  /* Ensure it is above other content */
   animation: fadeIn var(--duration-200) var(--ease-out);
+  overflow-y: auto;
 }
 
 .modal {
-  /* Use card background which flips correctly in dark mode */
   background-color: var(--color-bg-card);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
-  max-height: calc(100dvh - 2rem);
-  /* Limit height to viewport minus padding */
   width: 100%;
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
   display: flex;
   flex-direction: column;
   animation: slideIn var(--duration-200) var(--ease-out);
   border: 1px solid var(--color-border-subtle);
-  margin: 0;
   overflow: hidden;
-  /* Ensure children don't overflow the rounded corners or height */
 }
 
 .modal--sm {
-  width: 100%;
-  max-width: 28rem;
+  max-width: 24rem;
 }
 
 .modal--md {
-  width: 100%;
-  max-width: 42rem;
+  max-width: 32rem;
 }
 
 .modal--lg {
-  width: 100%;
-  max-width: 56rem;
+  max-width: 48rem;
 }
 
 .modal--xl {
-  width: 100%;
-  max-width: 72rem;
+  max-width: 64rem;
 }
 
 .modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-5);
+  padding: var(--space-4) var(--space-5);
   border-bottom: 1px solid var(--color-border-subtle);
   background-color: var(--color-bg-subtle);
   flex-shrink: 0;
-  /* Prevent header from shrinking */
 }
 
 .modal-title {
-  font-size: 1.25rem;
-  /* text-xl replacement if var missing or direct value */
+  font-size: 1.125rem;
   font-weight: 600;
   color: var(--color-text-primary);
   margin: 0;
@@ -79,12 +64,12 @@
 .modal-close {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   color: var(--color-text-secondary);
   cursor: pointer;
   padding: var(--space-2);
   line-height: 1;
-  transition: all 0.2s;
+  transition: all 0.15s;
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
@@ -93,15 +78,14 @@
 
 .modal-close:hover {
   color: var(--color-text-primary);
-  background-color: var(--color-bg-subtle);
+  background-color: var(--color-bg-hover, rgba(0, 0, 0, 0.05));
 }
 
 .modal-body {
-  padding: var(--space-6);
+  padding: var(--space-5);
   overflow-y: auto;
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
-  /* Crucial for nested flex scrolling */
   color: var(--color-text-primary);
   background-color: var(--color-bg-card);
 }
@@ -110,8 +94,33 @@
   padding: var(--space-4) var(--space-5);
   border-top: 1px solid var(--color-border-subtle);
   background-color: var(--color-bg-subtle);
-  border-bottom-left-radius: var(--radius-lg);
-  border-bottom-right-radius: var(--radius-lg);
+  flex-shrink: 0;
+}
+
+/* Mobile styles - full screen modal */
+@media (max-width: 640px) {
+  .modal-overlay {
+    padding: 0;
+    align-items: stretch;
+  }
+
+  .modal {
+    max-width: 100%;
+    max-height: 100vh;
+    max-height: 100dvh;
+    height: 100%;
+    border-radius: 0;
+    border: none;
+  }
+
+  .modal-body {
+    padding: var(--space-4);
+  }
+
+  .modal-header,
+  .modal-footer {
+    padding: var(--space-3) var(--space-4);
+  }
 }
 
 @keyframes fadeIn {
@@ -126,7 +135,7 @@
 
 @keyframes slideIn {
   from {
-    transform: translateY(-20px);
+    transform: translateY(-10px);
     opacity: 0;
   }
 

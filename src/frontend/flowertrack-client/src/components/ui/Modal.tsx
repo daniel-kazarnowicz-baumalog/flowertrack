@@ -1,4 +1,5 @@
 import { useEffect, useRef, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from './Button';
 import './Modal.css';
@@ -58,7 +59,8 @@ export function Modal({
     }
   };
 
-  return (
+  // Use Portal to render modal at document.body level
+  return createPortal(
     <div className="modal-overlay" onClick={handleOverlayClick} role="dialog" aria-modal="true">
       <div ref={modalRef} className={`modal modal--${size}`}>
         {title && (
@@ -77,7 +79,8 @@ export function Modal({
         <div className="modal-body">{children}</div>
         {footer && <div className="modal-footer">{footer}</div>}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
