@@ -31,25 +31,18 @@ RUN dotnet publish "Flowertrack.Api.csproj" -c Release -o /app/publish /p:UseApp
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-preview AS runtime
 WORKDIR /app
 
-# Create non-root user for security (using useradd for Debian-based images)
-RUN groupadd --gid 1000 appgroup && \
-    useradd --uid 1000 --gid appgroup --shell /bin/bash --create-home appuser
-
 # Copy published app
 COPY --from=build /app/publish .
 
-# Create logs directory and set ownership
-RUN mkdir -p /app/logs && chown -R appuser:appgroup /app
-
-# Switch to non-root user
-USER appuser
+# Create logs directory
+RUN mkdir -p /app/logs
 
 # Expose port (Render uses PORT env variable)
 EXPOSE 8080
 
-# Health check
+# Health check (using wget instead of curl for minimal images)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8080/health || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
 
 # Set environment variables
 ENV ASPNETCORE_URLS=http://+:8080
