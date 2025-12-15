@@ -287,14 +287,16 @@ public class SupabaseClientService : ISupabaseClient
             {
                 AutoRefreshToken = true,
                 AutoConnectRealtime = false, // Disable realtime for MVP
-                // Use Service Key for server-side operations (bypasses RLS)
+                // Headers for additional API operations - ServiceKey used for admin operations
                 Headers = new Dictionary<string, string>
                 {
-                    { "apikey", _options.ServiceKey }
+                    { "apikey", _options.AnonKey }
                 }
             };
 
-            var client = new Client(_options.Url, _options.ServiceKey, supabaseOptions);
+            // Use AnonKey for authentication operations (SignIn, SignUp, etc.)
+            // ServiceKey is only used for Admin API calls via direct HTTP client
+            var client = new Client(_options.Url, _options.AnonKey, supabaseOptions);
 
             _logger.LogInformation("Supabase client initialized successfully");
 
