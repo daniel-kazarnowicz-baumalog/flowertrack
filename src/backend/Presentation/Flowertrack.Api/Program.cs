@@ -276,12 +276,16 @@ try
     // Configure CORS
     var frontendUrl = builder.Configuration["Frontend:Url"] ?? "http://localhost:5173";
     
-    // Build list of allowed origins
+    // Build list of allowed origins (include both localhost and 127.0.0.1 variants)
     var allowedOrigins = new List<string>
     {
         frontendUrl,
         "http://localhost:5173",
+        "http://localhost:5174",
         "http://localhost:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
+        "http://127.0.0.1:3000",
         "https://daniel-kazarnowicz-baumalog.github.io"  // GitHub Pages
     };
     
@@ -311,7 +315,11 @@ try
 
     // Configure the HTTP request pipeline
 
-    // Add Global Exception Handler (must be first)
+    // CORS must be very early in the pipeline to handle preflight requests
+    // and add CORS headers to all responses including errors
+    app.UseCors();
+
+    // Add Global Exception Handler (after CORS so error responses have CORS headers)
     app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
     // Add Serilog request logging
@@ -338,8 +346,6 @@ try
     {
         app.MapOpenApi();
     }
-
-    app.UseCors();
 
     // Only use HTTPS redirection in production to avoid CORS issues during development
     if (!app.Environment.IsDevelopment())
