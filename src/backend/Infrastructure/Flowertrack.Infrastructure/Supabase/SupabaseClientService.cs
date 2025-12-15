@@ -282,6 +282,12 @@ public class SupabaseClientService : ISupabaseClient
         try
         {
             _logger.LogInformation("Initializing Supabase client for URL: {Url}", _options.Url);
+            
+            // Debug: Log key prefixes for troubleshooting
+            var anonKeyPrefix = !string.IsNullOrEmpty(_options.AnonKey) && _options.AnonKey.Length > 20 
+                ? _options.AnonKey[..20] + "..." 
+                : "EMPTY_OR_SHORT";
+            _logger.LogInformation("Using AnonKey starting with: {AnonKeyPrefix}", anonKeyPrefix);
 
             var supabaseOptions = new global::Supabase.SupabaseOptions
             {
