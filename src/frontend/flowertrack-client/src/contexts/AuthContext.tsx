@@ -78,9 +78,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const loginService = async (email: string, password: string): Promise<void> => {
     const response = await authService.loginService(email, password);
-    // Backend returns role as 'Admin' or 'Technician' in response.user.role
+    // Backend returns role as 'ServiceAdministrator' or 'ServiceTechnician' in response.user.role
     // We map this to isAdmin and set the context role to 'service'
-    const isAdmin = response.user.role === 'Admin';
+    const isAdmin =
+      response.user.role === 'ServiceAdministrator' || response.user.role === 'Admin';
 
     login(response.accessToken, {
       ...response.user,
