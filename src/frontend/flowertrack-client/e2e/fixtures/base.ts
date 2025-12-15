@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { test as base, expect, type Page } from '@playwright/test';
 import { testUsers } from '../utils/testData';
 
@@ -12,10 +13,10 @@ async function authenticateAs(
   const user = testUsers[userKey];
 
   // Create mock user object
-  const mockUser = {
+  const userData = {
     id: 'test-user-id-' + Date.now(),
     email: user.email,
-    role: role,
+    role,
     name: 'Test User',
     fullName: 'Test User',
     firstName: 'Test',
@@ -24,7 +25,7 @@ async function authenticateAs(
   };
 
   // Create mock token (for testing purposes)
-  const mockToken = 'test-token-' + Date.now();
+  const token = 'test-token-' + Date.now();
 
   // Navigate to base URL first to set localStorage in correct origin
   await page.goto('');
@@ -35,7 +36,7 @@ async function authenticateAs(
       localStorage.setItem('accessToken', token);
       localStorage.setItem('user', JSON.stringify(userData));
     },
-    { token: mockToken, userData: mockUser }
+    { token, userData }
   );
 }
 

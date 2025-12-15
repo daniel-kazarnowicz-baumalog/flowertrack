@@ -1,6 +1,5 @@
 import { test, expect } from './fixtures/base';
 import { LoginPage } from './pages/LoginPage';
-import { testUsers, testData } from './utils/testData';
 
 /**
  * Login Page E2E Tests
@@ -42,7 +41,7 @@ test.describe('Service Login Page', () => {
       await expect(loginPage.emailInput).toHaveAttribute('placeholder', /technik@flowertrack/i);
     });
 
-    test('should have back link pointing to gateway', async ({ page }) => {
+    test('should have back link pointing to gateway', async () => {
       await expect(loginPage.backLink).toHaveAttribute('href', '/flowertrack');
     });
 
