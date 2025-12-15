@@ -77,25 +77,34 @@ public class SupabaseAuthService : IAuthService
         {
             _logger.LogInformation("Attempting to sign in user with email: {Email}", email);
 
-            var session = await _supabaseClient.Auth.SignIn(email, password);
+            // Use direct HTTP call instead of supabase-csharp library
+            // The library has issues with API key headers in some environments
+            var result = await _supabaseClient.SignInWithHttpAsync(email, password, cancellationToken);
 
-            if (session?.User == null)
+            if (!result.Success)
             {
-                _logger.LogWarning("Sign in failed for user {Email}: Invalid credentials", email);
-                return AuthResult.CreateFailure("Invalid email or password.");
+                _logger.LogWarning("Sign in failed for user {Email}: {Error}", email, result.ErrorMessage);
+                return AuthResult.CreateFailure(result.ErrorMessage ?? "Invalid email or password.");
             }
 
             _logger.LogInformation("Successfully signed in user {Email} with ID {UserId}", 
-                email, session.User.Id);
+                email, result.UserId);
 
-            var expiresAt = session.ExpiresIn > 0
-                ? DateTimeOffset.UtcNow.AddSeconds(session.ExpiresIn)
+            var expiresAt = result.ExpiresIn > 0
+                ? DateTimeOffset.UtcNow.AddSeconds(result.ExpiresIn)
                 : DateTimeOffset.UtcNow.AddHours(1);
 
+            // Create a minimal User object for backward compatibility
+            var user = new global::Supabase.Gotrue.User
+            {
+                Id = result.UserId,
+                Email = result.Email
+            };
+
             return AuthResult.CreateSuccess(
-                session.AccessToken ?? string.Empty,
-                session.RefreshToken ?? string.Empty,
-                session.User,
+                result.AccessToken ?? string.Empty,
+                result.RefreshToken ?? string.Empty,
+                user,
                 expiresAt
             );
         }

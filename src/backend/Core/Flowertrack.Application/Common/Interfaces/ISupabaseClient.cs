@@ -58,4 +58,54 @@ public interface ISupabaseClient
         string subject,
         string htmlBody,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Signs in a user using direct HTTP call to Supabase Auth API
+    /// This bypasses the supabase-csharp library which has issues with API key headers
+    /// </summary>
+    Task<SignInHttpResult> SignInWithHttpAsync(
+        string email,
+        string password,
+        CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// Result from direct HTTP sign-in call
+/// </summary>
+public class SignInHttpResult
+{
+    public bool Success { get; set; }
+    public string? AccessToken { get; set; }
+    public string? RefreshToken { get; set; }
+    public long ExpiresIn { get; set; }
+    public string? UserId { get; set; }
+    public string? Email { get; set; }
+    public string? ErrorMessage { get; set; }
+
+    public static SignInHttpResult CreateSuccess(
+        string accessToken,
+        string refreshToken,
+        long expiresIn,
+        string userId,
+        string email)
+    {
+        return new SignInHttpResult
+        {
+            Success = true,
+            AccessToken = accessToken,
+            RefreshToken = refreshToken,
+            ExpiresIn = expiresIn,
+            UserId = userId,
+            Email = email
+        };
+    }
+
+    public static SignInHttpResult CreateFailure(string errorMessage)
+    {
+        return new SignInHttpResult
+        {
+            Success = false,
+            ErrorMessage = errorMessage
+        };
+    }
 }

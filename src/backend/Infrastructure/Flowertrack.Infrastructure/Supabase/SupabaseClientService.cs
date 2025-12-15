@@ -277,6 +277,102 @@ public class SupabaseClientService : ISupabaseClient
         }
     }
 
+    /// <summary>
+    /// Signs in a user using direct HTTP call to Supabase Auth API
+    /// This bypasses the supabase-csharp library which has issues with API key headers
+    /// </summary>
+    public async Task<SignInHttpResult> SignInWithHttpAsync(
+        string email,
+        string password,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            _logger.LogInformation("Attempting direct HTTP sign-in for user: {Email}", email);
+
+            using var httpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(30)
+            };
+
+            // Set required headers for Supabase Auth API
+            httpClient.DefaultRequestHeaders.Add("apikey", _options.AnonKey);
+            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_options.AnonKey}");
+
+            var requestBody = new
+            {
+                email,
+                password
+            };
+
+            var content = new StringContent(
+                System.Text.Json.JsonSerializer.Serialize(requestBody),
+                System.Text.Encoding.UTF8,
+                "application/json");
+
+            var authUrl = $"{_options.Url}/auth/v1/token?grant_type=password";
+            _logger.LogDebug("Sending sign-in request to: {Url}", authUrl);
+
+            var response = await httpClient.PostAsync(authUrl, content, cancellationToken);
+            var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning(
+                    "Sign-in failed: {StatusCode} - {Error}",
+                    response.StatusCode,
+                    responseContent);
+
+                // Try to parse error message
+                try
+                {
+                    var errorDoc = System.Text.Json.JsonDocument.Parse(responseContent);
+                    var errorMessage = errorDoc.RootElement.TryGetProperty("error_description", out var desc)
+                        ? desc.GetString()
+                        : errorDoc.RootElement.TryGetProperty("message", out var msg)
+                            ? msg.GetString()
+                            : "Authentication failed";
+                    return SignInHttpResult.CreateFailure(errorMessage ?? "Authentication failed");
+                }
+                catch
+                {
+                    return SignInHttpResult.CreateFailure($"Authentication failed: {response.StatusCode}");
+                }
+            }
+
+            // Parse successful response
+            var jsonDoc = System.Text.Json.JsonDocument.Parse(responseContent);
+            var root = jsonDoc.RootElement;
+
+            var accessToken = root.GetProperty("access_token").GetString();
+            var refreshToken = root.GetProperty("refresh_token").GetString();
+            var expiresIn = root.GetProperty("expires_in").GetInt64();
+            
+            string? userId = null;
+            string? userEmail = null;
+            
+            if (root.TryGetProperty("user", out var userElement))
+            {
+                userId = userElement.TryGetProperty("id", out var idProp) ? idProp.GetString() : null;
+                userEmail = userElement.TryGetProperty("email", out var emailProp) ? emailProp.GetString() : null;
+            }
+
+            _logger.LogInformation("Successfully signed in user {Email} via direct HTTP", email);
+
+            return SignInHttpResult.CreateSuccess(
+                accessToken ?? string.Empty,
+                refreshToken ?? string.Empty,
+                expiresIn,
+                userId ?? string.Empty,
+                userEmail ?? email);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Direct HTTP sign-in failed for user {Email}", email);
+            return SignInHttpResult.CreateFailure($"Sign-in failed: {ex.Message}");
+        }
+    }
+
     private Client InitializeClient()
     {
         try
