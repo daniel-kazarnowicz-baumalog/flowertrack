@@ -2,6 +2,22 @@
 
 > Advanced service ticket management system for production equipment maintenance
 
+---
+
+## 🚀 Szybki Start dla Przeprogramowani
+
+**Logowanie jako Admin:**
+- Email: `admin@system.com` | Hasło: `Admin123!`
+
+**Dodawanie nowego klienta:**
+- Po zalogowaniu jako admin → "Organizations" → "Add Organization" → wypełnij dane firmy → utwórz pierwszego Organization Admina
+- Nowy użytkownik otrzyma email z linkiem aktywacyjnym, a jego domyślne hasło to: **hasło z emaila (jednorazowy link)**
+
+**TL;DR Obsługa:**
+Jako admin zarządzasz organizacjami klientów i ich użytkownikami, przypisujesz zgłoszenia (tickets) do techników, a klienci widzą tylko swoje maszyny i zgłoszenia. System automatycznie zbiera logi błędów z maszyn przez API, a każda zmiana statusu zgłoszenia jest rejestrowana w timeline. Wszystko działa w dwóch portalach: Service Portal (dla was) i Client Portal (dla klientów).
+
+---
+
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?logo=react)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript)](https://www.typescriptlang.org/)
