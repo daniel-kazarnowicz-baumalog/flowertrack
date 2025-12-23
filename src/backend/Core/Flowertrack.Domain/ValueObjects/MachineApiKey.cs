@@ -6,15 +6,16 @@ namespace Flowertrack.Domain.ValueObjects;
 
 /// <summary>
 /// Value Object representing a secure API key for machine authentication.
-/// Format: mch_{base64_token}
+/// Format: {12_random_alphanumeric_chars}
+/// Maximum 12 characters, unique, permanently assigned to machine
 /// </summary>
 public sealed class MachineApiKey : ValueObject
 {
-    private const string Pattern = @"^mch_[a-zA-Z0-9-]{32,40}$";
+    private const string Pattern = @"^[A-Za-z0-9]{12}$";
     private static readonly Regex ValidationRegex = new(Pattern, RegexOptions.Compiled);
 
-    private const string Prefix = "mch_";
-    private const int TokenByteLength = 24; // Will generate 32 base64 characters
+    private const int TokenLength = 12; // Exactly 12 characters
+    private const string AllowedChars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789"; // Removed confusing chars: 0, O, 1, I, l
 
     public string Value { get; }
 
@@ -26,31 +27,20 @@ public sealed class MachineApiKey : ValueObject
 
     /// <summary>
     /// Generates a new secure MachineApiKey using cryptographically secure random number generation.
+    /// Generates exactly 12 random alphanumeric characters (avoiding confusing characters like 0, O, 1, I, l)
     /// </summary>
     /// <returns>A new MachineApiKey instance with a randomly generated token.</returns>
     public static MachineApiKey Generate()
     {
-        var randomBytes = RandomNumberGenerator.GetBytes(TokenByteLength);
-        var base64Token = Convert.ToBase64String(randomBytes)
-            .Replace("+", "-")
-            .Replace("/", "-")
-            .Replace("=", "");
-
-        // Ensure we have at least 32 characters
-        if (base64Token.Length < 32)
+        var result = new char[TokenLength];
+        var randomBytes = RandomNumberGenerator.GetBytes(TokenLength);
+        
+        for (int i = 0; i < TokenLength; i++)
         {
-            // Generate more bytes if needed
-            var additionalBytes = RandomNumberGenerator.GetBytes(8);
-            base64Token += Convert.ToBase64String(additionalBytes)
-                .Replace("+", "-")
-                .Replace("/", "-")
-                .Replace("=", "");
+            result[i] = AllowedChars[randomBytes[i] % AllowedChars.Length];
         }
-
-        // Take exactly 32 characters for consistent length
-        base64Token = base64Token[..32];
-
-        var value = $"{Prefix}{base64Token}";
+        
+        var value = new string(result);
         return new MachineApiKey(value);
     }
 
@@ -82,11 +72,6 @@ public sealed class MachineApiKey : ValueObject
 
         try
         {
-            if (!value.StartsWith(Prefix))
-            {
-                return false;
-            }
-
             if (!ValidationRegex.IsMatch(value))
             {
                 return false;
@@ -125,17 +110,10 @@ public sealed class MachineApiKey : ValueObject
             throw new ArgumentException("Machine API key cannot be null or empty.", nameof(value));
         }
 
-        if (!value.StartsWith(Prefix))
-        {
-            throw new ArgumentException(
-                $"Machine API key must start with '{Prefix}'. Got: {value}",
-                nameof(value));
-        }
-
         if (!ValidationRegex.IsMatch(value))
         {
             throw new ArgumentException(
-                $"Machine API key has invalid format. Expected format: mch_{{32-40 alphanumeric characters}}. Got: {value}",
+                $"Machine API key has invalid format. Expected format: exactly 12 alphanumeric characters. Got: {value}",
                 nameof(value));
         }
     }

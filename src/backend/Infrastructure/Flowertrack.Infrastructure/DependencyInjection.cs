@@ -1,6 +1,7 @@
 using Flowertrack.Application.Common.Interfaces;
 using Flowertrack.Domain.Repositories;
 using Flowertrack.Infrastructure.Configuration;
+using Flowertrack.Infrastructure.Mqtt.Services;
 using Flowertrack.Infrastructure.Persistence;
 using Flowertrack.Infrastructure.Persistence.Repositories;
 using Flowertrack.Infrastructure.Services;
@@ -83,6 +84,12 @@ public static class DependencyInjection
 
         // HTTP Context Accessor for CurrentUserService
         services.AddHttpContextAccessor();
+
+        // MQTT Configuration and Services
+        services.Configure<MqttOptions>(configuration.GetSection("Mqtt"));
+        services.AddScoped<IMqttLogProcessor, MqttLogProcessor>();
+        services.AddSingleton<IMqttLogIngestionService, MqttLogIngestionService>();
+        services.AddHostedService<MqttLogIngestionHostedService>();
 
         return services;
     }
